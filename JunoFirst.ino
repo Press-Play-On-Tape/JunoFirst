@@ -1,13 +1,19 @@
-#include <Arduboy2.h>
-#include "Images.h"
-#include "Enums.h"
+#include "src/utils/Arduboy2Ext.h"
+#include "src/characters/Player.h"
+#include "src/images/Images.h"
+#include "src/utils/Enums.h"
+#include "src/characters/Enemy.h"
 
-Arduboy2 arduboy;
+Arduboy2Ext arduboy;
 GameState gameState = GameState::Intro;
 
 uint8_t introDelay = 0;
 uint8_t yPos = 0;
 uint8_t xPos = 60;
+
+Player player;
+Enemy enemies[MAX_NUMBER_OF_ENEMIES];
+
 
 // --------------------------------------------------------------------------------------
 //  Setup ..
@@ -20,6 +26,23 @@ void setup() {
   arduboy.setFrameRate(30);
   arduboy.initRandomSeed();
 
+
+  // Initialise a couple of the enemies ..
+
+  enemies[0].setEnemyType(EnemyType::EnemyType1);
+  enemies[0].setActive(true);
+  enemies[0].setX(20);
+  enemies[0].setY(22);
+
+  enemies[1].setEnemyType(EnemyType::EnemyType1);
+  enemies[1].setActive(true);
+  enemies[1].setX(50);
+  enemies[1].setY(13);
+
+  enemies[2].setEnemyType(EnemyType::EnemyType1);
+  enemies[2].setActive(true);
+  enemies[2].setX(90);
+  enemies[2].setY(8);
 
 }
 
@@ -60,7 +83,7 @@ void Intro() {
 
   // Draw logo ..
 
-  arduboy.drawCompressed(14, 8, logo, WHITE);
+  arduboy.drawCompressed(18, 4, logo, WHITE);
 
 
   // Display 'Press A' button after a short period of time ..
@@ -69,18 +92,47 @@ void Intro() {
     introDelay++;
   }
   else {    
-    arduboy.drawCompressed(97, 55, pressA, WHITE); 
+    arduboy.drawCompressed(51, 55, pressA, WHITE);
   }
 
 
   // If 'A' bUtton is pressed move to game play ..
 
-  if (arduboy.justPressed(A_BUTTON)) { gameState = GameState::GamePlay; }
+  if (arduboy.justPressed(A_BUTTON)) { 
+
+    player.reset();  
+    gameState = GameState::GamePlay; 
+    
+  }
 
 }
 
 
+// --------------------------------------------------------------------------------------
+//  Let's play!
+//
 void Play() {
+
+
+  // Handle players actions ..
+
+  if (arduboy.pressed(DOWN_BUTTON))     { player.decYDelta(); }
+  if (arduboy.pressed(UP_BUTTON))       { player.incYDelta(); }
+  if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
+  if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
+
+  RenderScreen(&player, enemies);
+
+}
+
+
+// --------------------------------------------------------------------------------------
+//  Render the screen
+//
+void RenderScreen(Player *player, Enemy *enemies) {
+
+  arduboy.setCursor(0,0);
+  arduboy.print(player->getYDelta());
 
   switch (yPos) {
 
@@ -116,19 +168,115 @@ void Play() {
 
   }
 
-  if (arduboy.everyXFrames(4)) {
 
-    if (arduboy.pressed(DOWN_BUTTON))   { yPos = (yPos == 0 ? 2: yPos - 1); }
-    if (arduboy.pressed(UP_BUTTON))     { yPos = (yPos == 2 ? 0: yPos + 1); }
+  // Render the enemies ..
+
+  for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+    Enemy *enemy = &enemies[x];
+
+    uint8_t const *imageName = nullptr;
+    uint8_t const *maskName = nullptr;
+
+    if (enemy->getActive()) {
+
+      switch (enemy->getType()) {
+
+        case EnemyType::EnemyType1:
+
+          switch (enemy->getSize()) {
+
+            case ImageSize::Far:
+
+              imageName = alien_1_far;
+              maskName = alien_1_far_mask;
+              break;
+
+            case ImageSize::Medium:
+
+              if (arduboy.getFrameCount(4) < 2) {
+                imageName = alien_1_medium_1;
+                maskName = alien_1_medium_1_mask;
+              }
+              else {
+                imageName = alien_1_medium_2;
+                maskName = alien_1_medium_2_mask;
+              }
+              break;
+
+            case ImageSize::Close:
+
+              if (arduboy.getFrameCount(4) < 2) {
+                imageName = alien_1_close_1;
+                maskName = alien_1_close_1_mask;
+              }
+              else {
+                imageName = alien_1_close_2;
+                maskName = alien_1_close_2_mask;
+              }
+              break;
+
+          }
+
+          break;
+
+        case EnemyType::EnemyType2:
+          // enemy 2 images;
+          break;
+
+      }
+
+      // Render image ..
+
+      arduboy.drawCompressed(enemy->getX(), enemy->getY(), maskName, BLACK);
+      arduboy.drawCompressed(enemy->getX(), enemy->getY(), imageName, WHITE);
+ 
+    }
 
   }
 
 
-  if (arduboy.pressed(LEFT_BUTTON))     { xPos = (xPos == 10 ? 10: xPos - 2); }
-  if (arduboy.pressed(RIGHT_BUTTON))     { xPos = (xPos == 118 ? 118: xPos + 2); }
+  // Render the space ship ..  Depending on the YDelta value, we flip between the image frames 
+  // at different rates.  The frame rates are stored in an array called 'frames' and we use 
+  // the absolut value of yDelta to look up the frame rate.  If the spaceship is statinary,
+  // the rate is 0, slowly moving forward or backwards (yDelta = 1 or -1) results in a value
+  // of 4.  The fastest spaceship speed (YDelta = 4 or -4) results in a fast frame rate of 2.
 
+  const uint8_t frames[] = {0, 4, 3, 3, 2};
+  uint8_t frameRate = frames[absT(player->getYDelta())];
 
-  arduboy.drawCompressed(xPos, 50, spaceship_neutral_mask, BLACK);
-  arduboy.drawCompressed(xPos, 50, spaceship_neutral, WHITE);
+  switch (player->getYDelta()) {
+
+    case -4 ... -1:
+
+      if (arduboy.everyXFrames(frameRate)) { 
+        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_1_mask, BLACK);
+        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_1, WHITE);
+      }
+      else {
+        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_2_mask, BLACK);
+        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_2, WHITE);
+      }
+      break;
+
+    case 0:
+
+      arduboy.drawCompressed(player->getX(), player->getY(), spaceship_neutral_mask, BLACK);
+      arduboy.drawCompressed(player->getX(), player->getY(), spaceship_neutral, WHITE);
+      break;
+
+    case 1 ... 4:
+
+      if (arduboy.everyXFrames(frameRate)) { 
+        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_1_mask, BLACK);
+        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_1, WHITE);
+      }
+      else {
+        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_2_mask, BLACK);
+        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_2, WHITE);
+      }
+      break;
+
+  }
 
 }
