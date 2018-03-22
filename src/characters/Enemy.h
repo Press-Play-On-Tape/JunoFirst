@@ -28,12 +28,10 @@ class Enemy {
 
   private:
 
-    EnemyType _enemyType;
+    uint8_t _flags;           // bits 0 - 3 enemy type, bits 4 - 7 enabled
     uint8_t _x;
     uint8_t _y;
-    int8_t _xDelta;
-    int8_t _yDelta;
-    bool _active;
+    uint8_t _delta;           // bits 0 - 3 x, bts 4 - 7 y
 
 };
 
@@ -42,7 +40,7 @@ class Enemy {
 // Properties ..
 
 EnemyType Enemy::getType() {
-  return _enemyType;
+  return static_cast<EnemyType>(_flags & 0x0f);
 }
 
 uint8_t Enemy::getX() {
@@ -54,19 +52,21 @@ uint8_t Enemy::getY() {
 }
 
 int8_t Enemy::getXDelta() {
-  return _xDelta;
+  return ((_delta & 0x80) == 0x80 ? 0xF0 | ((_delta & 0xF0) >> 4) : (_delta & 0xF0) >> 4);
 }
 
 int8_t Enemy::getYDelta() {
-  return _yDelta;
+
+  return ((_delta & 0x08) == 0x08 ? 0xF0 | (_delta & 0x0F) : _delta & 0xF0);
 }
 
 bool Enemy::getActive() {
-  return _active;
+  return (_flags & 0xf0) > 0;
+
 }
 
 void Enemy::setEnemyType(EnemyType val) {
-  _enemyType = val;
+  _flags = (_flags & 0xf0) | static_cast<uint8_t>(val);
 }
 
 void Enemy::setX(uint8_t val) {
@@ -78,15 +78,15 @@ void Enemy::setY(uint8_t val) {
 }
 
 void Enemy::setXDelta(int8_t val) {
-  _xDelta = val;
+  _delta = (val >= 0 ? (_delta & 0x0f) | ((val & 0x0f) << 4) : (_delta & 0x0f) | 0x80 | ((val & 0x07) << 4));
 }
 
 void Enemy::setYDelta(int8_t val) {
-  _yDelta = val;
+  _delta = (val >= 0 ? (_delta & 0xF0) | (val & 0x0f) : (_delta & 0x0f) | 0x08 | (val & 0x07));
 }
 
 void Enemy::setActive(bool val) {
-  _active = val;
+  _flags = (_flags & 0x0f) | (val ? 0x10 : 0x00);
 }
 
 

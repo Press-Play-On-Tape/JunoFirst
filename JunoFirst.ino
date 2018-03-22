@@ -3,6 +3,7 @@
 #include "src/images/Images.h"
 #include "src/utils/Enums.h"
 #include "src/characters/Enemy.h"
+#include "src/levels/Level.h"
 
 Arduboy2Ext arduboy;
 GameState gameState = GameState::Intro;
@@ -10,9 +11,11 @@ GameState gameState = GameState::Intro;
 uint8_t introDelay = 0;
 uint8_t yPos = 0;
 uint8_t xPos = 60;
+uint8_t hoizonIncrement = 0;
 
 Player player;
 Enemy enemies[MAX_NUMBER_OF_ENEMIES];
+Level level;
 
 
 // --------------------------------------------------------------------------------------
@@ -23,7 +26,7 @@ void setup() {
   arduboy.boot();
   arduboy.flashlight();
   arduboy.systemButtons();
-  arduboy.setFrameRate(30);
+  arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
 
 
@@ -114,14 +117,46 @@ void Intro() {
 void Play() {
 
 
+  // Update the ground's position ..
+
+  const uint8_t speedLookup[] = {0, 4, 2, 0, 1};
+  uint8_t speed = speedLookup[absT(player.getYDelta())];
+
+  if (hoizonIncrement == speed) {
+    level.incHorizon( player.getYDelta() > 0 ? 1 : -1);
+    hoizonIncrement = 0;
+  }
+  
+  hoizonIncrement++;
+
+
+
+  // Update the enemies ..
+
+  for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+    Enemy *enemy = &enemies[x];
+
+    if (enemy->getActive()) {
+
+//      enemy.set
+
+    }    
+
+  }
+
+
+  RenderScreen(&player, enemies);
+
+
   // Handle players actions ..
 
-  if (arduboy.pressed(DOWN_BUTTON))     { player.decYDelta(); }
-  if (arduboy.pressed(UP_BUTTON))       { player.incYDelta(); }
+  if (arduboy.pressed(DOWN_BUTTON))     { if (player.decYDelta()) hoizonIncrement = 0; }
+  if (arduboy.pressed(UP_BUTTON))       { if (player.incYDelta()) hoizonIncrement = 0; }
   if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
   if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-  RenderScreen(&player, enemies);
+  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(8)) { player.decelerate(); }
 
 }
 
@@ -131,42 +166,30 @@ void Play() {
 //
 void RenderScreen(Player *player, Enemy *enemies) {
 
-  arduboy.setCursor(0,0);
-  arduboy.print(player->getYDelta());
 
-  switch (yPos) {
+  // Render the horizon ;
 
-    case 0:
-      arduboy.drawLine(0, 20, WIDTH, 20, WHITE);
-      arduboy.drawLine(0, 22, WIDTH, 22, WHITE);
-      arduboy.drawLine(0, 26, WIDTH, 26, WHITE);
-      arduboy.drawLine(0, 32, WIDTH, 32, WHITE);
-      arduboy.drawLine(0, 40, WIDTH, 40, WHITE);
-      arduboy.drawLine(0, 50, WIDTH, 50, WHITE);
-      arduboy.drawLine(0, 62, WIDTH, 62, WHITE);
-      break;
+  const uint8_t horizon[5][7] = {
+                                  { 0, 2,  6, 12, 20, 30, 42 },
+                                  { 0, 2,  7, 13, 22, 32, 45 },
+                                  { 0, 3,  8, 15, 24, 35, 48 },
+                                  { 0, 3,  9, 16, 26, 37, 51 },
+                                  { 0, 4, 10, 18, 28, 40, 54 }
+                                };                        
 
-    case 1:
-      arduboy.drawLine(0, 20, WIDTH, 20, WHITE);
-      arduboy.drawLine(0, 23, WIDTH, 23, WHITE); //1
-      arduboy.drawLine(0, 28, WIDTH, 28, WHITE); //2
-      arduboy.drawLine(0, 35, WIDTH, 35, WHITE); //3
-      arduboy.drawLine(0, 44, WIDTH, 44, WHITE); //4
-      arduboy.drawLine(0, 55, WIDTH, 55, WHITE); //5
-      arduboy.drawLine(0, 68, WIDTH, 68, WHITE); //6
-      break;
 
-    case 2:
-      arduboy.drawLine(0, 20, WIDTH, 20, WHITE);
-      arduboy.drawLine(0, 24, WIDTH, 24, WHITE); //2
-      arduboy.drawLine(0, 30, WIDTH, 30, WHITE); //4
-      arduboy.drawLine(0, 38, WIDTH, 38, WHITE); //6
-      arduboy.drawLine(0, 48, WIDTH, 48, WHITE); //8
-      arduboy.drawLine(0, 60, WIDTH, 60, WHITE); //10
-      arduboy.drawLine(0, 74, WIDTH, 74, WHITE); //12
-      break;
+
+
+  uint8_t row = level.getHorizon();
+
+  for (uint8_t col = 0; col < HORIZON_COL_COUNT; col++) {
+
+// Stephane uncomment this line and comment the line below out ..
+//    arduboy.drawLine(0, horizon[row][col] + 8, WIDTH, horizon[row][col] + 8, WHITE);
+    arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, horizon[row][col] + 8, col + 2);
 
   }
+
 
 
   // Render the enemies ..

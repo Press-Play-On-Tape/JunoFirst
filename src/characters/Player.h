@@ -23,8 +23,10 @@ class Player {
     void reset();
     void incX();
     void decX();
-    void incYDelta();
-    void decYDelta();
+
+    boolean incYDelta();
+    boolean decYDelta();
+    boolean decelerate();
 
   private:
 
@@ -88,66 +90,83 @@ void Player::decX() {
 
 }
 
-void Player::incYDelta() {
+// Returns true if hte value has changed ..
+
+boolean Player::incYDelta() {
 
   switch(_yDelta) {
 
     case -4:      
       _yDelta = -2;
-      break;
+      return true;
 
     case -2:      
       _yDelta = -1;
-      break;
+      return true;
 
     case -1:      
       _yDelta = 0;
-      break;
+      return true;
       
     case 0:
       _yDelta = 1;
-      break;
+      return true;
 
     case 1:
       _yDelta = 2;
-      break;
+      return true;
 
     case 2:
       _yDelta = 4;
-      break;
+      return true;
 
   }
 
+  return false;
+
 }
 
-void Player::decYDelta() {
+// Returns true if hte value has changed ..
+
+boolean Player::decYDelta() {
 
   switch(_yDelta) {
 
     case -2:      
       _yDelta = -4;
-      break;
+      return true;
 
     case -1:      
       _yDelta = -2;
-      break;
+      return true;
       
     case 0:
       _yDelta = -1;
-      break;
+      return true;
 
     case 1:
       _yDelta = 0;
-      break;
+      return true;
 
     case 2:
       _yDelta = 1;
-      break;
+      return true;
 
     case 4:
       _yDelta = 2;
-      break;
+      return true;
 
   }
+
+  return false;
+
+}
+
+boolean Player::decelerate() {
+
+  if (_yDelta > 0) return decYDelta();
+  if (_yDelta < 0) return incYDelta();
+
+  return false;
 
 }

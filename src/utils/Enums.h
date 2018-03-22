@@ -5,6 +5,11 @@
 
 #define MAX_NUMBER_OF_ENEMIES     10
 
+#define HORIZON_MIN_VALUE         42
+#define HORIZON_INCREMENT         3
+#define HORIZON_COL_COUNT         7
+#define HORIZON_ROW_COUNT         5
+
 
 // ----------------------------------------------------------------------------
 //  A better absolute as it uses less memory than the standard one .. 
