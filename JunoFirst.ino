@@ -47,6 +47,16 @@ void setup() {
   enemies[2].setX(90);
   enemies[2].setY(8);
 
+  // enemies[3].setEnemyType(EnemyType::EnemyType1);
+  // enemies[3].setActive(true);
+  // enemies[3].setX(110);
+  // enemies[3].setY(0);
+
+  // enemies[4].setEnemyType(EnemyType::EnemyType1);
+  // enemies[4].setActive(true);
+  // enemies[4].setX(113);
+  // enemies[4].setY(2);
+
 }
 
 
@@ -156,7 +166,7 @@ void Play() {
   if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
   if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(8)) { player.decelerate(); }
+  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(16)) { player.decelerate(); }
 
 }
 
@@ -184,9 +194,14 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   for (uint8_t col = 0; col < HORIZON_COL_COUNT; col++) {
 
-// Stephane uncomment this line and comment the line below out ..
-//    arduboy.drawLine(0, horizon[row][col] + 8, WIDTH, horizon[row][col] + 8, WHITE);
-    arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, horizon[row][col] + 8, col + 2);
+    uint8_t y = horizon[row][col] + 4;
+
+    if (y <= 57) {
+//      arduboy.drawLine(0, y, WIDTH, y, WHITE);
+      arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
+//      arduboy.drawHorizontalDottedLine(0, WIDTH, y, col + 2);
+
+    }
 
   }
 
@@ -217,7 +232,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
             case ImageSize::Medium:
 
-              if (arduboy.getFrameCount(4) < 2) {
+              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
                 imageName = alien_1_medium_1;
                 maskName = alien_1_medium_1_mask;
               }
@@ -229,7 +244,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
             case ImageSize::Close:
 
-              if (arduboy.getFrameCount(4) < 2) {
+              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
                 imageName = alien_1_close_1;
                 maskName = alien_1_close_1_mask;
               }
@@ -251,8 +266,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
       // Render image ..
 
-      arduboy.drawCompressed(enemy->getX(), enemy->getY(), maskName, BLACK);
-      arduboy.drawCompressed(enemy->getX(), enemy->getY(), imageName, WHITE);
+      Sprites::drawExternalMask(enemy->getX(), enemy->getY(), imageName, maskName, 0, 0 );
  
     }
 
@@ -272,34 +286,58 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
     case -4 ... -1:
 
-      if (arduboy.everyXFrames(frameRate)) { 
-        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_1_mask, BLACK);
-        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_1, WHITE);
+      if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
+        Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_1, spaceship_backwards_1_mask, 0, 0);
       }
       else {
-        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_2_mask, BLACK);
-        arduboy.drawCompressed(player->getX(), player->getY() - 4, spaceship_backwards_2, WHITE);
+        Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_2, spaceship_backwards_2_mask, 0, 0);
       }
       break;
 
     case 0:
 
-      arduboy.drawCompressed(player->getX(), player->getY(), spaceship_neutral_mask, BLACK);
-      arduboy.drawCompressed(player->getX(), player->getY(), spaceship_neutral, WHITE);
+      Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_neutral, spaceship_neutral_mask, 0, 0);
       break;
 
     case 1 ... 4:
 
-      if (arduboy.everyXFrames(frameRate)) { 
-        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_1_mask, BLACK);
-        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_1, WHITE);
+      if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
+        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
       }
       else {
-        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_2_mask, BLACK);
-        arduboy.drawCompressed(player->getX(), player->getY(), spaceship_advance_2, WHITE);
+        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
       }
       break;
 
   }
+
+
+
+  // Render scoreboard ..
+
+  Sprites::drawOverwrite(0, 59, numbers, 0);
+  Sprites::drawOverwrite(5, 59, numbers, 0);
+  Sprites::drawOverwrite(10, 59, numbers, 0);
+  Sprites::drawOverwrite(15, 59, numbers, 0);
+  Sprites::drawOverwrite(20, 59, numbers, 0);
+  Sprites::drawOverwrite(25, 59, numbers, 0);
+
+  Sprites::drawOverwrite(50, 59, wave, 0);
+  Sprites::drawOverwrite(74, 59, numbers, 0);
+  Sprites::drawOverwrite(79, 59, numbers, 1);
+  
+  Sprites::drawOverwrite(102, 59, life, 0);
+  Sprites::drawOverwrite(109, 59, life, 0);
+  Sprites::drawOverwrite(116, 59, life, 0);
+  Sprites::drawOverwrite(123, 59, life, 0);
+
+
+
+arduboy.drawPixel(108, 0);
+arduboy.drawPixel(110, 0);
+arduboy.drawPixel(112, 0);
+arduboy.drawPixel(108, 2);
+arduboy.drawPixel(110, 2);
+arduboy.drawPixel(112, 2);
 
 }

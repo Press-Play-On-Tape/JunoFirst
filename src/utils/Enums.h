@@ -9,6 +9,8 @@
 #define HORIZON_INCREMENT         3
 #define HORIZON_COL_COUNT         7
 #define HORIZON_ROW_COUNT         5
+#define ENEMY_FRAME_COUNT         30
+#define ENEMY_FRAME_COUNT_HALF    15
 
 
 // ----------------------------------------------------------------------------

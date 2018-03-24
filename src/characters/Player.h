@@ -45,7 +45,7 @@ uint8_t Player::getX() {
 }
 
 uint8_t Player::getY() {
-  return 48;
+  return 43;
 }
 
 int8_t Player::getXDelta() {
