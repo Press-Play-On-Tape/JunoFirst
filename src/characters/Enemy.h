@@ -185,10 +185,11 @@ static const int8_t ENEMY_MAXIMUM_Y = 120;
 
 void Enemy::move(Player *player) {
 
-//  _x = clamp(static_cast<int8_t>(_x + (player->getXDelta() / 2)), ENEMY_MINIMUM_X, ENEMY_MAXIMUM_X);
+//* Stephane uncomment these out individually ..
 
-
-  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 4)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
+  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 2)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
+//  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 3)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
+//  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 4)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
   
 }
 
