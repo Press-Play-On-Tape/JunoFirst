@@ -141,14 +141,22 @@ const uint8_t PROGMEM alien_1_medium_2_mask[] = {
 };
 
 const uint8_t PROGMEM alien_1_far[] = {
-7, 8,
-0x00, 0x00, 0x14, 0x08, 0x14, 0x00, 0x00, 
+5, 5,
+0x00, 0x0a, 0x04, 0x0a, 0x00, 
 };
 
 const uint8_t PROGMEM alien_1_far_mask[] = {
-0x00, 0x14, 0x3e, 0x1c, 0x3e, 0x14, 0x00, 
+0x0a, 0x1f, 0x0e, 0x1f, 0x0a, 
 };
 
+const uint8_t PROGMEM alien_1_horizon[] = {
+1, 1,
+0x01, 
+};
+
+const uint8_t PROGMEM alien_1_horizon_mask[] = {
+0x01, 
+};
 
 
 //---------------------------------------------------------------------------------------------------------------------

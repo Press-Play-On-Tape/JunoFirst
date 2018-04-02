@@ -45,7 +45,7 @@ uint8_t Player::getX() {
 }
 
 uint8_t Player::getY() {
-  return 43;
+  return 41;
 }
 
 int8_t Player::getXDelta() {
@@ -80,13 +80,13 @@ void Player::reset() {
 
 void Player::incX() {
 
-  if (_x < 122) _x = _x + 2;
+  if (_x < 114) _x = _x + 1;
 
 }
 
 void Player::decX() {
 
-  if (_x > 2) _x = _x - 2;
+  if (_x > 0) _x = _x - 1;
 
 }
 

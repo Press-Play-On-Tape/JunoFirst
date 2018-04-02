@@ -1,9 +1,11 @@
 #include "src/utils/Arduboy2Ext.h"
 #include "src/characters/Player.h"
+#include "src/characters/Enemy.h"
+#include "src/characters/Bullet.h"
 #include "src/images/Images.h"
 #include "src/utils/Enums.h"
-#include "src/characters/Enemy.h"
 #include "src/levels/Level.h"
+#include "src/levels/Formations.h"
 
 Arduboy2Ext arduboy;
 GameState gameState = GameState::Intro;
@@ -11,10 +13,11 @@ GameState gameState = GameState::Intro;
 uint8_t introDelay = 0;
 uint8_t yPos = 0;
 uint8_t xPos = 60;
-uint8_t hoizonIncrement = 0;
+uint8_t horizonIncrement = 0;
 
 Player player;
 Enemy enemies[MAX_NUMBER_OF_ENEMIES];
+Bullet bullets[MAX_NUMBER_OF_BULLETS];
 Level level;
 
 
@@ -26,36 +29,11 @@ void setup() {
   arduboy.boot();
   arduboy.flashlight();
   arduboy.systemButtons();
-  arduboy.setFrameRate(60);
+  arduboy.setFrameRate(90);
   arduboy.initRandomSeed();
 
 
-  // Initialise a couple of the enemies ..
-
-  enemies[0].setEnemyType(EnemyType::EnemyType1);
-  enemies[0].setActive(true);
-  enemies[0].setX(20);
-  enemies[0].setY(22);
-
-  enemies[1].setEnemyType(EnemyType::EnemyType1);
-  enemies[1].setActive(true);
-  enemies[1].setX(50);
-  enemies[1].setY(13);
-
-  enemies[2].setEnemyType(EnemyType::EnemyType1);
-  enemies[2].setActive(true);
-  enemies[2].setX(90);
-  enemies[2].setY(8);
-
-  // enemies[3].setEnemyType(EnemyType::EnemyType1);
-  // enemies[3].setActive(true);
-  // enemies[3].setX(110);
-  // enemies[3].setY(0);
-
-  // enemies[4].setEnemyType(EnemyType::EnemyType1);
-  // enemies[4].setActive(true);
-  // enemies[4].setX(113);
-  // enemies[4].setY(2);
+  bullets[0].setX(3);
 
 }
 
@@ -111,9 +89,11 @@ void Intro() {
 
   // If 'A' bUtton is pressed move to game play ..
 
-  if (arduboy.justPressed(A_BUTTON)) { 
+  if (arduboy.pressed(A_BUTTON)) { 
 
     player.reset();  
+    Serial.println("Load enemeies");
+    launchFormation(1);
     gameState = GameState::GamePlay; 
     
   }
@@ -125,35 +105,82 @@ void Intro() {
 //  Let's play!
 //
 void Play() {
-
+arduboy.setCursor(0,0);
 
   // Update the ground's position ..
 
-  const uint8_t speedLookup[] = {0, 4, 2, 0, 1};
+//  const uint8_t speedLookup[] = {0, 4, 2, 0, 1};
+  const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
   uint8_t speed = speedLookup[absT(player.getYDelta())];
 
-  if (hoizonIncrement == speed) {
+  if (horizonIncrement == speed) {
+
     level.incHorizon( player.getYDelta() > 0 ? 1 : -1);
-    hoizonIncrement = 0;
+    horizonIncrement = 0;
+  
+
+
+
+    // Update the enemies relative to the player position ..
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+      Enemy *enemy = &enemies[x];
+
+      if (enemy->getActive()) {
+        enemy->move(&player);
+      }    
+
+    }
+    
   }
   
-  hoizonIncrement++;
+  horizonIncrement++;
 
+// Enemy *enemy = &enemies[0];
+// arduboy.setCursor(0,0);
+// arduboy.print(enemy->getX());
+// arduboy.print(",");
+// arduboy.print(enemy->getY());
+// arduboy.print("  ");
+// arduboy.print(enemy->getXDelta());
+// arduboy.print(",");
+// arduboy.print(enemy->getYDelta());
+// arduboy.print(" ");
+// arduboy.print(enemy->isVisible());
+// arduboy.print(" ");
 
+// Serial.print("enemies >");
 
-  // Update the enemies ..
+//     for (uint8_t y = 0; y < MAX_NUMBER_OF_ENEMIES; y++) {
+
+//       Enemy *enemy = &enemies[y];
+
+//       if (enemy->getActive()) {
+
+//         Serial.print(", (");
+//         Serial.print(enemy->getX());
+//         Serial.print(",");
+//         Serial.print(enemy->getY());
+//         Serial.print(")");
+
+//       }
+//     }
+// Serial.println("");
+
+if (arduboy.everyXFrames(4)) {
 
   for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
     Enemy *enemy = &enemies[x];
 
     if (enemy->getActive()) {
-
-//      enemy.set
-
+      enemy->move();
     }    
 
   }
+
+}
 
 
   RenderScreen(&player, enemies);
@@ -161,183 +188,44 @@ void Play() {
 
   // Handle players actions ..
 
-  if (arduboy.pressed(DOWN_BUTTON))     { if (player.decYDelta()) hoizonIncrement = 0; }
-  if (arduboy.pressed(UP_BUTTON))       { if (player.incYDelta()) hoizonIncrement = 0; }
+  if (arduboy.pressed(DOWN_BUTTON))     { if (player.decYDelta()) horizonIncrement = 0; }
+  if (arduboy.pressed(UP_BUTTON))       { if (player.incYDelta()) horizonIncrement = 0; }
   if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
   if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(16)) { player.decelerate(); }
+  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(32)) { player.decelerate(); }
 
 }
 
+void launchFormation(uint8_t formationNumber) {
 
-// --------------------------------------------------------------------------------------
-//  Render the screen
-//
-void RenderScreen(Player *player, Enemy *enemies) {
+  uint16_t dataOffset = 0;
+  const uint8_t *formationToLoad = formations[formationNumber];
 
+  uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
 
-  // Render the horizon ;
+  for (uint8_t x = 0; x < numberOfEnemies; x++) {
 
-  const uint8_t horizon[5][7] = {
-                                  { 0, 2,  6, 12, 20, 30, 42 },
-                                  { 0, 2,  7, 13, 22, 32, 45 },
-                                  { 0, 3,  8, 15, 24, 35, 48 },
-                                  { 0, 3,  9, 16, 26, 37, 51 },
-                                  { 0, 4, 10, 18, 28, 40, 54 }
-                                };                        
+    for (uint8_t y = 0; y < MAX_NUMBER_OF_ENEMIES; y++) {
 
+      Enemy *enemy = &enemies[y];
 
+      if (!enemy->getActive()) {
 
+        enemy->setEnemyType(static_cast<EnemyType>(pgm_read_byte(&formationToLoad[dataOffset++])));
+        enemy->setX(pgm_read_byte(&formationToLoad[dataOffset++]));
+        enemy->setY(pgm_read_byte(&formationToLoad[dataOffset++]));
+        enemy->setXDelta(pgm_read_byte(&formationToLoad[dataOffset++]));
+        enemy->setYDelta(pgm_read_byte(&formationToLoad[dataOffset++]));
+        enemy->setMovementSequence(static_cast<MovementSequence>(pgm_read_byte(&formationToLoad[dataOffset++])));
+        enemy->setActive(true);
 
-  uint8_t row = level.getHorizon();
+        break;
 
-  for (uint8_t col = 0; col < HORIZON_COL_COUNT; col++) {
-
-    uint8_t y = horizon[row][col] + 4;
-
-    if (y <= 57) {
-//      arduboy.drawLine(0, y, WIDTH, y, WHITE);
-      arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
-//      arduboy.drawHorizontalDottedLine(0, WIDTH, y, col + 2);
+      }    
 
     }
 
   }
-
-
-
-  // Render the enemies ..
-
-  for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
-
-    Enemy *enemy = &enemies[x];
-
-    uint8_t const *imageName = nullptr;
-    uint8_t const *maskName = nullptr;
-
-    if (enemy->getActive()) {
-
-      switch (enemy->getType()) {
-
-        case EnemyType::EnemyType1:
-
-          switch (enemy->getSize()) {
-
-            case ImageSize::Far:
-
-              imageName = alien_1_far;
-              maskName = alien_1_far_mask;
-              break;
-
-            case ImageSize::Medium:
-
-              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-                imageName = alien_1_medium_1;
-                maskName = alien_1_medium_1_mask;
-              }
-              else {
-                imageName = alien_1_medium_2;
-                maskName = alien_1_medium_2_mask;
-              }
-              break;
-
-            case ImageSize::Close:
-
-              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-                imageName = alien_1_close_1;
-                maskName = alien_1_close_1_mask;
-              }
-              else {
-                imageName = alien_1_close_2;
-                maskName = alien_1_close_2_mask;
-              }
-              break;
-
-          }
-
-          break;
-
-        case EnemyType::EnemyType2:
-          // enemy 2 images;
-          break;
-
-      }
-
-      // Render image ..
-
-      Sprites::drawExternalMask(enemy->getX(), enemy->getY(), imageName, maskName, 0, 0 );
- 
-    }
-
-  }
-
-
-  // Render the space ship ..  Depending on the YDelta value, we flip between the image frames 
-  // at different rates.  The frame rates are stored in an array called 'frames' and we use 
-  // the absolut value of yDelta to look up the frame rate.  If the spaceship is statinary,
-  // the rate is 0, slowly moving forward or backwards (yDelta = 1 or -1) results in a value
-  // of 4.  The fastest spaceship speed (YDelta = 4 or -4) results in a fast frame rate of 2.
-
-  const uint8_t frames[] = {0, 4, 3, 3, 2};
-  uint8_t frameRate = frames[absT(player->getYDelta())];
-
-  switch (player->getYDelta()) {
-
-    case -4 ... -1:
-
-      if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-        Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_1, spaceship_backwards_1_mask, 0, 0);
-      }
-      else {
-        Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_2, spaceship_backwards_2_mask, 0, 0);
-      }
-      break;
-
-    case 0:
-
-      Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_neutral, spaceship_neutral_mask, 0, 0);
-      break;
-
-    case 1 ... 4:
-
-      if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
-      }
-      else {
-        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
-      }
-      break;
-
-  }
-
-
-
-  // Render scoreboard ..
-
-  Sprites::drawOverwrite(0, 59, numbers, 0);
-  Sprites::drawOverwrite(5, 59, numbers, 0);
-  Sprites::drawOverwrite(10, 59, numbers, 0);
-  Sprites::drawOverwrite(15, 59, numbers, 0);
-  Sprites::drawOverwrite(20, 59, numbers, 0);
-  Sprites::drawOverwrite(25, 59, numbers, 0);
-
-  Sprites::drawOverwrite(50, 59, wave, 0);
-  Sprites::drawOverwrite(74, 59, numbers, 0);
-  Sprites::drawOverwrite(79, 59, numbers, 1);
-  
-  Sprites::drawOverwrite(102, 59, life, 0);
-  Sprites::drawOverwrite(109, 59, life, 0);
-  Sprites::drawOverwrite(116, 59, life, 0);
-  Sprites::drawOverwrite(123, 59, life, 0);
-
-
-
-arduboy.drawPixel(108, 0);
-arduboy.drawPixel(110, 0);
-arduboy.drawPixel(112, 0);
-arduboy.drawPixel(108, 2);
-arduboy.drawPixel(110, 2);
-arduboy.drawPixel(112, 2);
 
 }
