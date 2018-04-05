@@ -29,6 +29,27 @@
 #define WIDTH_HALF                        WIDTH / 2
 
 
+
+
+
+static const int8_t ENEMY_MINIMUM_X                     = -80;
+static const int8_t ENEMY_MAXIMUM_X                     = 80;
+static const int8_t ENEMY_MINIMUM_Y                     = 0;
+static const int8_t ENEMY_MAXIMUM_Y                     = 120;
+
+static const uint8_t ENEMY_DISTANCE_FAR_WIDTH           = 5;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH        = 8;
+static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH         = 9;
+
+static const uint8_t ENEMY_DISTANCE_FAR_HEIGHT          = 5;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_HEIGHT       = 7;
+static const uint8_t ENEMY_DISTANCE_CLOSE_HEIGHT        = 13;
+
+static const uint8_t ENEMY_DISTANCE_FAR_WIDTH_HALF      = 2;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH_HALF   = 3;
+static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH_HALF    = 6;
+
+
 // ----------------------------------------------------------------------------
 //  A better absolute as it uses less memory than the standard one .. 
 //
@@ -83,3 +104,48 @@ enum class MovementSequence : uint8_t {
   Sequence_2,       // Move both X and Y simultaneously.  When at an edge of the screen, reverse direction.
 
 };
+
+
+enum class EnemyStatus : uint8_t {
+
+  Dead,
+  Explosion1,
+  Explosion2,
+  Explosion3,
+  Explosion4,
+  Active
+
+};
+
+
+// EnemyStatus ..
+
+inline EnemyStatus operator++( EnemyStatus & c ) {
+
+  c = static_cast<EnemyStatus>( static_cast<uint8_t>(c) + 1 );
+  return c;
+
+}
+
+inline EnemyStatus operator++( EnemyStatus & c, int ) {
+
+  EnemyStatus result = c;
+  ++c;
+  return result;
+
+}
+
+inline EnemyStatus operator--( EnemyStatus & c ) {
+ 
+  c = static_cast<EnemyStatus>( static_cast<uint8_t>(c) - 1 );
+  return c;
+
+}
+
+inline EnemyStatus operator--( EnemyStatus & c, int ) {
+
+  EnemyStatus result = c;
+  --c;
+  return result;
+
+}

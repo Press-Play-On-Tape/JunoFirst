@@ -16,6 +16,7 @@ uint8_t xPos = 60;
 uint8_t horizonIncrement = 0;
 
 Player player;
+Bullet playerBullet;
 Enemy enemies[MAX_NUMBER_OF_ENEMIES];
 Bullet bullets[MAX_NUMBER_OF_BULLETS];
 Level level;
@@ -92,8 +93,7 @@ void Intro() {
   if (arduboy.pressed(A_BUTTON)) { 
 
     player.reset();  
-    Serial.println("Load enemeies");
-    launchFormation(1);
+    launchFormation(0);
     gameState = GameState::GamePlay; 
     
   }
@@ -105,7 +105,6 @@ void Intro() {
 //  Let's play!
 //
 void Play() {
-arduboy.setCursor(0,0);
 
   // Update the ground's position ..
 
@@ -127,7 +126,7 @@ arduboy.setCursor(0,0);
 
       Enemy *enemy = &enemies[x];
 
-      if (enemy->getActive()) {
+      if (enemy->getStatus() == EnemyStatus::Active) {
         enemy->move(&player);
       }    
 
@@ -137,50 +136,20 @@ arduboy.setCursor(0,0);
   
   horizonIncrement++;
 
-// Enemy *enemy = &enemies[0];
-// arduboy.setCursor(0,0);
-// arduboy.print(enemy->getX());
-// arduboy.print(",");
-// arduboy.print(enemy->getY());
-// arduboy.print("  ");
-// arduboy.print(enemy->getXDelta());
-// arduboy.print(",");
-// arduboy.print(enemy->getYDelta());
-// arduboy.print(" ");
-// arduboy.print(enemy->isVisible());
-// arduboy.print(" ");
 
-// Serial.print("enemies >");
+  if (arduboy.everyXFrames(4)) {
 
-//     for (uint8_t y = 0; y < MAX_NUMBER_OF_ENEMIES; y++) {
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
-//       Enemy *enemy = &enemies[y];
+      Enemy *enemy = &enemies[x];
 
-//       if (enemy->getActive()) {
+      if (enemy->getStatus() == EnemyStatus::Active) {
+        enemy->move();
+      }    
 
-//         Serial.print(", (");
-//         Serial.print(enemy->getX());
-//         Serial.print(",");
-//         Serial.print(enemy->getY());
-//         Serial.print(")");
-
-//       }
-//     }
-// Serial.println("");
-
-if (arduboy.everyXFrames(4)) {
-
-  for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
-
-    Enemy *enemy = &enemies[x];
-
-    if (enemy->getActive()) {
-      enemy->move();
-    }    
+    }
 
   }
-
-}
 
 
   RenderScreen(&player, enemies);
@@ -193,14 +162,90 @@ if (arduboy.everyXFrames(4)) {
   if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
   if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
+  if (arduboy.pressed(A_BUTTON))        { 
+
+    if (playerBullet.getY() == 0) {
+
+      playerBullet.setY(45);
+      playerBullet.setX(player.getX() + 7);
+
+    }
+
+  }
+
   if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(32)) { player.decelerate(); }
+
+
+  // Update player bullet position ..
+  //if (arduboy.everyXFrames(2)) {
+
+    uint8_t bulletY = playerBullet.getY();
+
+    playerBullet.setY(bulletY > 20 ? bulletY - 5 : 0);
+
+  //}
+
+
+
+  // Did our bullet hit an enemy?
+
+  if (playerBullet.getY() > 0) {
+
+    Rect bulletRect = { playerBullet.getX() - 1, playerBullet.getY() - 5, 3, 5 };
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+      Enemy *enemy = &enemies[x];
+
+      if (enemy->getStatus() == EnemyStatus::Active) {
+
+        Rect enemyRect = { enemy->getXDisplay(), enemy->getYDisplay(), enemy->getWidth(), enemy->getHeight() };
+
+        if (arduboy.collide(bulletRect, enemyRect)) {
+
+          enemy->setStatus(EnemyStatus::Explosion4);
+
+        }
+
+      }    
+
+    }
+
+  }
+
+
+
+  // Update dying enemy images ..
+  if (arduboy.everyXFrames(8)) {
+  for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+    Enemy *enemy = &enemies[x];
+    EnemyStatus enemyStatus = enemy->getStatus();
+
+    if (enemyStatus > EnemyStatus::Dead && enemyStatus < EnemyStatus::Active) {
+
+// arduboy.setCursor(0,0);
+// arduboy.print((uint8_t)enemyStatus);
+// arduboy.print((uint8_t)enemyStatus);
+      enemy->setStatus(--enemyStatus);
+// arduboy.print(" ");
+// arduboy.print((uint8_t)enemy->getStatus());
+
+    }    
+
+  }
+
+  }
+
+
+
 
 }
 
 void launchFormation(uint8_t formationNumber) {
 
   uint16_t dataOffset = 0;
-  const uint8_t *formationToLoad = formations[formationNumber];
+  const int8_t *formationToLoad = formations[formationNumber];
 
   uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
 
@@ -210,16 +255,15 @@ void launchFormation(uint8_t formationNumber) {
 
       Enemy *enemy = &enemies[y];
 
-      if (!enemy->getActive()) {
+      if (enemy->getStatus() == EnemyStatus::Dead) {
 
         enemy->setEnemyType(static_cast<EnemyType>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setX(pgm_read_byte(&formationToLoad[dataOffset++]));
+        enemy->setX(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
         enemy->setY(pgm_read_byte(&formationToLoad[dataOffset++]));
-        enemy->setXDelta(pgm_read_byte(&formationToLoad[dataOffset++]));
-        enemy->setYDelta(pgm_read_byte(&formationToLoad[dataOffset++]));
+        enemy->setXDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
+        enemy->setYDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
         enemy->setMovementSequence(static_cast<MovementSequence>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setActive(true);
-
+        enemy->setStatus(EnemyStatus::Active);
         break;
 
       }    

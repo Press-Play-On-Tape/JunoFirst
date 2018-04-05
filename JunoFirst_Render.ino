@@ -46,63 +46,94 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
     if (enemy->isVisible()) {
 
-      switch (enemy->getType()) {
+      if (enemy->getStatus() == EnemyStatus::Active) {
+          
+        switch (enemy->getType()) {
 
-        case EnemyType::EnemyType1:
+          case EnemyType::EnemyType1:
 
-          switch (enemy->getSize()) {
+            switch (enemy->getSize()) {
 
-            case ImageSize::Horizon:
+              case ImageSize::Horizon:
 
-              imageName = alien_1_horizon;
-              maskName = alien_1_horizon_mask;
-              break;
+                imageName = alien_1_horizon;
+                maskName = alien_1_horizon_mask;
+                break;
 
-            case ImageSize::Far:
+              case ImageSize::Far:
 
-              imageName = alien_1_far;
-              maskName = alien_1_far_mask;
-              break;
+                imageName = alien_1_far;
+                maskName = alien_1_far_mask;
+                break;
 
-            case ImageSize::Medium:
+              case ImageSize::Medium:
 
-              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-                imageName = alien_1_medium_1;
-                maskName = alien_1_medium_1_mask;
-              }
-              else {
-                imageName = alien_1_medium_2;
-                maskName = alien_1_medium_2_mask;
-              }
-              break;
+                if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+                  imageName = alien_1_medium_1;
+                  maskName = alien_1_medium_1_mask;
+                }
+                else {
+                  imageName = alien_1_medium_2;
+                  maskName = alien_1_medium_2_mask;
+                }
+                break;
 
-            case ImageSize::Close:
+              case ImageSize::Close:
 
-              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-                imageName = alien_1_close_1;
-                maskName = alien_1_close_1_mask;
-              }
-              else {
-                imageName = alien_1_close_2;
-                maskName = alien_1_close_2_mask;
-              }
-              break;
+                if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+                  imageName = alien_1_close_1;
+                  maskName = alien_1_close_1_mask;
+                }
+                else {
+                  imageName = alien_1_close_2;
+                  maskName = alien_1_close_2_mask;
+                }
+                break;
 
-          }
+            }
 
-          break;
+            break;
 
-        case EnemyType::EnemyType2:
+          case EnemyType::EnemyType2:
 
-          // enemy 2 images;
-          break;
+            // enemy 2 images;
+            break;
+
+        }
+
+
+        // Render image ..
+
+        Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, 0, 0 );
 
       }
+      else {
 
+        switch (enemy->getStatus()) {
 
-      // Render image ..
+          case (EnemyStatus::Explosion1):
+            imageName = alien_close_explosion_4;
+            break;
 
-      Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, 0, 0 );
+          case (EnemyStatus::Explosion2):
+            imageName = alien_close_explosion_3;
+            break;
+
+          case (EnemyStatus::Explosion3):
+            imageName = alien_close_explosion_2;
+            break;
+
+          case (EnemyStatus::Explosion4):
+            imageName = alien_close_explosion_1;
+            break;
+
+          default: break;
+            
+        }
+
+        Sprites::drawSelfMasked(enemy->getXDisplay(), enemy->getYDisplay(), imageName, 0);
+
+      }
  
     }
 
@@ -144,6 +175,21 @@ void RenderScreen(Player *player, Enemy *enemies) {
         Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
       }
       break;
+
+  }
+
+
+
+  // Render player bullet ..
+
+  if (playerBullet.getY() > 0) {
+
+    // arduboy.drawLine(playerBullet.getX(), playerBullet.getY(), playerBullet.getX(), playerBullet.getY() - 2, WHITE); 
+    // arduboy.drawLine(playerBullet.getX(), playerBullet.getY() - 4, playerBullet.getX(), playerBullet.getY() - 5, WHITE); 
+    // arduboy.drawLine(playerBullet.getX(), playerBullet.getY() - 7, playerBullet.getX(), playerBullet.getY() - 8, WHITE); 
+    // arduboy.drawLine(playerBullet.getX(), playerBullet.getY() - 10, playerBullet.getX(), playerBullet.getY() - 10, WHITE); 
+
+    arduboy.drawLine(playerBullet.getX(), playerBullet.getY(), playerBullet.getX(), playerBullet.getY() - 5, WHITE); 
 
   }
 
