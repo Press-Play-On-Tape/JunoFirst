@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../utils/Enums.h"
+
 class Player {
 
   public: 
@@ -12,11 +14,12 @@ class Player {
     uint8_t getY();
     int8_t getXDelta();
     int8_t getYDelta();
-    
+    PlayerStatus getStatus();
+
     void setX(uint8_t val);
     void setXDelta(int8_t val);
     void setYDelta(int8_t val);
-
+    void setStatus(PlayerStatus val);
 
     // Methods ..
 
@@ -33,6 +36,7 @@ class Player {
     uint8_t _x;
     int8_t _xDelta;
     int8_t _yDelta;
+    PlayerStatus _status; 
 
 };
 
@@ -56,6 +60,11 @@ int8_t Player::getYDelta() {
   return _yDelta;
 }
 
+PlayerStatus Player::getStatus() {
+  return _status;
+}
+
+
 void Player::setX(uint8_t val) {
   _x = val;
 }
@@ -67,6 +76,11 @@ void Player::setXDelta(int8_t val) {
 void Player::setYDelta(int8_t val) {
   _yDelta = val;
 }
+
+void Player::setStatus(PlayerStatus val) {
+  _status = val; 
+}
+
 
 
 //--------------------------------------------------------------------------------------------------------------------------

@@ -37,6 +37,7 @@ class Enemy {
 
     void move(Player *player);
     void move();
+    bool inShootingRange();
 
   private:
 
@@ -296,4 +297,10 @@ void Enemy::move() {
     
   }
 
+}
+
+bool Enemy::inShootingRange() {
+
+  return (_y - 48 > 10 &&  _y - 48 < 40);
+  
 }

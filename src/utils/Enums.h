@@ -3,34 +3,31 @@
 #include "Arduboy2Ext.h"
 
 
-#define MAX_NUMBER_OF_ENEMIES             20
-#define MAX_NUMBER_OF_BULLETS             10
+static const uint8_t MAX_NUMBER_OF_ENEMIES              = 20;
+static const uint8_t MAX_NUMBER_OF_BULLETS              = 10;
 
-#define HORIZON_MIN_VALUE                 42
-#define HORIZON_INCREMENT                 3
-#define HORIZON_COL_COUNT                 7
-#define HORIZON_ROW_COUNT                 5
-#define ENEMY_FRAME_COUNT                 30
-#define ENEMY_FRAME_COUNT_HALF            15
+static const uint8_t HORIZON_MIN_VALUE                  = 42;
+static const uint8_t HORIZON_INCREMENT                  = 3;
+static const uint8_t HORIZON_COL_COUNT                  = 7;
+static const uint8_t HORIZON_ROW_COUNT                  = 5;
+static const uint8_t ENEMY_FRAME_COUNT                  = 30;
+static const uint8_t ENEMY_FRAME_COUNT_HALF             = 15;
 
-#define ENEMY_DISTANCE_HORIZON_START_1    24
-#define ENEMY_DISTANCE_HORIZON_END_1      47
-#define ENEMY_DISTANCE_HORIZON_START_2    48
-#define ENEMY_DISTANCE_HORIZON_END_2      51
-#define ENEMY_DISTANCE_FAR_START          52
-#define ENEMY_DISTANCE_FAR_END            57
-#define ENEMY_DISTANCE_MEDIUM_START       58
-#define ENEMY_DISTANCE_MEDIUM_END         63
-#define ENEMY_DISTANCE_CLOSE_START        64
-#define ENEMY_DISTANCE_CLOSE_END          122
+static const uint8_t ENEMY_DISTANCE_HORIZON_START_1     = 24;
+static const uint8_t ENEMY_DISTANCE_HORIZON_END_1       = 47;
+static const uint8_t ENEMY_DISTANCE_HORIZON_START_2     = 48;
+static const uint8_t ENEMY_DISTANCE_HORIZON_END_2       = 51;
+static const uint8_t ENEMY_DISTANCE_FAR_START           = 52;
+static const uint8_t ENEMY_DISTANCE_FAR_END             = 57;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_START        = 58;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_END          = 63;
+static const uint8_t ENEMY_DISTANCE_CLOSE_START         = 64;
+static const uint8_t ENEMY_DISTANCE_CLOSE_END           = 122;
 
-#define ENEMY_VISIBLE_HORIZON             24
+static const uint8_t ENEMY_VISIBLE_HORIZON              = 24;
 
-#define WIDTH_HALF                        WIDTH / 2
-
-
-
-
+static const uint8_t WIDTH_HALF                         = 64;
+static const uint8_t INTRO_DELAY                        = 60;
 
 static const int8_t ENEMY_MINIMUM_X                     = -80;
 static const int8_t ENEMY_MAXIMUM_X                     = 80;
@@ -48,6 +45,7 @@ static const uint8_t ENEMY_DISTANCE_CLOSE_HEIGHT        = 13;
 static const uint8_t ENEMY_DISTANCE_FAR_WIDTH_HALF      = 2;
 static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH_HALF   = 3;
 static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH_HALF    = 6;
+
 
 
 // ----------------------------------------------------------------------------
@@ -74,6 +72,7 @@ template <typename T> T clamp(const T& value, const T& low, const T& high)
 enum class GameState : uint8_t {
 
   Intro,
+  ScoreTable,
   GamePlay,
   GameOver
 
@@ -94,6 +93,8 @@ enum class EnemyType : uint8_t {
 
   EnemyType1,
   EnemyType2,
+  EnemyType3,
+  EnemyType4,
 
 };
 
@@ -109,6 +110,28 @@ enum class MovementSequence : uint8_t {
 enum class EnemyStatus : uint8_t {
 
   Dead,
+  Explosion1,
+  Explosion2,
+  Explosion3,
+  Explosion4,
+  Active
+
+};
+
+
+enum class PlayerStatus : uint8_t {
+
+  Dead,
+  Dead_Delay_01,
+  Dead_Delay_02,
+  Dead_Delay_03,
+  Dead_Delay_04,
+  Dead_Delay_05,
+  Dead_Delay_06,
+  Dead_Delay_07,
+  Dead_Delay_08,
+  Dead_Delay_09,
+  Dead_Delay_10,
   Explosion1,
   Explosion2,
   Explosion3,
@@ -145,6 +168,39 @@ inline EnemyStatus operator--( EnemyStatus & c ) {
 inline EnemyStatus operator--( EnemyStatus & c, int ) {
 
   EnemyStatus result = c;
+  --c;
+  return result;
+
+}
+
+
+// PlayerStatus ..
+
+inline PlayerStatus operator++( PlayerStatus & c ) {
+
+  c = static_cast<PlayerStatus>( static_cast<uint8_t>(c) + 1 );
+  return c;
+
+}
+
+inline PlayerStatus operator++( PlayerStatus & c, int ) {
+
+  PlayerStatus result = c;
+  ++c;
+  return result;
+
+}
+
+inline PlayerStatus operator--( PlayerStatus & c ) {
+ 
+  c = static_cast<PlayerStatus>( static_cast<uint8_t>(c) - 1 );
+  return c;
+
+}
+
+inline PlayerStatus operator--( PlayerStatus & c, int ) {
+
+  PlayerStatus result = c;
   --c;
   return result;
 

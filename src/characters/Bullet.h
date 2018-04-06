@@ -18,6 +18,12 @@ class Bullet {
     void setXDelta(int8_t val);
     void setYDelta(int8_t val);
 
+
+    // Methods ..
+
+    void move();
+    void move(Player *player);
+
   private:
 
     uint8_t _x;
@@ -62,3 +68,22 @@ void Bullet::setYDelta(int8_t val) {
   _delta = (val >= 0 ? (_delta & 0xF0) | (val & 0x0f) : (_delta & 0x0f) | 0x08 | (val & 0x07));
 }
 
+
+//--------------------------------------------------------------------------------------------------------------------------
+// Methods ..
+
+void Bullet::move() {
+
+  _x = _x + getXDelta();
+  _y = _y + getYDelta();
+
+  if (_y > HEIGHT) { _y = 0; }
+  
+}
+
+void Bullet::move(Player *player) {
+
+  _y = static_cast<int8_t>(_y + (player->getYDelta() / 4));
+  if (_y > HEIGHT) { _y = 0; }
+  
+}

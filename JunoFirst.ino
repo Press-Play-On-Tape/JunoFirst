@@ -4,6 +4,7 @@
 #include "src/characters/Bullet.h"
 #include "src/images/Images.h"
 #include "src/utils/Enums.h"
+#include "src/utils/Utils.h"
 #include "src/levels/Level.h"
 #include "src/levels/Formations.h"
 
@@ -11,9 +12,13 @@ Arduboy2Ext arduboy;
 GameState gameState = GameState::Intro;
 
 uint8_t introDelay = 0;
+uint8_t alternate = 0;
 uint8_t yPos = 0;
 uint8_t xPos = 60;
 uint8_t horizonIncrement = 0;
+uint16_t score = 0;
+
+uint8_t bulletFrequency = 60;
 
 Player player;
 Bullet playerBullet;
@@ -33,9 +38,6 @@ void setup() {
   arduboy.setFrameRate(90);
   arduboy.initRandomSeed();
 
-
-  bullets[0].setX(3);
-
 }
 
 
@@ -53,8 +55,20 @@ void loop() {
       Intro();
       break;
 
+    case GameState::ScoreTable:
+      ScoreTable();
+
+
+      player.setStatus(PlayerStatus::Active);
+
+      break;
+
     case GameState::GamePlay:
       Play();
+      break;
+
+    case GameState::GameOver:
+      GameOver();
       break;
 
     default: break;
@@ -75,28 +89,101 @@ void Intro() {
 
   // Draw logo ..
 
-  arduboy.drawCompressed(18, 4, logo, WHITE);
+  Sprites::drawOverwrite(18, 4, logo, 0);
 
 
   // Display 'Press A' button after a short period of time ..
 
-  if (introDelay < 32) {
+  if (introDelay < INTRO_DELAY) {
     introDelay++;
   }
   else {    
-    arduboy.drawCompressed(51, 55, pressA, WHITE);
+    Sprites::drawOverwrite(51, 55, pressA, 0);
   }
 
 
   // If 'A' bUtton is pressed move to game play ..
 
-  if (arduboy.pressed(A_BUTTON)) { 
+  if (arduboy.justPressed(A_BUTTON)) { 
 
     player.reset();  
-    launchFormation(0);
+    gameState = GameState::ScoreTable; 
+    introDelay = 0;
+    
+  }
+
+}
+
+
+// --------------------------------------------------------------------------------------
+//  Render a score table ..
+//
+void ScoreTable() {
+
+  alternate++;
+  if (alternate > 108) alternate = 0;
+  bool first = alternate % 36 < 18;
+
+
+  // Render score table ..
+
+  Sprites::drawOverwrite(32, 1, scoreTable, 0);
+
+  Sprites::drawOverwrite(36, 12, (first ? alien_close_1 : alien_close_2), 0);
+  Sprites::drawOverwrite(55, 11, ellipsis, 0);
+  Sprites::drawOverwrite(75, 14, numbers, 1);  
+  Sprites::drawOverwrite(80, 14, numbers, 5);  
+  Sprites::drawOverwrite(85, 14, numbers, 0);  
+
+  Sprites::drawOverwrite(36, 22, (first ? alien_close_2 : alien_close_1), 1);
+  Sprites::drawOverwrite(55, 21, ellipsis, 0);
+  Sprites::drawOverwrite(75, 24, numbers, 3);  
+  Sprites::drawOverwrite(80, 24, numbers, 0);  
+  Sprites::drawOverwrite(85, 24, numbers, 0);  
+
+  Sprites::drawOverwrite(36, 32, (first ? alien_close_1 : alien_close_2), 2);
+  Sprites::drawOverwrite(55, 31, ellipsis, 0);
+  Sprites::drawOverwrite(75, 34, numbers, 4);  
+  Sprites::drawOverwrite(80, 34, numbers, 5);  
+  Sprites::drawOverwrite(85, 34, numbers, 0);  
+
+  Sprites::drawOverwrite(36, 42, (first ? alien_close_2 : alien_close_1), 3);
+  Sprites::drawOverwrite(55, 41, ellipsis, 0);
+  Sprites::drawOverwrite(75, 44, numbers, 6);  
+  Sprites::drawOverwrite(80, 44, numbers, 0);  
+  Sprites::drawOverwrite(85, 44, numbers, 0);  
+
+
+
+  // Display 'Press A' button after a short period of time ..
+
+  if (introDelay < INTRO_DELAY) {
+    introDelay++;
+  }
+  else {    
+    Sprites::drawOverwrite(51, 55, pressA, 0);
+  }
+
+
+  // If 'A' bUtton is pressed move to game play ..
+
+  if (arduboy.justPressed(A_BUTTON)) { 
+
+    player.reset();  
+    launchFormation(0);//random(0, 6));
     gameState = GameState::GamePlay; 
     
   }
+
+}
+
+
+// --------------------------------------------------------------------------------------
+//  Game Over !
+//
+void GameOver() {
+
+  Sprites::drawOverwrite(41, 29, gameOver, 0);
 
 }
 
@@ -106,9 +193,9 @@ void Intro() {
 //
 void Play() {
 
+
   // Update the ground's position ..
 
-//  const uint8_t speedLookup[] = {0, 4, 2, 0, 1};
   const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
   uint8_t speed = speedLookup[absT(player.getYDelta())];
 
@@ -116,11 +203,9 @@ void Play() {
 
     level.incHorizon( player.getYDelta() > 0 ? 1 : -1);
     horizonIncrement = 0;
-  
+ 
 
-
-
-    // Update the enemies relative to the player position ..
+    // Update the enemies / bullets relative to the player position ..
 
     for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
@@ -129,6 +214,18 @@ void Play() {
       if (enemy->getStatus() == EnemyStatus::Active) {
         enemy->move(&player);
       }    
+
+    }
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+      Bullet *bullet = &bullets[x];
+
+      if (bullet->getY() > 0) {
+
+        bullet->move(&player);
+
+      }
 
     }
     
@@ -162,7 +259,7 @@ void Play() {
   if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
   if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-  if (arduboy.pressed(A_BUTTON))        { 
+  if (arduboy.justPressed(A_BUTTON))        { 
 
     if (playerBullet.getY() == 0) {
 
@@ -177,17 +274,32 @@ void Play() {
 
 
   // Update player bullet position ..
-  //if (arduboy.everyXFrames(2)) {
 
-    uint8_t bulletY = playerBullet.getY();
+  if (arduboy.everyXFrames(2)) {
 
-    playerBullet.setY(bulletY > 20 ? bulletY - 5 : 0);
+      uint8_t bulletY = playerBullet.getY();
+      playerBullet.setY(bulletY > 10 ? bulletY - 5 : 0);
 
-  //}
+  }
+
+  if (arduboy.everyXFrames(2)) {
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+      Bullet *bullet = &bullets[x];
+
+      if (bullet->getY() > 0) {
+
+        bullet->move();
+
+      }
+
+    }
+
+  }
 
 
-
-  // Did our bullet hit an enemy?
+  // Did our bullet hit an enemy or bullet?
 
   if (playerBullet.getY() > 0) {
 
@@ -205,7 +317,71 @@ void Play() {
 
           enemy->setStatus(EnemyStatus::Explosion4);
 
+          score = score + ((static_cast<uint8_t>(enemy->getType()) + 1) * 150);
+
         }
+
+      }    
+
+    }
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+      Bullet *bullet = &bullets[x];
+
+      if (bullet->getY() > 0) {
+
+        Rect eneymBulletRect = { bullet->getX(), bullet->getY(), 2, 2 };
+
+        if (arduboy.collide(bulletRect, eneymBulletRect)) {
+
+          bullet->setY(0);
+          Sprites::drawSelfMasked(bullet->getX() - 2, bullet->getY() - 2, alien_far, 0);
+          //TODO: Sound when two bullets hit
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  // Did any enemy bullet hit us ..
+
+  for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+    Bullet *bullet = &bullets[x];
+
+    if (bullet->getY() > 0) {
+
+      Rect bulletRect = { bullet->getX(), bullet->getY(), 2, 2 };
+      Rect playerRect = { player.getX() + 1, player.getY() + 1, 13, 14 };
+
+      if (arduboy.collide(bulletRect, playerRect)) {
+
+        player.setStatus(PlayerStatus::Explosion4);
+
+      }
+
+    }
+
+  }
+
+
+  // Update dying enemy images ..
+
+  if (arduboy.everyXFrames(8)) {
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+      Enemy *enemy = &enemies[x];
+      EnemyStatus enemyStatus = enemy->getStatus();
+
+      if (enemyStatus > EnemyStatus::Dead && enemyStatus < EnemyStatus::Active) {
+
+        enemy->setStatus(--enemyStatus);
 
       }    
 
@@ -214,33 +390,85 @@ void Play() {
   }
 
 
+  // Update dying player image ..
 
-  // Update dying enemy images ..
   if (arduboy.everyXFrames(8)) {
-  for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
-    Enemy *enemy = &enemies[x];
-    EnemyStatus enemyStatus = enemy->getStatus();
+    PlayerStatus status = player.getStatus();
 
-    if (enemyStatus > EnemyStatus::Dead && enemyStatus < EnemyStatus::Active) {
+    if (status > PlayerStatus::Dead && status < PlayerStatus::Active) {
 
-// arduboy.setCursor(0,0);
-// arduboy.print((uint8_t)enemyStatus);
-// arduboy.print((uint8_t)enemyStatus);
-      enemy->setStatus(--enemyStatus);
-// arduboy.print(" ");
-// arduboy.print((uint8_t)enemy->getStatus());
+      player.setStatus(--status);
+      gameState = GameState::GameOver;
 
-    }    
-
-  }
+    }
 
   }
 
 
+  // Enemy takes a shot? 
 
+  if (random(0, bulletFrequency) == 0) {
+
+    bool bulletLaunched = false;
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+      Bullet *bullet = &bullets[x];
+
+      if (bullet->getY() == 0) { 
+        
+        uint8_t y = random(0, MAX_NUMBER_OF_ENEMIES);
+
+        for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+          
+          uint8_t x2 = (x + y) % MAX_NUMBER_OF_ENEMIES;
+
+          Enemy *enemy = &enemies[x2];
+          EnemyStatus enemyStatus = enemy->getStatus();
+
+          if (enemyStatus == EnemyStatus::Active && enemy->inShootingRange()) {
+
+            uint8_t enemyMiddle = enemy->getXDisplay() + (enemy->getWidth() / 2);
+
+            bullet->setX(enemyMiddle);
+            bullet->setY(enemy->getYDisplay() + enemy->getHeight());
+            bullet->setYDelta(enemy->getYDelta() + 1);
+
+            switch ((player.getX() + 7 - enemyMiddle) / (player.getY() - enemy->getYDisplay())) {
+
+              case -999 ... -1:
+                bullet->setXDelta(-1);
+                break;
+
+              case 0:
+                bullet->setXDelta(0);
+                break;
+
+              case 1 ... 999:
+                bullet->setXDelta(1);
+                break;
+
+            }
+
+            bulletLaunched = true;
+            break;
+
+          }
+
+        }
+
+      }
+
+      if (bulletLaunched) break;
+
+    }
+
+  }
 
 }
+
+
 
 void launchFormation(uint8_t formationNumber) {
 

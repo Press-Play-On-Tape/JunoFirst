@@ -25,9 +25,8 @@ void RenderScreen(Player *player, Enemy *enemies) {
     uint8_t y = horizon[row][col] + 4;
 
     if (y <= 56) {
-//      arduboy.drawLine(0, y, WIDTH, y, WHITE);
+
       arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
-//      arduboy.drawHorizontalDottedLine(0, WIDTH, y, col + 2);
 
     }
 
@@ -43,60 +42,54 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
     uint8_t const *imageName = nullptr;
     uint8_t const *maskName = nullptr;
+    uint8_t frame = 0;
 
     if (enemy->isVisible()) {
 
       if (enemy->getStatus() == EnemyStatus::Active) {
-          
-        switch (enemy->getType()) {
 
-          case EnemyType::EnemyType1:
+        switch (enemy->getSize()) {
 
-            switch (enemy->getSize()) {
+          case ImageSize::Horizon:
 
-              case ImageSize::Horizon:
+            imageName = alien_horizon;
+            maskName = alien_horizon_mask;
+            break;
 
-                imageName = alien_1_horizon;
-                maskName = alien_1_horizon_mask;
-                break;
+          case ImageSize::Far:
 
-              case ImageSize::Far:
+            imageName = alien_far;
+            maskName = alien_far_mask;
+            break;
 
-                imageName = alien_1_far;
-                maskName = alien_1_far_mask;
-                break;
+          case ImageSize::Medium:
 
-              case ImageSize::Medium:
-
-                if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-                  imageName = alien_1_medium_1;
-                  maskName = alien_1_medium_1_mask;
-                }
-                else {
-                  imageName = alien_1_medium_2;
-                  maskName = alien_1_medium_2_mask;
-                }
-                break;
-
-              case ImageSize::Close:
-
-                if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-                  imageName = alien_1_close_1;
-                  maskName = alien_1_close_1_mask;
-                }
-                else {
-                  imageName = alien_1_close_2;
-                  maskName = alien_1_close_2_mask;
-                }
-                break;
-
+            if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+              imageName = alien_medium_1;
+              maskName = alien_medium_1_mask;
             }
+            else {
+              imageName = alien_medium_2;
+              maskName = alien_medium_2_mask;
+            }
+
+            frame = static_cast<uint8_t>(enemy->getType());
 
             break;
 
-          case EnemyType::EnemyType2:
+          case ImageSize::Close:
 
-            // enemy 2 images;
+            if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+              imageName = alien_close_1;
+              maskName = alien_close_1_mask;
+            }
+            else {
+              imageName = alien_close_2;
+              maskName = alien_close_2_mask;
+            }
+
+            frame = static_cast<uint8_t>(enemy->getType());
+
             break;
 
         }
@@ -104,7 +97,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
         // Render image ..
 
-        Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, 0, 0 );
+        Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, frame, frame);
 
       }
       else {
@@ -140,44 +133,74 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
 
 
-  // Render the space ship ..  Depending on the YDelta value, we flip between the image frames 
-  // at different rates.  The frame rates are stored in an array called 'frames' and we use 
-  // the absolut value of yDelta to look up the frame rate.  If the spaceship is statinary,
-  // the rate is 0, slowly moving forward or backwards (yDelta = 1 or -1) results in a value
-  // of 4.  The fastest spaceship speed (YDelta = 4 or -4) results in a fast frame rate of 2.
+  // Render the space ship ..  
 
   const uint8_t frames[] = {0, 4, 3, 3, 2};
   uint8_t frameRate = frames[absT(player->getYDelta())];
 
-  switch (player->getYDelta()) {
+  if (player->getStatus() == PlayerStatus::Active) {
+      
+    switch (player->getYDelta()) {
 
-    case -4 ... -1:
+      case -4 ... -1:
 
-      if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-        Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_1, spaceship_backwards_1_mask, 0, 0);
-      }
-      else {
-        Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_2, spaceship_backwards_2_mask, 0, 0);
-      }
-      break;
+        if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
+          Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_1, spaceship_backwards_1_mask, 0, 0);
+        }
+        else {
+          Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_2, spaceship_backwards_2_mask, 0, 0);
+        }
+        break;
 
-    case 0:
+      case 0:
 
-      Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_neutral, spaceship_neutral_mask, 0, 0);
-      break;
+        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_neutral, spaceship_neutral_mask, 0, 0);
+        break;
 
-    case 1 ... 4:
+      case 1 ... 4:
 
-      if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
-      }
-      else {
-        Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
-      }
-      break;
+        if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
+          Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
+        }
+        else {
+          Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
+        }
+        break;
+
+    }
 
   }
+  else {
 
+    uint8_t const *imageName = nullptr;
+
+    switch (player->getStatus()) {
+
+      case PlayerStatus::Explosion1:
+        imageName = alien_close_explosion_4;
+        break;
+
+      case PlayerStatus::Explosion2:
+        imageName = alien_close_explosion_3;
+        break;
+
+      case PlayerStatus::Explosion3:
+        imageName = alien_close_explosion_2;
+        break;
+
+      case PlayerStatus::Explosion4:
+        imageName = alien_close_explosion_1;
+        break;
+
+      default: 
+        imageName = alien_close_explosion_5;
+        break;
+        
+    }
+
+    Sprites::drawSelfMasked(player->getX(), player->getY(), imageName, 0);
+    
+  }
 
 
   // Render player bullet ..
@@ -194,17 +217,35 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
 
 
+  // Render enemy bullets ..
+
+  for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+    Bullet *bullet = &bullets[x];
+
+    if (bullet->getY() > 0) { 
+
+      arduboy.drawRect(bullet->getX(), bullet->getY(), 2, 2, WHITE);
+
+    }
+
+  }
+
 
   // Render scoreboard ..
 
   arduboy.fillRect(0, 56, WIDTH, HEIGHT, BLACK);
 
-  Sprites::drawOverwrite(0, 59, numbers, 0);
-  Sprites::drawOverwrite(5, 59, numbers, 0);
-  Sprites::drawOverwrite(10, 59, numbers, 0);
-  Sprites::drawOverwrite(15, 59, numbers, 0);
-  Sprites::drawOverwrite(20, 59, numbers, 0);
-  Sprites::drawOverwrite(25, 59, numbers, 0);
+
+  // Score ..
+  {
+      uint8_t digits[6] = {};
+      extractDigits(digits, score);
+      
+      for(uint8_t i = 0, x = 25; i < 6; ++i, x -= 5) {
+        Sprites::drawOverwrite(x, 59, numbers, digits[i]);
+      }
+  }
 
   Sprites::drawOverwrite(50, 59, wave, 0);
   Sprites::drawOverwrite(74, 59, numbers, 0);
