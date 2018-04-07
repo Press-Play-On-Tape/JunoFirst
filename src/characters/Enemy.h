@@ -144,7 +144,13 @@ ImageSize Enemy::getSize() {
 
 int8_t Enemy::getXDisplay() {
 
+  #ifdef SCOREBOARD_BOTTOM
   uint8_t x = (static_cast<int16_t>(_x) * static_cast<int16_t>(_y) / static_cast<int16_t>(96)) + WIDTH_HALF;
+  #endif
+
+  #ifdef SCOREBOARD_SIDE
+  uint8_t x = (static_cast<int16_t>(_x) * static_cast<int16_t>(_y) / static_cast<int16_t>(96)) + WIDTH_HALF;
+  #endif
 
   switch (_y) {
 

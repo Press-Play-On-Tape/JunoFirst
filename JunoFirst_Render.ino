@@ -24,11 +24,17 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
     uint8_t y = horizon[row][col] + 4;
 
+#ifdef SCOREBOARD_BOTTOM
     if (y <= 56) {
-
       arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
-
     }
+#endif
+
+#ifdef SCOREBOARD_SIDE
+    if (y <= HEIGHT) {
+      arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
+    }
+#endif
 
   }
 
@@ -232,6 +238,8 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
 
 
+#ifdef SCOREBOARD_BOTTOM
+
   // Render scoreboard ..
 
   arduboy.fillRect(0, 56, WIDTH, HEIGHT, BLACK);
@@ -260,5 +268,64 @@ void RenderScreen(Player *player, Enemy *enemies) {
   // Fuel ?
 
   arduboy.drawLine(0, 57, 93, 57);
-  
+
+#endif
+
+#ifdef SCOREBOARD_SIDE
+
+  if (arduboy.everyXFrames(2)) {
+    
+    alternate++;
+
+  }
+
+
+  // Render scoreboard ..
+
+  arduboy.fillRect(120, 0, WIDTH, HEIGHT, BLACK);
+  arduboy.drawLine(121, 0, 121, HEIGHT, WHITE);
+
+
+  if (alternate < 128) {
+
+    // Score ..
+    {
+        uint8_t digits[6] = {};
+        extractDigits(digits, score);
+        
+        for(int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
+          Sprites::drawOverwrite(123, y, numbers_vert, digits[i]);
+        }
+    }
+
+
+    Sprites::drawOverwrite(123, 40, life_vert, 0);
+    Sprites::drawOverwrite(123, 46, life_vert, 0);
+    Sprites::drawOverwrite(123, 52, life_vert, 0);
+    Sprites::drawOverwrite(123, 58, life_vert, 0);
+
+  }
+  else {
+
+    Sprites::drawOverwrite(123, 0, fuel, 0);
+
+    uint8_t fuel = player->getFuel() / 10;
+    for (uint8_t x = 5; x < fuel; x+=2) {
+
+      arduboy.drawRect(123, x, WIDTH, 1, WHITE);
+
+    }
+
+    Sprites::drawOverwrite(123, 50, heart, 0);
+
+    for (uint8_t x = 0; x < player->getHealth(); x+=2) {
+
+      arduboy.drawRect(123, 57 + x, WIDTH, 1, WHITE);
+
+    }
+
+
+  }
+
+#endif
 }

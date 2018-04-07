@@ -3,8 +3,11 @@
 #include "src/characters/Enemy.h"
 #include "src/characters/Bullet.h"
 #include "src/images/Images.h"
+#include "src/images/Fonts.h"
 #include "src/utils/Enums.h"
 #include "src/utils/Utils.h"
+#include "src/utils/Slot.h"
+#include "src/utils/EEPROM_Utils.h"
 #include "src/levels/Level.h"
 #include "src/levels/Formations.h"
 
@@ -16,9 +19,10 @@ uint8_t alternate = 0;
 uint8_t yPos = 0;
 uint8_t xPos = 60;
 uint8_t horizonIncrement = 0;
-uint16_t score = 0;
-
-uint8_t bulletFrequency = 60;
+uint16_t score = 2000;
+uint8_t waveScore = 0;
+uint8_t editSlot = DO_NOT_EDIT_SLOT;
+uint8_t bulletFrequency = 40;
 
 Player player;
 Bullet playerBullet;
@@ -37,6 +41,8 @@ void setup() {
   arduboy.systemButtons();
   arduboy.setFrameRate(90);
   arduboy.initRandomSeed();
+
+  EEPROM_Utils::initEEPROM();
 
 }
 
@@ -57,10 +63,7 @@ void loop() {
 
     case GameState::ScoreTable:
       ScoreTable();
-
-
-      player.setStatus(PlayerStatus::Active);
-
+      player.reset();
       break;
 
     case GameState::GamePlay:
@@ -69,6 +72,15 @@ void loop() {
 
     case GameState::GameOver:
       GameOver();
+      break;
+
+    case GameState::SaveScore:
+      editSlot = EEPROM_Utils::saveScore(score, waveScore);
+      gameState = GameState::HighScore;
+      // break; Fall-through intentional.
+
+    case GameState::HighScore:
+      HighScore();
       break;
 
     default: break;
@@ -197,6 +209,17 @@ void GameOver() {
 
   Sprites::drawOverwrite(24, 22, gameOver, 0);
 
+
+  // If 'A' bUtton is pressed move to game play ..
+
+  if (arduboy.justPressed(A_BUTTON)) { 
+
+    player.reset();  
+    gameState = GameState::SaveScore; 
+    introDelay = 0;
+    
+  }
+
 }
 
 
@@ -210,6 +233,8 @@ void Play() {
 
   const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
   uint8_t speed = speedLookup[absT(player.getYDelta())];
+
+  player.incHealth();
 
   if (horizonIncrement == speed) {
 
@@ -373,7 +398,19 @@ void Play() {
 
       if (arduboy.collide(bulletRect, playerRect)) {
 
-        player.setStatus(PlayerStatus::Explosion4);
+        uint8_t health = player.getHealth();
+        bullet->setY(0);
+
+        if (health > 0) {
+
+          player.setHealth(--health);
+
+        }
+        else {
+
+          player.setStatus(PlayerStatus::Explosion4);
+
+        }
 
       }
 
@@ -411,7 +448,12 @@ void Play() {
     if (status > PlayerStatus::Dead && status < PlayerStatus::Active) {
 
       player.setStatus(--status);
-      gameState = GameState::GameOver;
+
+      if (status == PlayerStatus::Dead) {
+
+        gameState = GameState::GameOver;
+
+      }
 
     }
 
@@ -508,6 +550,95 @@ void launchFormation(uint8_t formationNumber) {
 
       }    
 
+    }
+
+  }
+
+}
+
+uint8_t charIndex = 0;
+uint8_t rowIndex = 0;
+uint8_t chars[3] = { 0, 0, 0 };
+
+
+void HighScore() {
+
+  uint8_t xOffset = 28;
+  uint8_t yOffset = 20;
+
+  for (uint8_t x =0; x < MAX_NUMBER_OF_SCORES; x++) {
+
+
+    Slot slot;
+    EEPROM_Utils::getSlot(x, &slot);
+
+    Sprites::drawOverwrite(xOffset, yOffset, font, slot.char0);
+    Sprites::drawOverwrite(xOffset + 5, yOffset, font, slot.char1);
+    Sprites::drawOverwrite(xOffset + 10, yOffset, font, slot.char2);
+
+
+    // Score ..
+    {
+      uint8_t digits[6] = {};
+      extractDigits(digits, slot.score);
+      
+      for (uint8_t i = 0, x2 = xOffset + 49; i < 6; ++i, x2 -= 5) {
+        Sprites::drawOverwrite(x2, yOffset, numbers, digits[i]);
+      }
+      
+    }
+
+
+    // Wave ..
+    
+    Sprites::drawOverwrite(xOffset + 65, yOffset, numbers, slot.wave / 10);
+    Sprites::drawOverwrite(xOffset + 70, yOffset, numbers, slot.wave % 10);
+
+    yOffset = yOffset + 8;
+
+  }
+
+
+  if (editSlot != DO_NOT_EDIT_SLOT) {
+
+    yOffset = 20;
+
+    if (charIndex == 0) {
+      arduboy.fillRect(xOffset - 1, yOffset + (editSlot * 8) - 1, 5, 7, WHITE);
+      Sprites::drawErase(xOffset, yOffset + (editSlot * 8), font, chars[0]);
+    }
+    else {
+      Sprites::drawOverwrite(xOffset, yOffset + (editSlot * 8), font, chars[0]);
+    }
+
+    if (charIndex == 1) {
+      arduboy.fillRect(xOffset + 4, yOffset + (editSlot * 8) - 1, 5, 7, WHITE);
+      Sprites::drawErase(xOffset + 5, yOffset + (editSlot * 8), font, chars[1]);
+    }
+    else {
+      Sprites::drawOverwrite(xOffset + 5, yOffset + (editSlot * 8), font, chars[1]);
+    }
+
+    if (charIndex == 2) {
+      arduboy.fillRect(xOffset + 9, yOffset + (editSlot * 8) - 1, 5, 7, WHITE);
+      Sprites::drawErase(xOffset + 10, yOffset + (editSlot * 8), font, chars[2]);
+    }
+    else {
+      Sprites::drawOverwrite(xOffset + 10, yOffset + (editSlot * 8), font, chars[2]);
+    }
+
+
+    // Handle buttons ..
+
+    if (arduboy.justPressed(UP_BUTTON))       { if (chars[charIndex] == 37 ) { chars[charIndex] = 0; } else { chars[charIndex]++; }   EEPROM_Utils::writeChar(editSlot, charIndex, chars[charIndex] ); }
+    if (arduboy.justPressed(DOWN_BUTTON))     { if (chars[charIndex] == 0) { chars[charIndex] = 37; } else { chars[charIndex]--; }    EEPROM_Utils::writeChar(editSlot, charIndex, chars[charIndex] ); }
+    if (arduboy.justPressed(LEFT_BUTTON))     { if (charIndex > 0) charIndex--; } 
+    if (arduboy.justPressed(RIGHT_BUTTON))    { if (charIndex < 2) charIndex++; } 
+
+    if (arduboy.justPressed(A_BUTTON)) { 
+      
+      editSlot = DO_NOT_EDIT_SLOT; 
+      
     }
 
   }

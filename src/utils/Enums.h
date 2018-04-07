@@ -2,9 +2,23 @@
 
 #include "Arduboy2Ext.h"
 
+#define _SCOREBOARD_BOTTOM
+#define SCOREBOARD_SIDE
+
+#ifdef SCOREBOARD_BOTTOM
+static const uint8_t WIDTH_HALF                         = 64;
+#endif
+
+#ifdef SCOREBOARD_SIDE
+static const uint8_t WIDTH_HALF                         = 60;
+#endif
 
 static const uint8_t MAX_NUMBER_OF_ENEMIES              = 20;
 static const uint8_t MAX_NUMBER_OF_BULLETS              = 10;
+static const uint16_t INCREMENT_HEALTH                  = 800;
+
+static const uint8_t MAX_NUMBER_OF_SCORES               = 5;
+static const uint8_t DO_NOT_EDIT_SLOT                   = 255;
 
 static const uint8_t HORIZON_MIN_VALUE                  = 42;
 static const uint8_t HORIZON_INCREMENT                  = 3;
@@ -25,8 +39,6 @@ static const uint8_t ENEMY_DISTANCE_CLOSE_START         = 64;
 static const uint8_t ENEMY_DISTANCE_CLOSE_END           = 122;
 
 static const uint8_t ENEMY_VISIBLE_HORIZON              = 24;
-
-static const uint8_t WIDTH_HALF                         = 64;
 static const uint8_t INTRO_DELAY                        = 60;
 
 static const int8_t ENEMY_MINIMUM_X                     = -80;
@@ -74,7 +86,9 @@ enum class GameState : uint8_t {
   Intro,
   ScoreTable,
   GamePlay,
-  GameOver
+  GameOver,
+  SaveScore,
+  HighScore
 
 };
 
