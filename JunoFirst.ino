@@ -127,32 +127,44 @@ void ScoreTable() {
 
   // Render score table ..
 
-  Sprites::drawOverwrite(32, 1, scoreTable, 0);
+  Sprites::drawOverwrite(20, 1, scoreTable, 0);
 
-  Sprites::drawOverwrite(36, 12, (first ? alien_close_1 : alien_close_2), 0);
-  Sprites::drawOverwrite(55, 11, ellipsis, 0);
-  Sprites::drawOverwrite(75, 14, numbers, 1);  
-  Sprites::drawOverwrite(80, 14, numbers, 5);  
-  Sprites::drawOverwrite(85, 14, numbers, 0);  
+  Sprites::drawOverwrite(10, 21, (first ? alien_close_1 : alien_close_2), 0);
+  Sprites::drawOverwrite(29, 20, ellipsis, 0);
+  Sprites::drawOverwrite(44, 23, numbers, 1);  
+  Sprites::drawOverwrite(49, 23, numbers, 5);  
+  Sprites::drawOverwrite(54, 23, numbers, 0);  
 
-  Sprites::drawOverwrite(36, 22, (first ? alien_close_2 : alien_close_1), 1);
-  Sprites::drawOverwrite(55, 21, ellipsis, 0);
-  Sprites::drawOverwrite(75, 24, numbers, 3);  
-  Sprites::drawOverwrite(80, 24, numbers, 0);  
-  Sprites::drawOverwrite(85, 24, numbers, 0);  
+  Sprites::drawOverwrite(10, 31, (first ? alien_close_2 : alien_close_1), 1);
+  Sprites::drawOverwrite(29, 30, ellipsis, 0);
+  Sprites::drawOverwrite(44, 33, numbers, 3);  
+  Sprites::drawOverwrite(49, 33, numbers, 0);  
+  Sprites::drawOverwrite(54, 33, numbers, 0);  
+ 
+  Sprites::drawOverwrite(11, 41, austronaut_prison_close, 0);
+  Sprites::drawOverwrite(29, 40, ellipsis, 0);
+  Sprites::drawOverwrite(44, 43, numbers, 5);  
+  Sprites::drawOverwrite(49, 43, numbers, 0);  
+  Sprites::drawOverwrite(54, 43, numbers, 0); 
 
-  Sprites::drawOverwrite(36, 32, (first ? alien_close_1 : alien_close_2), 2);
-  Sprites::drawOverwrite(55, 31, ellipsis, 0);
-  Sprites::drawOverwrite(75, 34, numbers, 4);  
-  Sprites::drawOverwrite(80, 34, numbers, 5);  
-  Sprites::drawOverwrite(85, 34, numbers, 0);  
+  Sprites::drawOverwrite(70, 21, (first ? alien_close_1 : alien_close_2), 2);
+  Sprites::drawOverwrite(89, 20, ellipsis, 0);
+  Sprites::drawOverwrite(104, 23, numbers, 5);  
+  Sprites::drawOverwrite(109, 23, numbers, 0);  
+  Sprites::drawOverwrite(114, 23, numbers, 0); 
 
-  Sprites::drawOverwrite(36, 42, (first ? alien_close_2 : alien_close_1), 3);
-  Sprites::drawOverwrite(55, 41, ellipsis, 0);
-  Sprites::drawOverwrite(75, 44, numbers, 6);  
-  Sprites::drawOverwrite(80, 44, numbers, 0);  
-  Sprites::drawOverwrite(85, 44, numbers, 0);  
-
+  Sprites::drawOverwrite(70, 31, (first ? alien_close_2 : alien_close_1), 3);
+  Sprites::drawOverwrite(89, 30, ellipsis, 0);
+  Sprites::drawOverwrite(104, 33, numbers, 2);  
+  Sprites::drawOverwrite(109, 33, numbers, 5);  
+  Sprites::drawOverwrite(114, 33, numbers, 0);  
+ 
+  Sprites::drawOverwrite(72, 41, austronaut_close, 0);
+  Sprites::drawOverwrite(89, 40, ellipsis, 0);
+  Sprites::drawOverwrite(99, 43, numbers, 1);  
+  Sprites::drawOverwrite(104, 43, numbers, 0);  
+  Sprites::drawOverwrite(109, 43, numbers, 0);  
+  Sprites::drawOverwrite(114, 43, numbers, 0);  
 
 
   // Display 'Press A' button after a short period of time ..
@@ -183,7 +195,7 @@ void ScoreTable() {
 //
 void GameOver() {
 
-  Sprites::drawOverwrite(41, 29, gameOver, 0);
+  Sprites::drawOverwrite(24, 22, gameOver, 0);
 
 }
 
