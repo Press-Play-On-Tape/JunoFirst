@@ -2,7 +2,7 @@
 
 #include "Arduboy2Ext.h"
 #include "Enums.h"
-#include "Slot.h"
+#include "../entity/Slot.h"
 
 #define EEPROM_START                  EEPROM_STORAGE_SPACE_START + 300
 #define EEPROM_START_C1               EEPROM_START
@@ -19,7 +19,7 @@ class EEPROM_Utils {
     static void initEEPROM();
     static void getSlot(uint8_t x, Slot *slot);
     static uint8_t saveScore(uint16_t score, uint8_t wave);
-    static void writeChar(uint8_t slotIndex, uint8_t charIndex, uint8_t letterIndex);
+    static void writeChars(uint8_t slotIndex, HighScore *highScore);
 
 };
 
@@ -68,14 +68,14 @@ void EEPROM_Utils::initEEPROM() {
  */
 void EEPROM_Utils::getSlot(uint8_t x, Slot *slot) {
 
-  slot->char0 = EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x));
-  slot->char1 = EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 1);
-  slot->char2 = EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 2);
-  slot->wave = EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 3);
+  slot->setChar0(EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x)));
+  slot->setChar1(EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 1));
+  slot->setChar2(EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 2));
+  slot->setWave(EEPROM.read(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 3));
 
   uint16_t score = 0;
   EEPROM.get(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 4, score);
-  slot->score = score;
+  slot->setScore(score);
 
 }
 
@@ -108,11 +108,11 @@ uint8_t EEPROM_Utils::saveScore(uint16_t score, uint8_t wave) {
       Slot slot;
       getSlot(x - 1, &slot);
 
-      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x), slot.char0);
-      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 1, slot.char1);
-      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 2, slot.char2);
-      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 3, slot.wave);
-      EEPROM.put(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 4, slot.score);
+      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x), slot.getChar0());
+      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 1, slot.getChar1());
+      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 2, slot.getChar2());
+      EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 3, slot.getWave());
+      EEPROM.put(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * x) + 4, slot.getScore());
 
     }
 
@@ -133,8 +133,10 @@ uint8_t EEPROM_Utils::saveScore(uint16_t score, uint8_t wave) {
 /* -----------------------------------------------------------------------------
  *   Save score and return index.  255 not good enough! 
  */
-static void EEPROM_Utils::writeChar(uint8_t slotIndex, uint8_t charIndex, uint8_t letterIndex) {
+void EEPROM_Utils::writeChars(uint8_t slotIndex, HighScore *highscore) {
 
-    EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * slotIndex) + charIndex, letterIndex);
+    EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * slotIndex), highscore->getChar(0));
+    EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * slotIndex) + 1, highscore->getChar(1));
+    EEPROM.update(EEPROM_TOP_START + (EEPROM_ENTRY_SIZE * slotIndex) + 2, highscore->getChar(2));
 
 }

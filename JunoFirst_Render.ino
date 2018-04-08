@@ -291,7 +291,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
     // Score ..
     {
         uint8_t digits[6] = {};
-        extractDigits(digits, score);
+        extractDigits(digits, level.getScore());
         
         for(int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
           Sprites::drawOverwrite(123, y, numbers_vert, digits[i]);

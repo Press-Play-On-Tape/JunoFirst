@@ -393,3 +393,13 @@ const uint8_t PROGMEM fuel[] = {
 5, 8,
 0x01, 0x01, 0x03, 0x01, 0x07, 
 };
+
+const uint8_t PROGMEM arrowLeft[] = {
+3, 6,
+0x04, 0x0e, 0x1f, 
+};
+
+const uint8_t PROGMEM arrowRight[] = {
+3, 6,
+0x1f, 0x0e, 0x04, 
+};
