@@ -6,7 +6,7 @@
 //
 void GameOver() {
 
-  Sprites::drawOverwrite(24, 22, gameOver, 0);
+  Sprites::drawOverwrite(1, 18, gameOver, 0);
 
 
   // If 'A' bUtton is pressed move to game play ..

@@ -8,10 +8,11 @@
 void HighScore() {
 
   uint8_t xOffset = 28;
-  uint8_t yOffset = 20;
+  uint8_t yOffset = 23;
+
+  Sprites::drawOverwrite(17, 0, highScoreImg, 0);
 
   for (uint8_t x =0; x < MAX_NUMBER_OF_SCORES; x++) {
-
 
     Slot slot;
     EEPROM_Utils::getSlot(x, &slot);
@@ -45,7 +46,7 @@ void HighScore() {
 
   if (highScore.getSlotNumber() != DO_NOT_EDIT_SLOT) {
 
-    yOffset = 20;
+    yOffset = 23;
     alternate++;
   
     if (alternate < 40) {

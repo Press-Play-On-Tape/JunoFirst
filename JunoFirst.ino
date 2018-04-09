@@ -105,7 +105,8 @@ void Play() {
   // Update the ground's position ..
 
 //  const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
-  const uint8_t speedLookup[] = {0, 8, 4, 0, 2};
+//  const uint8_t speedLookup[] = {0, 8, 4, 0, 2};
+  const uint8_t speedLookup[] = {0, 12, 6, 0, 3};
   uint8_t speed = speedLookup[absT(player.getYDelta())];
 
   player.incHealth();
@@ -167,24 +168,27 @@ void Play() {
 
   // Handle players actions ..
 
-  if (arduboy.pressed(DOWN_BUTTON))     { if (player.decYDelta()) horizonIncrement = 0; }
-  if (arduboy.pressed(UP_BUTTON))       { if (player.incYDelta()) horizonIncrement = 0; }
-  if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
-  if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
+  if (player.getStatus() == PlayerStatus::Active) {
 
-  if (arduboy.justPressed(A_BUTTON))        { 
+    if (arduboy.pressed(DOWN_BUTTON))     { if (player.decYDelta()) horizonIncrement = 0; }
+    if (arduboy.pressed(UP_BUTTON))       { if (player.incYDelta()) horizonIncrement = 0; }
+    if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
+    if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-    if (playerBullet.getY() == 0) {
+    if (arduboy.justPressed(A_BUTTON))        { 
 
-      playerBullet.setY(45);
-      playerBullet.setX(player.getX() + 7);
+      if (playerBullet.getY() == 0) {
+
+        playerBullet.setY(45);
+        playerBullet.setX(player.getX() + 7);
+
+      }
 
     }
 
+    if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(FRAME_RATE_16)) { player.decelerate(); }
+
   }
-
-  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(FRAME_RATE_16)) { player.decelerate(); }
-
 
   // Update player bullet position ..
 
