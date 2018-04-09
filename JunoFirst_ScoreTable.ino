@@ -67,8 +67,9 @@ void ScoreTable() {
 
   if (arduboy.justPressed(A_BUTTON)) { 
 
-    player.reset();  
-    launchFormation(0);//random(0, 6));
+    player.reset(); 
+    level.reset(enemies, bullets, &playerBullet);
+    level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
     gameState = GameState::GamePlay; 
     
   }

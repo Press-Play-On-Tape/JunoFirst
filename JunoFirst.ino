@@ -55,7 +55,7 @@ void setup() {
 //
 void loop() {
 
-  if (!(arduboy.nextFrame())) return;
+  if (!(arduboy.nextFrameDEV())) return;
   arduboy.pollButtons();
 
   switch (gameState) {
@@ -96,41 +96,6 @@ void loop() {
 }
 
 
-
-// --------------------------------------------------------------------------------------
-//  Show introduction screen ..
-//
-void Intro() {
-
-
-  // Draw logo ..
-
-  Sprites::drawOverwrite(18, 4, logo, 0);
-
-
-  // Display 'Press A' button after a short period of time ..
-
-  if (introDelay < INTRO_DELAY) {
-    introDelay++;
-  }
-  else {    
-    Sprites::drawOverwrite(51, 55, pressA, 0);
-  }
-
-
-  // If 'A' bUtton is pressed move to game play ..
-
-  if (arduboy.justPressed(A_BUTTON)) { 
-
-    player.reset();  
-    gameState = GameState::ScoreTable; 
-    introDelay = 0;
-    
-  }
-
-}
-
-
 // --------------------------------------------------------------------------------------
 //  Let's play!
 //
@@ -139,7 +104,8 @@ void Play() {
 
   // Update the ground's position ..
 
-  const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
+//  const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
+  const uint8_t speedLookup[] = {0, 8, 4, 0, 2};
   uint8_t speed = speedLookup[absT(player.getYDelta())];
 
   player.incHealth();
@@ -157,8 +123,10 @@ void Play() {
       Enemy *enemy = &enemies[x];
 
       if (enemy->getStatus() == EnemyStatus::Active) {
+
         enemy->move(&player);
-      }    
+
+      }
 
     }
 
@@ -176,10 +144,11 @@ void Play() {
     
   }
   
+
   horizonIncrement++;
 
 
-  if (arduboy.everyXFrames(4)) {
+  if (arduboy.everyXFrames(FRAME_RATE_2)) {
 
     for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
@@ -193,9 +162,8 @@ void Play() {
 
   }
 
-
   RenderScreen(&player, enemies);
-
+ 
 
   // Handle players actions ..
 
@@ -215,36 +183,28 @@ void Play() {
 
   }
 
-  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(32)) { player.decelerate(); }
+  if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(FRAME_RATE_16)) { player.decelerate(); }
 
 
   // Update player bullet position ..
 
-  if (arduboy.everyXFrames(2)) {
+  uint8_t bulletY = playerBullet.getY();
+  playerBullet.setY(bulletY > 10 ? bulletY - 5 : 0);
 
-      uint8_t bulletY = playerBullet.getY();
-      playerBullet.setY(bulletY > 10 ? bulletY - 5 : 0);
+  for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
 
-  }
+    Bullet *bullet = &bullets[x];
 
-  if (arduboy.everyXFrames(2)) {
+    if (bullet->getY() > 0) {
 
-    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
-
-      Bullet *bullet = &bullets[x];
-
-      if (bullet->getY() > 0) {
-
-        bullet->move();
-
-      }
+      bullet->move();
 
     }
 
   }
 
 
-  // Did our bullet hit an enemy or bullet?
+  // Did our bullet hit an enemy or enemy bullet?
 
   if (playerBullet.getY() > 0) {
 
@@ -284,6 +244,9 @@ void Play() {
           }
 
           level.setScore(level.getScore() + scoreInc);
+          level.decInPlay();
+
+          //TDOD sound when enemy shot.
 
         }
 
@@ -314,30 +277,84 @@ void Play() {
   }
 
 
-  // Did any enemy bullet hit us ..
+  // Did any enemy hit us ..
 
-  for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+  if (player.getStatus() == PlayerStatus::Active) {
 
-    Bullet *bullet = &bullets[x];
+    Rect playerRect = { player.getX() + 1, player.getY() + 1, 13, 14 };
 
-    if (bullet->getY() > 0) {
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
-      Rect bulletRect = { bullet->getX(), bullet->getY(), 2, 2 };
-      Rect playerRect = { player.getX() + 1, player.getY() + 1, 13, 14 };
+      Enemy *enemy = &enemies[x];
 
-      if (arduboy.collide(bulletRect, playerRect)) {
+      if (enemy->getStatus() == EnemyStatus::Active) {
 
-        uint8_t health = player.getHealth();
-        bullet->setY(0);
+        Rect enemyRect = { enemy->getXDisplay(), enemy->getYDisplay(), enemy->getWidth(), enemy->getHeight() };
 
-        if (health > 0) {
+        if (arduboy.collide(enemyRect, playerRect)) {
 
-          player.setHealth(--health);
+          if (!enemy->getPlayerOverlap()) {
+
+            enemy->setPlayerOverlap(true);
+            uint8_t health = player.getHealth();
+
+            if (health > 0) {
+
+              player.setHealth(--health);
+
+            }
+            else {
+
+              player.setStatus(PlayerStatus::Explosion4);
+
+            }
+
+          }
 
         }
         else {
 
-          player.setStatus(PlayerStatus::Explosion4);
+          enemy->setPlayerOverlap(false);
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+
+  // Did any enemy bullet hit us ..
+
+  if (player.getStatus() == PlayerStatus::Active) {
+
+    Rect playerRect = { player.getX() + 1, player.getY() + 1, 13, 14 };
+
+    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+      Bullet *bullet = &bullets[x];
+
+      if (bullet->getY() > 0) {
+
+        Rect bulletRect = { bullet->getX(), bullet->getY(), 2, 2 };
+
+        if (arduboy.collide(bulletRect, playerRect)) {
+
+          uint8_t health = player.getHealth();
+          bullet->setY(0);
+
+          if (health > 0) {
+
+            player.setHealth(--health);
+
+          }
+          else {
+
+            player.setStatus(PlayerStatus::Explosion4);
+
+          }
 
         }
 
@@ -350,7 +367,7 @@ void Play() {
 
   // Update dying enemy images ..
 
-  if (arduboy.everyXFrames(8)) {
+  if (arduboy.everyXFrames(FRAME_RATE_4)) {
 
     for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
@@ -365,12 +382,8 @@ void Play() {
 
     }
 
-  }
 
-
-  // Update dying player image ..
-
-  if (arduboy.everyXFrames(8)) {
+    // Update dying player image ..
 
     PlayerStatus status = player.getStatus();
 
@@ -415,7 +428,7 @@ void Play() {
             uint8_t enemyMiddle = enemy->getXDisplay() + (enemy->getWidth() / 2);
 
             bullet->setX(enemyMiddle);
-            bullet->setY(enemy->getYDisplay() + enemy->getHeight());
+            bullet->setY(absT(enemy->getYDisplay() + enemy->getHeight()));
             bullet->setYDelta(enemy->getYDelta() + 1);
 
             switch ((player.getX() + 7 - enemyMiddle) / (player.getY() - enemy->getYDisplay())) {
@@ -449,141 +462,15 @@ void Play() {
 
   }
 
-}
 
+  // Launch a new formation ?
 
+  level.decCountDown();
 
-void launchFormation(uint8_t formationNumber) {
+  if (level.getCountDown() == 0 && level.getInPlay() < MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION) {
+    level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
 
-  uint16_t dataOffset = 0;
-  const int8_t *formationToLoad = formations[formationNumber];
-
-  uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
-
-  for (uint8_t x = 0; x < numberOfEnemies; x++) {
-
-    for (uint8_t y = 0; y < MAX_NUMBER_OF_ENEMIES; y++) {
-
-      Enemy *enemy = &enemies[y];
-
-      if (enemy->getStatus() == EnemyStatus::Dead) {
-
-        enemy->setEnemyType(static_cast<EnemyType>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setX(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setY(pgm_read_byte(&formationToLoad[dataOffset++]));
-        enemy->setXDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setYDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setMovementSequence(static_cast<MovementSequence>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setStatus(EnemyStatus::Active);
-        break;
-
-      }    
-
-    }
-
-  }
-
-}
-
-
-
-
-void HighScore() {
-
-  uint8_t xOffset = 28;
-  uint8_t yOffset = 20;
-
-  for (uint8_t x =0; x < MAX_NUMBER_OF_SCORES; x++) {
-
-
-    Slot slot;
-    EEPROM_Utils::getSlot(x, &slot);
-
-    Sprites::drawOverwrite(xOffset, yOffset, font, slot.getChar0());
-    Sprites::drawOverwrite(xOffset + 5, yOffset, font, slot.getChar1());
-    Sprites::drawOverwrite(xOffset + 10, yOffset, font, slot.getChar2());
-
-
-    // Score ..
-    {
-      uint8_t digits[6] = {};
-      extractDigits(digits, slot.getScore());
-      
-      for (uint8_t i = 0, x2 = xOffset + 49; i < 6; ++i, x2 -= 5) {
-        Sprites::drawOverwrite(x2, yOffset, numbers, digits[i]);
-      }
-      
-    }
-
-
-    // Wave ..
-    
-    Sprites::drawOverwrite(xOffset + 65, yOffset, numbers, slot.getWave() / 10);
-    Sprites::drawOverwrite(xOffset + 70, yOffset, numbers, slot.getWave() % 10);
-
-    yOffset = yOffset + 8;
-
-  }
-
-
-  if (highScore.getSlotNumber() != DO_NOT_EDIT_SLOT) {
-
-    yOffset = 20;
-    alternate++;
-  
-    if (alternate < 40) {
-
-      Sprites::drawOverwrite(xOffset - 6, yOffset + (highScore.getSlotNumber() * 8), arrowLeft, 0);
-      Sprites::drawOverwrite(xOffset + 77, yOffset + (highScore.getSlotNumber() * 8), arrowRight, 0);
-    
-    }
-    else if (alternate > 80) {
-
-      alternate = 0;
-
-    }
-
-    if (highScore.getCharIndex() == 0) {
-      arduboy.fillRect(xOffset - 1, yOffset + (highScore.getSlotNumber() * 8) - 1, 5, 7, WHITE);
-      Sprites::drawErase(xOffset, yOffset + (highScore.getSlotNumber() * 8), font, highScore.getChar(0));
-    }
-    else {
-      Sprites::drawOverwrite(xOffset, yOffset + (highScore.getSlotNumber() * 8), font, highScore.getChar(0));
-    }
-
-    if (highScore.getCharIndex() == 1) {
-      arduboy.fillRect(xOffset + 4, yOffset + (highScore.getSlotNumber() * 8) - 1, 5, 7, WHITE);
-      Sprites::drawErase(xOffset + 5, yOffset + (highScore.getSlotNumber() * 8), font, highScore.getChar(1));
-    }
-    else {
-      Sprites::drawOverwrite(xOffset + 5, yOffset + (highScore.getSlotNumber() * 8), font, highScore.getChar(1));
-    }
-
-    if (highScore.getCharIndex() == 2) {
-      arduboy.fillRect(xOffset + 9, yOffset + (highScore.getSlotNumber() * 8) - 1, 5, 7, WHITE);
-      Sprites::drawErase(xOffset + 10, yOffset + (highScore.getSlotNumber() * 8), font, highScore.getChar(2));
-    }
-    else {
-      Sprites::drawOverwrite(xOffset + 10, yOffset + (highScore.getSlotNumber() * 8), font, highScore.getChar(2));
-    }
-
-
-    // Handle buttons ..
-
-    uint8_t charIndex = highScore.getCharIndex();
-
-    if (arduboy.justPressed(UP_BUTTON))       { highScore.incChar(charIndex); }
-    if (arduboy.justPressed(DOWN_BUTTON))     { highScore.decChar(charIndex); }
-    if (arduboy.justPressed(LEFT_BUTTON))     { highScore.decCharIndex(); } 
-    if (arduboy.justPressed(RIGHT_BUTTON))    { highScore.incCharIndex(); } 
-
-    if (arduboy.justPressed(A_BUTTON)) { 
-      
-      EEPROM_Utils::writeChars(highScore.getSlotNumber(), &highScore);
-      highScore.disableEditting(); 
-      
-    }
-
+    //TODO : sound formation launch
   }
 
 }

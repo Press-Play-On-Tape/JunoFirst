@@ -59,13 +59,7 @@ uint8_t Player::getX() {
 }
 
 uint8_t Player::getY() {
-
-#ifdef SCOREBOARD_BOTTOM
-  return 41;
-#endif
-#ifdef SCOREBOARD_SIDE
   return 49;
-#endif
 }
 
 uint16_t Player::getFuel() {
@@ -123,14 +117,14 @@ void Player::reset() {
   _xDelta = 0;
   _yDelta = 0;
   _fuel = 480;
-  _health = 2;
+  _health = 7;
   _status = PlayerStatus::Active;
 
 }
 
 void Player::incX() {
 
-  if (_x < 114) _x = _x + 1;
+  if (_x < 108) _x = _x + 1;
 
 }
 

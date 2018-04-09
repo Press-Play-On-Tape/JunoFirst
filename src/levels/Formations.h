@@ -2,6 +2,11 @@
 
 #include "../utils/Enums.h"
 
+static const uint8_t NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT  = 6;
+static const uint8_t MAX_DELAY_BETWEEN_FORMATIONS = 140;
+static const uint8_t MIN_DELAY_BETWEEN_FORMATIONS = MAX_DELAY_BETWEEN_FORMATIONS / 2;
+static const uint8_t LEVEL_DELAY_BETWEEN_FORMATIONS = (MAX_DELAY_BETWEEN_FORMATIONS / 10);
+
 
 // A block of four enemies, travelling in formation.
 const int8_t PROGMEM formation_00[] = {

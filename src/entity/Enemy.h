@@ -17,6 +17,7 @@ class Enemy {
     EnemyStatus getStatus();
     EnemyType getType();
     MovementSequence getMovementSequence();
+    bool getPlayerOverlap();
         
     void setX(int8_t val);
     void setY(int8_t val);
@@ -25,6 +26,7 @@ class Enemy {
     void setStatus(EnemyStatus val);
     void setEnemyType(EnemyType val);
     void setMovementSequence(MovementSequence val);
+    void setPlayerOverlap(bool val);
 
     // Methods ..
 
@@ -41,10 +43,10 @@ class Enemy {
 
   private:
 
-    uint8_t _flags;           // bits 0 - 3 enemy type, bits 4 - 7 movement type
+    uint8_t _flags;           // bits 0 - 3 enemy type, bit 4 overlap, bits 5 - 7 movement type
     int8_t _x;
     int8_t _y;
-    uint8_t _delta;           // bits 0 - 3 x, bits 4 - 7 _y
+    uint8_t _delta;           // bits 0 - 3 x, bits 4 - 7 y
     EnemyStatus _status; 
 
 };
@@ -79,7 +81,11 @@ EnemyStatus Enemy::getStatus() {
 }
 
 MovementSequence Enemy::getMovementSequence() {
-  return static_cast<MovementSequence>(_flags >> 4);
+  return static_cast<MovementSequence>(_flags >> 5);
+}
+
+bool Enemy::getPlayerOverlap() {
+  return (_flags & 0x10) == 0x10;
 }
 
 void Enemy::setEnemyType(EnemyType val) {
@@ -108,7 +114,11 @@ void Enemy::setStatus(EnemyStatus val) {
 }
 
 void Enemy::setMovementSequence(MovementSequence val) {
-  _flags = (_flags & 0x0F) | (static_cast<uint8_t>(val) << 4);
+  _flags = (_flags & 0x1F) | (static_cast<uint8_t>(val) << 5);
+}
+
+void Enemy::setPlayerOverlap(bool val) {
+  _flags = (_flags & 0xEF) | (val ? 0x10 : 0x00);
 }
 
 
@@ -144,13 +154,7 @@ ImageSize Enemy::getSize() {
 
 int8_t Enemy::getXDisplay() {
 
-  #ifdef SCOREBOARD_BOTTOM
   uint8_t x = (static_cast<int16_t>(_x) * static_cast<int16_t>(_y) / static_cast<int16_t>(96)) + WIDTH_HALF;
-  #endif
-
-  #ifdef SCOREBOARD_SIDE
-  uint8_t x = (static_cast<int16_t>(_x) * static_cast<int16_t>(_y) / static_cast<int16_t>(96)) + WIDTH_HALF;
-  #endif
 
   switch (_y) {
 

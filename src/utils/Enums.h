@@ -2,62 +2,58 @@
 
 #include "Arduboy2Ext.h"
 
-#define _SCOREBOARD_BOTTOM
-#define SCOREBOARD_SIDE
+static const uint8_t WIDTH_HALF                           = 60;
 
-#ifdef SCOREBOARD_BOTTOM
-static const uint8_t WIDTH_HALF                         = 64;
-#endif
+static const uint8_t MAX_NUMBER_OF_ENEMIES                = 12;
+static const uint8_t MAX_NUMBER_OF_ENEMIES_PER_FORMATION  = 4;
+static const uint8_t MAX_NUMBER_OF_BULLETS                = 10;
+static const uint16_t INCREMENT_HEALTH                    = 800;
 
-#ifdef SCOREBOARD_SIDE
-static const uint8_t WIDTH_HALF                         = 60;
-#endif
+static const uint8_t MAX_NUMBER_OF_SCORES                 = 5;
+static const uint8_t DO_NOT_EDIT_SLOT                     = 255;
 
-static const uint8_t MAX_NUMBER_OF_ENEMIES              = 20;
-static const uint8_t MAX_NUMBER_OF_BULLETS              = 10;
-static const uint16_t INCREMENT_HEALTH                  = 800;
+static const uint8_t HORIZON_MIN_VALUE                    = 42;
+static const uint8_t HORIZON_INCREMENT                    = 3;
+static const uint8_t HORIZON_COL_COUNT                    = 7;
+static const uint8_t HORIZON_ROW_COUNT                    = 5;
+static const uint8_t ENEMY_FRAME_COUNT                    = 30;
+static const uint8_t ENEMY_FRAME_COUNT_HALF               = 15;
 
-static const uint8_t MAX_NUMBER_OF_SCORES               = 5;
-static const uint8_t DO_NOT_EDIT_SLOT                   = 255;
+static const uint8_t ENEMY_DISTANCE_HORIZON_START_1       = 24;
+static const uint8_t ENEMY_DISTANCE_HORIZON_END_1         = 47;
+static const uint8_t ENEMY_DISTANCE_HORIZON_START_2       = 48;
+static const uint8_t ENEMY_DISTANCE_HORIZON_END_2         = 51;
+static const uint8_t ENEMY_DISTANCE_FAR_START             = 52;
+static const uint8_t ENEMY_DISTANCE_FAR_END               = 57;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_START          = 58;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_END            = 63;
+static const uint8_t ENEMY_DISTANCE_CLOSE_START           = 64;
+static const uint8_t ENEMY_DISTANCE_CLOSE_END             = 122;
 
-static const uint8_t HORIZON_MIN_VALUE                  = 42;
-static const uint8_t HORIZON_INCREMENT                  = 3;
-static const uint8_t HORIZON_COL_COUNT                  = 7;
-static const uint8_t HORIZON_ROW_COUNT                  = 5;
-static const uint8_t ENEMY_FRAME_COUNT                  = 30;
-static const uint8_t ENEMY_FRAME_COUNT_HALF             = 15;
+static const uint8_t ENEMY_VISIBLE_HORIZON                = 24;
+static const uint8_t INTRO_DELAY                          = 60;
 
-static const uint8_t ENEMY_DISTANCE_HORIZON_START_1     = 24;
-static const uint8_t ENEMY_DISTANCE_HORIZON_END_1       = 47;
-static const uint8_t ENEMY_DISTANCE_HORIZON_START_2     = 48;
-static const uint8_t ENEMY_DISTANCE_HORIZON_END_2       = 51;
-static const uint8_t ENEMY_DISTANCE_FAR_START           = 52;
-static const uint8_t ENEMY_DISTANCE_FAR_END             = 57;
-static const uint8_t ENEMY_DISTANCE_MEDIUM_START        = 58;
-static const uint8_t ENEMY_DISTANCE_MEDIUM_END          = 63;
-static const uint8_t ENEMY_DISTANCE_CLOSE_START         = 64;
-static const uint8_t ENEMY_DISTANCE_CLOSE_END           = 122;
+static const int8_t ENEMY_MINIMUM_X                       = -80;
+static const int8_t ENEMY_MAXIMUM_X                       = 80;
+static const int8_t ENEMY_MINIMUM_Y                       = 0;
+static const int8_t ENEMY_MAXIMUM_Y                       = 120;
 
-static const uint8_t ENEMY_VISIBLE_HORIZON              = 24;
-static const uint8_t INTRO_DELAY                        = 60;
+static const uint8_t ENEMY_DISTANCE_FAR_WIDTH             = 5;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH          = 8;
+static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH           = 9;
 
-static const int8_t ENEMY_MINIMUM_X                     = -80;
-static const int8_t ENEMY_MAXIMUM_X                     = 80;
-static const int8_t ENEMY_MINIMUM_Y                     = 0;
-static const int8_t ENEMY_MAXIMUM_Y                     = 120;
+static const uint8_t ENEMY_DISTANCE_FAR_HEIGHT            = 5;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_HEIGHT         = 7;
+static const uint8_t ENEMY_DISTANCE_CLOSE_HEIGHT          = 13;
 
-static const uint8_t ENEMY_DISTANCE_FAR_WIDTH           = 5;
-static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH        = 8;
-static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH         = 9;
+static const uint8_t ENEMY_DISTANCE_FAR_WIDTH_HALF        = 2;
+static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH_HALF     = 3;
+static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH_HALF      = 6;
 
-static const uint8_t ENEMY_DISTANCE_FAR_HEIGHT          = 5;
-static const uint8_t ENEMY_DISTANCE_MEDIUM_HEIGHT       = 7;
-static const uint8_t ENEMY_DISTANCE_CLOSE_HEIGHT        = 13;
-
-static const uint8_t ENEMY_DISTANCE_FAR_WIDTH_HALF      = 2;
-static const uint8_t ENEMY_DISTANCE_MEDIUM_WIDTH_HALF   = 3;
-static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH_HALF    = 6;
-
+static const uint8_t FRAME_RATE_1                         = 1;
+static const uint8_t FRAME_RATE_2                         = 2;
+static const uint8_t FRAME_RATE_4                         = 4;
+static const uint8_t FRAME_RATE_16                        = 16;
 
 
 // ----------------------------------------------------------------------------
