@@ -1,4 +1,7 @@
 #include "src/utils/Arduboy2Ext.h"
+#include "src/utils/FadeEffects.h"
+
+
 
 
 // --------------------------------------------------------------------------------------
@@ -10,6 +13,14 @@ void Intro() {
   // Draw logo ..
 
   Sprites::drawOverwrite(18, 4, logo, 0);
+
+
+  if (!fadeInEffect.isComplete()) {
+
+    fadeInEffect.draw(arduboy);
+    fadeInEffect.update();
+
+  }
 
 
   // Display 'Press A' button after a short period of time ..

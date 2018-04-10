@@ -79,12 +79,15 @@ template <typename T> T clamp(const T& value, const T& low, const T& high)
 //
 enum class GameState : uint8_t {
 
+  Intro_Init,
   Intro,
   ScoreTable,
   GamePlay,
+  GameOver_Init,
   GameOver,
   SaveScore,
-  HighScore
+  HighScore,
+  Credits
 
 };
 

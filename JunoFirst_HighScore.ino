@@ -105,7 +105,7 @@ void HighScore() {
   }
   else {
 
-    if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) { gameState = GameState::Intro; }
+    if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) { gameState = GameState::Credits; }
     
   }
 

@@ -199,7 +199,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   if (playerBullet.getY() > 0) {
 
-    arduboy.drawFastVLine(playerBullet.getX(), playerBullet.getY(), playerBullet.getY() - 5, WHITE); 
+    arduboy.drawFastVLine(playerBullet.getX(), playerBullet.getY(), 5, WHITE); 
 
   }
 
@@ -228,7 +228,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   // Render scoreboard ..
 
-  Sprites::drawOverwrite(120, 0, FuelTick, 0);
+  Sprites::drawOverwrite(120, 0, blankScoreboard, 0);
 
   if (alternate < 128) {
 

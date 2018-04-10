@@ -5,14 +5,16 @@
 #include "src/entity/Slot.h"
 #include "src/entity/HighScore.h"
 #include "src/images/Images.h"
+#include "src/images/Fonts.h"
 #include "src/utils/Enums.h"
 #include "src/utils/Utils.h"
 #include "src/utils/EEPROM_Utils.h"
 #include "src/levels/Level.h"
 #include "src/levels/Formations.h"
+#include "src/utils/FadeEffects.h"
 
 Arduboy2Ext arduboy;
-GameState gameState = GameState::Intro;
+GameState gameState = GameState::Intro_Init;
 
 uint8_t introDelay = 0;
 uint8_t alternate = 0;
@@ -29,7 +31,7 @@ Level level;
 
 
 HighScore highScore;
-
+FadeInEffect fadeInEffect;
 
 
 
@@ -54,10 +56,15 @@ void setup() {
 //
 void loop() {
 
-  if (!(arduboy.nextFrameDEV())) return;
+  if (!(arduboy.nextFrame())) return;
   arduboy.pollButtons();
 
   switch (gameState) {
+
+    case GameState::Intro_Init:
+      fadeInEffect.reset();
+      gameState = GameState::Intro;
+      // break; Fall-through intentional.
 
     case GameState::Intro:
       Intro();
@@ -72,6 +79,11 @@ void loop() {
       Play();
       break;
 
+    case GameState::GameOver_Init:
+      gameState = GameState::GameOver;
+      fadeInEffect.reset();
+      // break; Fall-through intentional.
+
     case GameState::GameOver:
       GameOver();
       break;
@@ -80,10 +92,15 @@ void loop() {
       highScore.reset();
       highScore.setSlotNumber(EEPROM_Utils::saveScore(level.getScore(), level.getWave()));
       gameState = GameState::HighScore;
+      fadeInEffect.reset();
       // break; Fall-through intentional.
 
     case GameState::HighScore:
       HighScore();
+      break;
+
+    case GameState::Credits:
+      Credits();
       break;
 
     default: break;
@@ -188,6 +205,7 @@ void Play() {
     if (!arduboy.pressed(DOWN_BUTTON) && !arduboy.pressed(UP_BUTTON) && arduboy.everyXFrames(FRAME_RATE_16)) { player.decelerate(); }
 
   }
+
 
   // Update player bullet position ..
 
@@ -396,7 +414,7 @@ void Play() {
 
       if (status == PlayerStatus::Dead) {
 
-        gameState = GameState::GameOver;
+        gameState = GameState::GameOver_Init;
 
       }
 
