@@ -28,9 +28,9 @@ void Credits() {
 
   // Draw logo and names ..
 
-  Sprites::drawOverwrite(37, 4, credits, 0);
-  arduboy.drawFastHLine(37, 23, 54, WHITE);
+  Sprites::drawOverwrite(37, 6, credits, 0);
   arduboy.drawFastHLine(37, 25, 54, WHITE);
+  arduboy.drawFastHLine(37, 27, 54, WHITE);
 
 
   // Display 'Press A' button after a short period of time ..
@@ -82,7 +82,7 @@ void Credits() {
 
   Sprites::drawOverwrite(38, 38, filmoteImage, 0);
   Sprites::drawOverwrite(76, 38, vampiricsBase, 0);
-  Sprites::drawOverwrite(76, 38, vampiricsAnimation, vampiricsImage);
+  Sprites::drawSelfMasked(76, 38, vampiricsAnimation, vampiricsImage);
   Sprites::drawOverwrite(32, 50, filmoteText, 0);
   Sprites::drawOverwrite(68, 50, vampriricsText, 0);
 
