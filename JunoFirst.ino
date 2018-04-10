@@ -5,7 +5,6 @@
 #include "src/entity/Slot.h"
 #include "src/entity/HighScore.h"
 #include "src/images/Images.h"
-#include "src/images/Fonts.h"
 #include "src/utils/Enums.h"
 #include "src/utils/Utils.h"
 #include "src/utils/EEPROM_Utils.h"
