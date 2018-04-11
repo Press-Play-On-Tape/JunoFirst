@@ -12,8 +12,11 @@
 #include "src/levels/Level.h"
 #include "src/levels/Formations.h"
 #include "src/utils/FadeEffects.h"
+#include "src/sounds/Sounds.h"
+#include <ArduboyTones.h>
 
 Arduboy2Ext arduboy;
+ArduboyTones sound(arduboy.audio.enabled);
 GameState gameState = GameState::Intro_Init;
 
 uint8_t introDelay = 0;
@@ -45,6 +48,7 @@ void setup() {
   arduboy.systemButtons();
   arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
+  arduboy.audio.begin();
 
   EEPROM_Utils::initEEPROM();
 
@@ -64,6 +68,7 @@ void loop() {
     case GameState::Intro_Init:
       fadeInEffect.reset();
       gameState = GameState::Intro;
+      sound.tones(intro_theme);
       // break; Fall-through intentional.
 
     case GameState::Intro:
@@ -82,6 +87,7 @@ void loop() {
     case GameState::GameOver_Init:
       gameState = GameState::GameOver;
       fadeInEffect.reset();
+      sound.tones(end_of_game);
       // break; Fall-through intentional.
 
     case GameState::GameOver:
@@ -197,6 +203,7 @@ void Play() {
 
         playerBullet.setY(45);
         playerBullet.setX(player.getX() + 7);
+        sound.tones(player_fires_bullet);
 
       }
 
@@ -242,6 +249,8 @@ void Play() {
         if (arduboy.collide(bulletRect, enemyRect)) {
 
           enemy->setStatus(EnemyStatus::Explosion4);
+          sound.tones(enemy_explosion);
+
           uint16_t scoreInc = 0;
 
           switch (enemy->getType()) {
@@ -287,7 +296,7 @@ void Play() {
 
           bullet->setY(0);
           Sprites::drawSelfMasked(bullet->getX() - 2, bullet->getY() - 2, alien_far, 0);
-          //TODO: Sound when two bullets hit
+          sound.tones(bullets_collide);
 
         }
 
@@ -308,25 +317,29 @@ void Play() {
 
       Enemy *enemy = &enemies[x];
 
-      if (enemy->getStatus() == EnemyStatus::Active) {
+      if (enemy->isVisible() && enemy->getStatus() == EnemyStatus::Active && enemy->getYDisplay() > 20) {
 
-        Rect enemyRect = { enemy->getXDisplay(), enemy->getYDisplay(), enemy->getWidth(), enemy->getHeight() };
+        Rect enemyRect = { enemy->getXDisplay() + 1, enemy->getYDisplay() + 1, static_cast<uint8_t>(enemy->getWidth() - 2), static_cast<uint8_t>(enemy->getHeight() - 2)};
 
         if (arduboy.collide(enemyRect, playerRect)) {
 
           if (!enemy->getPlayerOverlap()) {
 
             enemy->setPlayerOverlap(true);
+            enemy->setStatus(EnemyStatus::Explosion4);
+
             uint8_t health = player.getHealth();
 
             if (health > 0) {
 
               player.setHealth(--health);
+              sound.tones(player_hit_by_alien);
 
             }
             else {
 
               player.setStatus(PlayerStatus::Explosion4);
+              sound.tones(player_explosion);
 
             }
 
@@ -369,11 +382,13 @@ void Play() {
           if (health > 0) {
 
             player.setHealth(--health);
+            sound.tones(player_hit_by_bullet);
 
           }
           else {
 
             player.setStatus(PlayerStatus::Explosion4);
+            sound.tones(player_explosion);
 
           }
 
@@ -468,6 +483,7 @@ void Play() {
 
             }
 
+            sound.tones(enemy_fires_bullet);
             bulletLaunched = true;
             break;
 
@@ -489,9 +505,10 @@ void Play() {
   level.decCountDown();
 
   if (level.getCountDown() == 0 && level.getInPlay() < MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION) {
-    level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
 
-    //TODO : sound formation launch
+    uint8_t numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
+    sound.tones(formation_launch[numberOfEnemies - 1]);
+
   }
 
 }

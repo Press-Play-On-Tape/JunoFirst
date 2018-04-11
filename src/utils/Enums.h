@@ -2,6 +2,9 @@
 
 #include "Arduboy2Ext.h"
 
+#define USE_DOTTED_LINES
+
+
 static const uint8_t WIDTH_HALF                           = 60;
 
 static const uint8_t MAX_NUMBER_OF_ENEMIES                = 12;

@@ -21,8 +21,12 @@ void RenderScreen(Player *player, Enemy *enemies) {
   for (uint8_t col = 0; col < HORIZON_COL_COUNT; col++) {
 
     uint8_t y = horizon[row][col] + 4;
-    arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
 
+#ifdef USE_DOTTED_LINES
+    arduboy.drawHorizontalDottedLine((col + 2) / 2, WIDTH, y, col + 2);
+#else
+    arduboy.drawFastHLine(0, y, WIDTH);
+#endif
   }
 
 

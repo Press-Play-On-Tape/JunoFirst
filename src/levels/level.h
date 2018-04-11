@@ -33,7 +33,7 @@ class Level {
     void decCountDown();
     void decInPlay();
     void reset(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
-    void launchFormation(Enemy *enemies, uint8_t formationNumber);
+    uint8_t launchFormation(Enemy *enemies, uint8_t formationNumber);
 
   private:
 
@@ -138,7 +138,9 @@ void Level::decInPlay() {
 }
 
 
-void Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
+// Returns number launched ..
+
+uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
 
   uint16_t dataOffset = 0;
   const int8_t *formationToLoad = formations[formationNumber];
@@ -170,5 +172,7 @@ void Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
   }
 
   _countDown =  clamp<uint8_t>((MAX_DELAY_BETWEEN_FORMATIONS - (_wave * LEVEL_DELAY_BETWEEN_FORMATIONS)), MIN_DELAY_BETWEEN_FORMATIONS, MAX_DELAY_BETWEEN_FORMATIONS);
+  
+  return numberOfEnemies;
 
 }
