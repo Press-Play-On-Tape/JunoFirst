@@ -85,6 +85,7 @@ enum class GameState : uint8_t {
   Intro_Init,
   Intro,
   ScoreTable,
+  WaveInit,
   GamePlay,
   GameOver_Init,
   GameOver,

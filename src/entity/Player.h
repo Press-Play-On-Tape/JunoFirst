@@ -113,7 +113,7 @@ void Player::setHealth(uint8_t val) {
 
 void Player::reset() {
 
-  _x = 60;
+  _x = 56;
   _xDelta = 0;
   _yDelta = 0;
   _fuel = 480;

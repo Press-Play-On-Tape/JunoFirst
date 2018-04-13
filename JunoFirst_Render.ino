@@ -269,4 +269,26 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   }
 
+
+  // Start of game or wave?
+
+  if (gameState == GameState::WaveInit && introDelay != 2 & introDelay != 4 & introDelay != 6) {
+
+    if (level.getWave() == 1) {
+
+      arduboy.fillRect(33, 21, 53, 13, BLACK);
+      Sprites::drawOverwrite(34, 22, getReady, 0);
+
+    }
+    else {
+
+      arduboy.fillRect(42, 21, 39, 13, BLACK);
+      Sprites::drawSelfMasked(43, 22, startOfWave, 0);
+      Sprites::drawSelfMasked(70, 25, numbers, level.getWave() / 10);
+      Sprites::drawSelfMasked(74, 25, numbers, level.getWave() % 10);
+      
+    }
+
+  }
+
 }

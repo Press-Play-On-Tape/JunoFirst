@@ -69,8 +69,7 @@ void ScoreTable() {
 
     player.reset(); 
     level.reset(enemies, bullets, &playerBullet);
-    level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
-    gameState = GameState::GamePlay; 
+    gameState = GameState::WaveInit; 
     
   }
 
