@@ -16,6 +16,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
                                   { 0, 4, 10, 18, 28, 40, 54 }
                                 };                        
 
+  Serial.println(level.getHorizon());
   uint8_t row = level.getHorizon();
 
   for (uint8_t col = 0; col < HORIZON_COL_COUNT; col++) {
@@ -223,7 +224,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
 
 
-  if (arduboy.everyXFrames(2)) {
+  if (gameState == GameState::GamePlay && arduboy.everyXFrames(2)) {
     
     alternate++;
 
@@ -241,22 +242,44 @@ void RenderScreen(Player *player, Enemy *enemies) {
         uint8_t digits[6] = {};
         extractDigits(digits, level.getScore());
         
-        for(int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
+        for (int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
           Sprites::drawOverwrite(123, y, numbers_vert, digits[i]);
         }
     }
 
-    Sprites::drawOverwrite(123, 40, life_vert, 0);
-    Sprites::drawOverwrite(123, 46, life_vert, 0);
-    Sprites::drawOverwrite(123, 52, life_vert, 0);
-    Sprites::drawOverwrite(123, 58, life_vert, 0);
 
+    if (gameState == GameState::Wave) {
+    
+      if (introDelay % 2 == 1) {
+
+        for (int8_t i = player->getLives(), y = 64 - (player->getLives() * 6); i > 0; --i, y += 6) {
+          Sprites::drawOverwrite(123, y, life_vert, 0);
+        }
+
+      }
+      else {
+        
+        for (int8_t i = player->getLives() - 1, y = 64 - ((player->getLives() - 1) * 6); i > 0; --i, y += 6) {
+          Sprites::drawOverwrite(123, y, life_vert, 0);
+        }
+
+      }
+
+    }
+    else {
+        
+      for (int8_t i = player->getLives() - 1, y = 64 - ((player->getLives() - 1) * 6); i > 0; --i, y += 6) {
+        Sprites::drawOverwrite(123, y, life_vert, 0);
+      }
+      
+    }
+  
   }
   else {
 
     Sprites::drawOverwrite(123, 0, fuel, 0);
 
-    uint8_t fuel = player->getFuel() / 10;
+    uint8_t fuel = player->getFuel();
     for (uint8_t y = 5; y < fuel; y+=2) {
       arduboy.drawFastHLine(123, y, WIDTH, WHITE);
     }
@@ -272,12 +295,12 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   // Start of game or wave?
 
-  if (gameState == GameState::WaveInit && introDelay != 2 & introDelay != 4 & introDelay != 6) {
+  if (gameState == GameState::Wave && introDelay != 2 && introDelay != 4 && introDelay != 6) {
 
-    if (level.getWave() == 1) {
+    if (level.getWave() == 1 && player->getLives() == MAX_NUMBER_OF_LIVES) {
 
       arduboy.fillRect(33, 21, 53, 13, BLACK);
-      Sprites::drawOverwrite(34, 22, getReady, 0);
+      Sprites::drawSelfMasked(34, 22, getReady, 0);
 
     }
     else {

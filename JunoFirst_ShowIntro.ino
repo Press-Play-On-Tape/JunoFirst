@@ -33,24 +33,24 @@ void Intro() {
   }
 
 
-  // If 'A' bUtton is pressed move to game play ..
+  // If 'A' button is pressed move to game play ..
 
   if (arduboy.justPressed(A_BUTTON)) { 
 
-    player.reset();  
-    level.reset(enemies, bullets, &playerBullet);
+//    player.resetGame();  
+//    level.reset(enemies, bullets, &playerBullet);
     gameState = GameState::ScoreTable; 
     introDelay = 0;
     
   }
 
 
-  // If 'B' bUtton show high scores ..
+  // If 'B' button show high scores ..
 
   if (arduboy.justPressed(B_BUTTON)) { 
 
-    player.reset();
-    level.reset(enemies, bullets, &playerBullet);
+//    player.resetGame();
+//    level.reset(enemies, bullets, &playerBullet);
     gameState = GameState::HighScore; 
     
   }

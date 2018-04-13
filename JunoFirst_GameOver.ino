@@ -19,7 +19,7 @@ void GameOver() {
 
   if (arduboy.justPressed(A_BUTTON)) { 
 
-    player.reset();  
+//    player.reset();  
     gameState = GameState::SaveScore; 
     introDelay = 0;
     

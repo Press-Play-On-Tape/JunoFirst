@@ -11,6 +11,7 @@ static const uint8_t MAX_NUMBER_OF_ENEMIES                = 12;
 static const uint8_t MAX_NUMBER_OF_ENEMIES_PER_FORMATION  = 4;
 static const uint8_t MAX_NUMBER_OF_BULLETS                = 10;
 static const uint16_t INCREMENT_HEALTH                    = 800;
+static const uint8_t MAX_NUMBER_OF_LIVES                  = 4;
 
 static const uint8_t MAX_NUMBER_OF_SCORES                 = 5;
 static const uint8_t DO_NOT_EDIT_SLOT                     = 255;
@@ -57,6 +58,11 @@ static const uint8_t FRAME_RATE_1                         = 1;
 static const uint8_t FRAME_RATE_2                         = 2;
 static const uint8_t FRAME_RATE_4                         = 4;
 static const uint8_t FRAME_RATE_16                        = 16;
+static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;
+
+static const uint8_t DEFAULT_FRAME_RATE                   = 60;
+static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;
+
 
 
 // ----------------------------------------------------------------------------
@@ -85,7 +91,8 @@ enum class GameState : uint8_t {
   Intro_Init,
   Intro,
   ScoreTable,
-  WaveInit,
+  Wave_Init,
+  Wave,
   GamePlay,
   GameOver_Init,
   GameOver,

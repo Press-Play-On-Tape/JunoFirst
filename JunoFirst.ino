@@ -31,8 +31,6 @@ Enemy enemies[MAX_NUMBER_OF_ENEMIES];
 Bullet bullets[MAX_NUMBER_OF_BULLETS];
 Level level;
 
-
-
 HighScore highScore;
 FadeInEffect fadeInEffect;
 
@@ -46,7 +44,7 @@ void setup() {
   arduboy.boot();
   arduboy.flashlight();
   arduboy.systemButtons();
-  arduboy.setFrameRate(60);
+  arduboy.setFrameRate(DEFAULT_FRAME_RATE);
   arduboy.initRandomSeed();
   arduboy.audio.begin();
 
@@ -66,6 +64,7 @@ void loop() {
   switch (gameState) {
 
     case GameState::Intro_Init:
+      arduboy.setFrameRate(DEFAULT_FRAME_RATE);
       fadeInEffect.reset();
       gameState = GameState::Intro;
       sound.tones(intro_theme);
@@ -77,11 +76,20 @@ void loop() {
 
     case GameState::ScoreTable:
       ScoreTable();
-      player.reset();
-      introDelay = 12;
+      player.resetGame();
+      level.resetGame(enemies, bullets, &playerBullet);
       break;
 
-    case GameState::WaveInit:
+    case GameState::Wave_Init:
+      player.resetWave();
+      level.resetWave(enemies, bullets, &playerBullet);
+      introDelay = 12;
+      alternate = 0;
+      gameState = GameState::Wave;
+      arduboy.setFrameRate(level.getFrameRate());
+      // break; Fall-through intentional.
+
+    case GameState::Wave:
  
       if (arduboy.everyXFrames(20)) { introDelay--; }
     
@@ -98,6 +106,7 @@ void loop() {
       break;
 
     case GameState::GameOver_Init:
+      arduboy.setFrameRate(DEFAULT_FRAME_RATE);
       gameState = GameState::GameOver;
       fadeInEffect.reset();
       sound.tones(end_of_game);
@@ -181,9 +190,13 @@ void Play() {
   horizonIncrement++;
   
 
-  if (gameState != GameState::WaveInit) {
+  if (gameState != GameState::Wave) {
 
     player.incHealth();
+
+    if (arduboy.everyXFrames(FRAME_RATE_DEC_FUEL)) {
+      player.decFuel();
+    }
 
 
     if (arduboy.everyXFrames(FRAME_RATE_2)) {
@@ -214,7 +227,7 @@ void Play() {
     if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
     if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-    if (gameState != GameState::WaveInit && arduboy.justPressed(A_BUTTON))        { 
+    if (gameState != GameState::Wave && arduboy.justPressed(A_BUTTON))        { 
 
       if (playerBullet.getY() == 0) {
 
@@ -233,7 +246,8 @@ void Play() {
 
 
   
-  if (gameState != GameState::WaveInit) {
+  if (gameState != GameState::Wave) {
+
 
     // Update player bullet position ..
 
@@ -450,7 +464,15 @@ void Play() {
 
         if (status == PlayerStatus::Dead) {
 
-          gameState = GameState::GameOver_Init;
+          player.decLives();
+
+          if (player.getLives() > 0) {
+            gameState = GameState::Wave_Init;
+          }
+          else {
+            gameState = GameState::GameOver_Init;
+            
+          }
 
         }
 
@@ -521,14 +543,32 @@ void Play() {
     }
 
 
+    // Are we out of fuel?
+
+    if (player.getFuel() == 0) {
+
+      player.setStatus(PlayerStatus::Explosion4);
+      sound.tones(player_explosion);
+
+    }
+
+
     // Launch a new formation ?
 
     level.decCountDown();
 
-    if (level.getCountDown() == 0 && level.getInPlay() < MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION) {
+    if (level.getCountDown() == 0 && level.getInPlay() <= MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION) {
 
       uint8_t numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
       sound.tones(formation_launch[numberOfEnemies - 1]);
+
+    }
+
+
+    if (level.getScore() > 1000 && level.getWave() == 1) {
+
+      level.incWave();
+      gameState = GameState::Wave_Init;
 
     }
 

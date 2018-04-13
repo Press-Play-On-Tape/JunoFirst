@@ -10,16 +10,18 @@ class Player {
   
     // Properties ..
 
+    uint8_t getLives();
     uint8_t getX();
     uint8_t getY();
-    uint16_t getFuel();
+    uint8_t getFuel();
     uint8_t getHealth();
     int8_t getXDelta();
     int8_t getYDelta();
     PlayerStatus getStatus();
 
+    void setLives(uint8_t val);
     void setX(uint8_t val);
-    void setFuel(uint16_t val);
+    void setFuel(uint8_t val);
     void setHealth(uint8_t val);
     void setXDelta(int8_t val);
     void setYDelta(int8_t val);
@@ -27,22 +29,24 @@ class Player {
 
     // Methods ..
 
-    void reset();
+    void resetGame();
+    void resetWave();
     void incX();
     void decX();
     void incHealth();
+    void decFuel();
+    void decLives();
 
     boolean incYDelta();
     boolean decYDelta();
     boolean decelerate();
 
-    void resetGame();
-
   private:
 
+    uint8_t _lives;
     uint8_t _x;
     uint8_t _health;
-    uint16_t _fuel;
+    uint8_t _fuel;
     int8_t _xDelta;
     int8_t _yDelta;
     uint16_t _incHealth;
@@ -54,6 +58,10 @@ class Player {
 //--------------------------------------------------------------------------------------------------------------------------
 // Properties ..
 
+uint8_t Player::getLives() {
+  return _lives;
+}
+
 uint8_t Player::getX() {
   return _x;
 }
@@ -62,7 +70,7 @@ uint8_t Player::getY() {
   return 49;
 }
 
-uint16_t Player::getFuel() {
+uint8_t Player::getFuel() {
   return _fuel;
 }
 
@@ -82,11 +90,15 @@ uint8_t Player::getHealth() {
   return _health;
 }
 
+void Player::setLives(uint8_t val) {
+  _lives = val;
+}
+
 void Player::setX(uint8_t val) {
   _x = val;
 }
 
-void Player::setFuel(uint16_t val) {
+void Player::setFuel(uint8_t val) {
   _fuel = val;
 }
 
@@ -111,12 +123,20 @@ void Player::setHealth(uint8_t val) {
 //--------------------------------------------------------------------------------------------------------------------------
 // Methods ..
 
-void Player::reset() {
+
+void Player::resetGame() {
+
+  resetWave();
+  _lives = 4;
+
+}
+
+void Player::resetWave() {
 
   _x = 56;
   _xDelta = 0;
   _yDelta = 0;
-  _fuel = 480;
+  _fuel = 48;
   _health = 7;
   _status = PlayerStatus::Active;
 
@@ -124,17 +144,23 @@ void Player::reset() {
 
 void Player::incX() {
 
-  if (_x < 108) _x = _x + 1;
+  if (_x < 108) _x++;
 
 }
 
 void Player::decX() {
 
-  if (_x > 0) _x = _x - 1;
+  if (_x > 0) _x--;
 
 }
 
-// Returns true if hte value has changed ..
+void Player::decLives() {
+
+  if (_lives > 0) _lives--;
+
+}
+
+// Returns true if the value has changed ..
 
 boolean Player::incYDelta() {
 
@@ -225,5 +251,11 @@ void Player::incHealth() {
     if (_health < 7) _health++;
 
   }
+
+}
+
+void Player::decFuel() {
+
+  if (_fuel > 0) _fuel--;
 
 }

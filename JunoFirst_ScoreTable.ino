@@ -67,9 +67,9 @@ void ScoreTable() {
 
   if (arduboy.justPressed(A_BUTTON)) { 
 
-    player.reset(); 
-    level.reset(enemies, bullets, &playerBullet);
-    gameState = GameState::WaveInit; 
+//    player.reset(); 
+//    level.reset(enemies, bullets, &playerBullet);
+    gameState = GameState::Wave_Init; 
     
   }
 

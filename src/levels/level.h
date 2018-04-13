@@ -4,6 +4,8 @@
 #include "Formations.h"
 #include "../entity/Enemy.h"
 #include "../entity/Bullet.h"
+#include "FixedPoints.h"
+#include "FixedPointsCommon.h"
 
 class Level {
 
@@ -32,8 +34,11 @@ class Level {
     void incHorizon(int8_t val);
     void decCountDown();
     void decInPlay();
-    void reset(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
+    void incWave();
+    void resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
+    void resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
     uint8_t launchFormation(Enemy *enemies, uint8_t formationNumber);
+    uint8_t getFrameRate();
 
   private:
 
@@ -42,6 +47,7 @@ class Level {
     uint16_t _score;
     uint8_t _inPlay;
     uint16_t _countDown;
+    uint8_t _frameRate;
 
 };
 
@@ -102,7 +108,16 @@ void Level::incHorizon(int8_t val) {
 
 }
 
-void Level::reset(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
+void Level::resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
+
+  resetWave(enemies, bullets, playerBullet);
+
+  _wave = 01;
+  _score = 0;
+
+}
+
+void Level::resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
 
   for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
@@ -119,9 +134,8 @@ void Level::reset(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
   }
 
   playerBullet->setY(0);
-
-  _wave = 01;
-  _score = 0;
+  _inPlay = 0;
+  _horizon = 2;
 
 }
 
@@ -134,6 +148,12 @@ void Level::decCountDown() {
 void Level::decInPlay() {
 
   _inPlay--;
+
+}
+
+void Level::incWave() {
+
+  _wave++;
 
 }
 
@@ -174,5 +194,11 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
   _countDown =  clamp<uint8_t>((MAX_DELAY_BETWEEN_FORMATIONS - (_wave * LEVEL_DELAY_BETWEEN_FORMATIONS)), MIN_DELAY_BETWEEN_FORMATIONS, MAX_DELAY_BETWEEN_FORMATIONS);
   
   return numberOfEnemies;
+
+}
+
+uint8_t Level::getFrameRate() {
+
+  return DEFAULT_FRAME_RATE + ((_wave - 1) * NEW_WAVE_FRAME_RATE_INC);
 
 }
