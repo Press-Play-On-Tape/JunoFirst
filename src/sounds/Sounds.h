@@ -37,7 +37,7 @@ const uint16_t end_of_game[] PROGMEM = {
 };
 
 const uint16_t player_fires_bullet[] PROGMEM = {
-  NOTE_F2,22, NOTE_F2,22, NOTE_F2,22,
+  NOTE_C5,50, NOTE_C3,100, NOTE_C2,200,
   TONES_END
 };
 

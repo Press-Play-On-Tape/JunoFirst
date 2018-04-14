@@ -37,8 +37,8 @@ class Enemy {
     uint8_t getWidth();
     uint8_t getHeight();
 
+    void moveRelativeToPlayer(Player *player);
     void move(Player *player);
-    void move();
     bool inShootingRange();
 
   private:
@@ -240,13 +240,14 @@ uint8_t Enemy::getHeight() {
 
 }
 
-void Enemy::move(Player *player) {
+void Enemy::moveRelativeToPlayer(Player *player) {
 
-  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 4)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
+//Speed  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 4)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
+  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 2)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
   
 }
 
-void Enemy::move() {
+void Enemy::move(Player *player) {
 
   switch (this->getMovementSequence()) {
 
@@ -263,7 +264,8 @@ void Enemy::move() {
 
         if ((this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) || (this->getYDelta() > 0  && _y < ENEMY_MAXIMUM_Y)) {
 
-          _y = _y + this->getYDelta();
+//Speed          _y = _y + this->getYDelta();
+          _y = _y + (player->getYDelta() <= 0 ? this->getYDelta() : this->getYDelta() / 2);
 
         }
         else {
@@ -288,9 +290,15 @@ void Enemy::move() {
 
       }
 
-      if ((this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) || (this->getYDelta() > 0  && _y < ENEMY_MAXIMUM_Y)) {
+      if (this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) {
 
         _y = _y + this->getYDelta();
+
+      }
+      else if (this->getYDelta() > 0  && _y < ENEMY_MAXIMUM_Y) {
+
+//Speed        _y = _y + this->getYDelta();
+        _y = _y + (player->getYDelta() <= 0 ? this->getYDelta() : this->getYDelta() / 2);
 
       }
       else {

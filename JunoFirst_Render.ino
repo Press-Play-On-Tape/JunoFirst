@@ -16,7 +16,6 @@ void RenderScreen(Player *player, Enemy *enemies) {
                                   { 0, 4, 10, 18, 28, 40, 54 }
                                 };                        
 
-  Serial.println(level.getHorizon());
   uint8_t row = level.getHorizon();
 
   for (uint8_t col = 0; col < HORIZON_COL_COUNT; col++) {
@@ -247,7 +246,6 @@ void RenderScreen(Player *player, Enemy *enemies) {
         }
     }
 
-
     if (gameState == GameState::Wave) {
     
       if (introDelay % 2 == 1) {
@@ -307,7 +305,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
       arduboy.fillRect(42, 21, 39, 13, BLACK);
       Sprites::drawSelfMasked(43, 22, startOfWave, 0);
-      Sprites::drawSelfMasked(70, 25, numbers, level.getWave() / 10);
+      Sprites::drawSelfMasked(69, 25, numbers, level.getWave() / 10);
       Sprites::drawSelfMasked(74, 25, numbers, level.getWave() % 10);
       
     }

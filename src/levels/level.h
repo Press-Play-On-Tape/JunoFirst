@@ -37,8 +37,12 @@ class Level {
     void incWave();
     void resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
     void resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
+
     uint8_t launchFormation(Enemy *enemies, uint8_t formationNumber);
     uint8_t getFrameRate();
+    uint8_t getEnemiesInWave();
+    uint8_t getEnemiesLaunchedThisWave();
+
 
   private:
 
@@ -48,6 +52,8 @@ class Level {
     uint8_t _inPlay;
     uint16_t _countDown;
     uint8_t _frameRate;
+    uint8_t _enemiesInWave;
+    uint8_t _enemiesLaunchedThisWave;
 
 };
 
@@ -136,6 +142,7 @@ void Level::resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
   playerBullet->setY(0);
   _inPlay = 0;
   _horizon = 2;
+  _enemiesLaunchedThisWave = 0;
 
 }
 
@@ -192,7 +199,8 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
   }
 
   _countDown =  clamp<uint8_t>((MAX_DELAY_BETWEEN_FORMATIONS - (_wave * LEVEL_DELAY_BETWEEN_FORMATIONS)), MIN_DELAY_BETWEEN_FORMATIONS, MAX_DELAY_BETWEEN_FORMATIONS);
-  
+  _enemiesLaunchedThisWave = _enemiesLaunchedThisWave + numberOfEnemies;
+
   return numberOfEnemies;
 
 }
@@ -200,5 +208,17 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
 uint8_t Level::getFrameRate() {
 
   return DEFAULT_FRAME_RATE + ((_wave - 1) * NEW_WAVE_FRAME_RATE_INC);
+
+}
+
+uint8_t Level::getEnemiesInWave() {
+
+  return ENEMIES_IN_FIRST_WAVE + ((_wave - 1) * ADDITIONAL_ENEMIES_PER_WAVE);
+
+}
+
+uint8_t Level::getEnemiesLaunchedThisWave() {
+
+  return _enemiesLaunchedThisWave;
 
 }

@@ -21,8 +21,8 @@ class Bullet {
 
     // Methods ..
 
-    void move();
     void move(Player *player);
+    void moveRelativeToPlayer(Player *player);
 
   private:
 
@@ -72,18 +72,25 @@ void Bullet::setYDelta(int8_t val) {
 //--------------------------------------------------------------------------------------------------------------------------
 // Methods ..
 
-void Bullet::move() {
+void Bullet::move(Player *player) {
 
   _x = _x + getXDelta();
-  _y = _y + getYDelta();
+
+  if (player->getYDelta() <=0) {
+    _y = _y + getYDelta();
+  }
+  else {
+    _y = _y + (getYDelta() / 2);
+  }
 
   if (_y > HEIGHT) { _y = 0; }
   
 }
 
-void Bullet::move(Player *player) {
+void Bullet::moveRelativeToPlayer(Player *player) {
 
-  _y = static_cast<int8_t>(_y + (player->getYDelta() / 4));
+//Speed  _y = static_cast<int8_t>(_y + (player->getYDelta() / 4));
+  _y = static_cast<int8_t>(_y + (player->getYDelta() / 2));
   if (_y > HEIGHT) { _y = 0; }
   
 }

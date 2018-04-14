@@ -167,7 +167,7 @@ void Play() {
 
       if (enemy->getStatus() == EnemyStatus::Active) {
 
-        enemy->move(&player);
+        enemy->moveRelativeToPlayer(&player);
 
       }
 
@@ -179,7 +179,7 @@ void Play() {
 
       if (bullet->getY() > 0) {
 
-        bullet->move(&player);
+        bullet->moveRelativeToPlayer(&player);
 
       }
 
@@ -206,7 +206,7 @@ void Play() {
         Enemy *enemy = &enemies[x];
 
         if (enemy->getStatus() == EnemyStatus::Active) {
-          enemy->move();
+          enemy->move(&player);
         }    
 
       }
@@ -260,7 +260,7 @@ void Play() {
 
       if (bullet->getY() > 0) {
 
-        bullet->move();
+        bullet->move(&player);
 
       }
 
@@ -309,9 +309,6 @@ void Play() {
             }
 
             level.setScore(level.getScore() + scoreInc);
-            level.decInPlay();
-
-            //TDOD sound when enemy shot.
 
           }
 
@@ -449,7 +446,11 @@ void Play() {
 
           enemy->setStatus(--enemyStatus);
 
-        }    
+          if (enemyStatus == EnemyStatus::Dead) {
+            level.decInPlay();
+          }
+
+        }
 
       }
 
@@ -502,7 +503,7 @@ void Play() {
             Enemy *enemy = &enemies[x2];
             EnemyStatus enemyStatus = enemy->getStatus();
 
-            if (enemyStatus == EnemyStatus::Active && enemy->inShootingRange()) {
+            if (enemy->getYDelta() >= 0 && enemyStatus == EnemyStatus::Active && enemy->inShootingRange()) {
 
               uint8_t enemyMiddle = enemy->getXDisplay() + (enemy->getWidth() / 2);
 
@@ -557,7 +558,7 @@ void Play() {
 
     level.decCountDown();
 
-    if (level.getCountDown() == 0 && level.getInPlay() <= MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION) {
+    if (level.getCountDown() == 0 && level.getInPlay() <= MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION && level.getEnemiesLaunchedThisWave() < level.getEnemiesInWave()) {
 
       uint8_t numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
       sound.tones(formation_launch[numberOfEnemies - 1]);
@@ -565,7 +566,9 @@ void Play() {
     }
 
 
-    if (level.getScore() > 1000 && level.getWave() == 1) {
+    // Have we cleared the wave ?
+    
+    if (level.getInPlay() == 0 && level.getEnemiesLaunchedThisWave() >= level.getEnemiesInWave()) {
 
       level.incWave();
       gameState = GameState::Wave_Init;

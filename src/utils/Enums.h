@@ -2,15 +2,31 @@
 
 #include "Arduboy2Ext.h"
 
-#define USE_DOTTED_LINES
 
+// You can comment this out (or append it with an underscore or something) to have solid lines ..
+
+#define USE_DOTTED_LINES                  
+
+
+// ---------------------------------------------------------------------
+//  You can play with these ..
+
+static const uint8_t ENEMIES_IN_FIRST_WAVE                = 12;         // How many enemies in the first wave?
+static const uint8_t ADDITIONAL_ENEMIES_PER_WAVE          = 2;          // How many enemies in each additional wave?
+static const uint8_t DEFAULT_FRAME_RATE                   = 60;         // Frame rate the game starts at.
+static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
+static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
+static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
+
+
+// ---------------------------------------------------------------------
+//  Do not play with these !
 
 static const uint8_t WIDTH_HALF                           = 60;
 
 static const uint8_t MAX_NUMBER_OF_ENEMIES                = 12;
 static const uint8_t MAX_NUMBER_OF_ENEMIES_PER_FORMATION  = 4;
 static const uint8_t MAX_NUMBER_OF_BULLETS                = 10;
-static const uint16_t INCREMENT_HEALTH                    = 800;
 static const uint8_t MAX_NUMBER_OF_LIVES                  = 4;
 
 static const uint8_t MAX_NUMBER_OF_SCORES                 = 5;
@@ -58,11 +74,6 @@ static const uint8_t FRAME_RATE_1                         = 1;
 static const uint8_t FRAME_RATE_2                         = 2;
 static const uint8_t FRAME_RATE_4                         = 4;
 static const uint8_t FRAME_RATE_16                        = 16;
-static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;
-
-static const uint8_t DEFAULT_FRAME_RATE                   = 60;
-static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;
-
 
 
 // ----------------------------------------------------------------------------
