@@ -6,6 +6,7 @@
 // You can comment this out (or append it with an underscore or something) to have solid lines ..
 
 #define USE_DOTTED_LINES                  
+#define SHOW_OUT_OF_SIGHT
 
 
 // ---------------------------------------------------------------------
@@ -13,10 +14,14 @@
 
 static const uint8_t ENEMIES_IN_FIRST_WAVE                = 12;         // How many enemies in the first wave?
 static const uint8_t ADDITIONAL_ENEMIES_PER_WAVE          = 2;          // How many enemies in each additional wave?
+
+static const uint8_t INITIAL_BULLET_FREQUENCY             = 60;         // How frequently should enemies shoot you?  Higher is less often.
+static const uint8_t BULLETS_DECREASE_PER_WAVE            = 2;          // How does the frequency increase each wave?  Bigger numbers means enemies fire more rapidly each wave ..
+
 static const uint8_t DEFAULT_FRAME_RATE                   = 60;         // Frame rate the game starts at.
 static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
-static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
+static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 
 
 // ---------------------------------------------------------------------

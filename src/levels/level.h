@@ -42,7 +42,7 @@ class Level {
     uint8_t getFrameRate();
     uint8_t getEnemiesInWave();
     uint8_t getEnemiesLaunchedThisWave();
-
+    uint8_t getBulletFrequency();
 
   private:
 
@@ -220,5 +220,11 @@ uint8_t Level::getEnemiesInWave() {
 uint8_t Level::getEnemiesLaunchedThisWave() {
 
   return _enemiesLaunchedThisWave;
+
+}
+
+uint8_t Level::getBulletFrequency() {
+
+  return INITIAL_BULLET_FREQUENCY + ((_wave - 1) * BULLETS_DECREASE_PER_WAVE);
 
 }

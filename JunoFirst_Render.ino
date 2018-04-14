@@ -125,6 +125,62 @@ void RenderScreen(Player *player, Enemy *enemies) {
       }
  
     }
+#ifdef SHOW_OUT_OF_SIGHT
+    else { // Enemy is not visible ..
+
+      if (enemy->getStatus() == EnemyStatus::Active) {
+
+        if (enemy->getYDisplay() >= 64 && enemy->getYDisplay() <= 120) {
+
+          if (enemy->getXDisplay() < static_cast<int16_t>(0)) {
+
+            arduboy.drawPixel(0, 59, BLACK);
+            arduboy.drawFastVLine(0, 60, 3);
+            arduboy.drawFastHLine(0, 63, 3);
+            arduboy.drawPixel(4, 63, BLACK);
+
+          }
+          if (enemy->getXDisplay() > static_cast<int16_t>(119)) {
+
+            arduboy.drawPixel(119, 59, BLACK);
+            arduboy.drawFastVLine(119, 60, 3);
+            arduboy.drawFastHLine(116, 63, 3);
+            arduboy.drawPixel(115, 63, BLACK);
+
+          }
+          else {
+
+            arduboy.drawPixel(enemy->getXDisplay() + 2, 63, BLACK);
+            arduboy.drawFastHLine(enemy->getXDisplay() + 3, 63, 6);
+            arduboy.drawPixel(enemy->getXDisplay() + 9, 63, BLACK);
+
+          }
+
+        }
+        else {
+
+          if (enemy->getXDisplay() < static_cast<int16_t>(0)) {
+
+            arduboy.drawPixel(0, enemy->getYDisplay() + 2, BLACK);
+            arduboy.drawFastVLine(0, enemy->getYDisplay() + 3, 6, WHITE);
+            arduboy.drawPixel(0, enemy->getYDisplay() + 9, BLACK);
+
+          }
+
+          if (enemy->getXDisplay() > static_cast<int16_t>(119)) {
+
+            arduboy.drawPixel(119, enemy->getYDisplay() + 2, BLACK);
+            arduboy.drawFastVLine(119, enemy->getYDisplay() + 3, 6, WHITE);
+            arduboy.drawPixel(119, enemy->getYDisplay() + 9, BLACK);
+
+          }
+
+        }
+
+      }
+
+    }
+#endif
 
   }
 

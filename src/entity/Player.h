@@ -67,7 +67,13 @@ uint8_t Player::getX() {
 }
 
 uint8_t Player::getY() {
+
+  #ifdef SHOW_OUT_OF_SIGHT
   return 49;
+  #else
+  return 48;
+  #endif
+
 }
 
 uint8_t Player::getFuel() {

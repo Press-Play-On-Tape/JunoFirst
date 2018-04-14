@@ -10,7 +10,7 @@ class Enemy {
   
     // Properties ..
 
-    int8_t getX();
+    int16_t getX();
     int8_t getY();
     int8_t getXDelta();
     int8_t getYDelta();
@@ -19,7 +19,7 @@ class Enemy {
     MovementSequence getMovementSequence();
     bool getPlayerOverlap();
         
-    void setX(int8_t val);
+    void setX(int16_t val);
     void setY(int8_t val);
     void setXDelta(int8_t val);
     void setYDelta(int8_t val);
@@ -32,7 +32,7 @@ class Enemy {
 
     bool isVisible();
     ImageSize getSize();
-    int8_t getXDisplay();
+    int16_t getXDisplay();
     uint8_t getYDisplay();
     uint8_t getWidth();
     uint8_t getHeight();
@@ -44,9 +44,9 @@ class Enemy {
   private:
 
     uint8_t _flags;           // bits 0 - 3 enemy type, bit 4 overlap, bits 5 - 7 movement type
-    int8_t _x;
+    int16_t _x;
     int8_t _y;
-    uint8_t _delta;           // bits 0 - 3 x, bits 4 - 7 y
+    uint8_t _delta;           // bits 0 - 3 y, bits 4 - 7 x
     EnemyStatus _status; 
 
 };
@@ -60,7 +60,7 @@ EnemyType Enemy::getType() {
   return static_cast<EnemyType>(_flags & 0x0f);
 }
 
-int8_t Enemy::getX() {
+int16_t Enemy::getX() {
   return _x;
 }
 
@@ -92,7 +92,7 @@ void Enemy::setEnemyType(EnemyType val) {
   _flags = (_flags & 0xf0) | static_cast<uint8_t>(val);
 }
 
-void Enemy::setX(int8_t val) {
+void Enemy::setX(int16_t val) {
   _x = val;
 }
 
@@ -106,7 +106,7 @@ void Enemy::setXDelta(int8_t val) {
 }
 
 void Enemy::setYDelta(int8_t val) {
-  _delta = (val >= 0 ? (_delta & 0xF0) | (val & 0x0f) : (_delta & 0x0f) | 0x08 | (val & 0x07));
+  _delta = (val >= 0 ? (_delta & 0xF0) | (val & 0x0f) : (_delta & 0xF0) | 0x08 | (val & 0x07));
 }
 
 void Enemy::setStatus(EnemyStatus val) {
@@ -127,7 +127,7 @@ void Enemy::setPlayerOverlap(bool val) {
 
 
 bool Enemy::isVisible() {
-  return _status > EnemyStatus::Dead && (_y >= ENEMY_VISIBLE_HORIZON);
+  return _status > EnemyStatus::Dead && (_y >= ENEMY_VISIBLE_HORIZON && _y - 48 < 64) && ( getXDisplay() + static_cast<int16_t>(getWidth()) >= 0 && getXDisplay() <= static_cast<int16_t>(119));
 }
 
 ImageSize Enemy::getSize() {
@@ -152,9 +152,9 @@ ImageSize Enemy::getSize() {
 
 }
 
-int8_t Enemy::getXDisplay() {
+int16_t Enemy::getXDisplay() {
 
-  uint8_t x = (static_cast<int16_t>(_x) * static_cast<int16_t>(_y) / static_cast<int16_t>(96)) + WIDTH_HALF;
+  uint16_t x = (static_cast<int16_t>(_x) * static_cast<int16_t>(_y) / static_cast<int16_t>(96)) + WIDTH_HALF;
 
   switch (_y) {
 
@@ -255,7 +255,7 @@ void Enemy::move(Player *player) {
 
       if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
 
-        _x = _x + this->getXDelta();
+        _x = _x + static_cast<int16_t>(this->getXDelta());
 
       }
       else {
@@ -281,7 +281,7 @@ void Enemy::move(Player *player) {
 
       if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
 
-        _x = _x + this->getXDelta();
+        _x = _x + static_cast<int16_t>(this->getXDelta());
 
       }
       else {

@@ -60,4 +60,10 @@ const int8_t PROGMEM formation_05[] = {
   static_cast<uint8_t>(EnemyType::EnemyType1), ENEMY_MAXIMUM_X - 5, 24, -2, 2, static_cast<uint8_t>(MovementSequence::Sequence_2), 
 };
 
+const int8_t PROGMEM formation_06[] = {
+  1,  
+  static_cast<uint8_t>(EnemyType::EnemyType1), ENEMY_MINIMUM_X, 14, 2, 2, static_cast<uint8_t>(MovementSequence::Sequence_2), 
+};
+
 const int8_t *formations[] = { formation_00, formation_01, formation_02, formation_03, formation_04, formation_05 };
+//const int8_t *formations[] = { formation_06 };

@@ -22,7 +22,7 @@ GameState gameState = GameState::Intro_Init;
 uint8_t introDelay = 0;
 uint8_t alternate = 0;
 uint8_t horizonIncrement = 0;
-uint8_t bulletFrequency = 60;
+
 
 
 Player player;
@@ -484,7 +484,7 @@ void Play() {
 
     // Enemy takes a shot? 
 
-    if (random(0, bulletFrequency) == 0) {
+    if (random(0, level.getBulletFrequency()) == 0) {
 
       bool bulletLaunched = false;
 
@@ -546,7 +546,7 @@ void Play() {
 
     // Are we out of fuel?
 
-    if (player.getFuel() == 0) {
+    if (player.getFuel() == 0 && player.getStatus() == PlayerStatus::Active) {
 
       player.setStatus(PlayerStatus::Explosion4);
       sound.tones(player_explosion);
