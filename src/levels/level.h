@@ -4,8 +4,6 @@
 #include "Formations.h"
 #include "../entity/Enemy.h"
 #include "../entity/Bullet.h"
-#include "FixedPoints.h"
-#include "FixedPointsCommon.h"
 
 class Level {
 
