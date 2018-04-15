@@ -14,6 +14,7 @@ class Enemy {
     int8_t getY();
     int8_t getXDelta();
     int8_t getYDelta();
+    uint8_t getProtection();
     EnemyStatus getStatus();
     EnemyType getType();
     MovementSequence getMovementSequence();
@@ -24,9 +25,10 @@ class Enemy {
     void setXDelta(int8_t val);
     void setYDelta(int8_t val);
     void setStatus(EnemyStatus val);
-    void setEnemyType(EnemyType val);
+    void setType(EnemyType val);
     void setMovementSequence(MovementSequence val);
     void setPlayerOverlap(bool val);
+    void setProtection(uint8_t val);
 
     // Methods ..
 
@@ -38,7 +40,7 @@ class Enemy {
     uint8_t getHeight();
 
     void moveRelativeToPlayer(Player *player);
-    void move(Player *player);
+    bool move(Player *player);
     bool inShootingRange();
 
   private:
@@ -48,6 +50,7 @@ class Enemy {
     int8_t _y;
     uint8_t _delta;           // bits 0 - 3 y, bits 4 - 7 x
     EnemyStatus _status; 
+    uint8_t _protection;      // if non-zero, enemy is protected from bullets          
 
 };
 
@@ -84,11 +87,15 @@ MovementSequence Enemy::getMovementSequence() {
   return static_cast<MovementSequence>(_flags >> 5);
 }
 
+uint8_t Enemy::getProtection() {
+  return _protection;
+}
+
 bool Enemy::getPlayerOverlap() {
   return (_flags & 0x10) == 0x10;
 }
 
-void Enemy::setEnemyType(EnemyType val) {
+void Enemy::setType(EnemyType val) {
   _flags = (_flags & 0xf0) | static_cast<uint8_t>(val);
 }
 
@@ -121,10 +128,13 @@ void Enemy::setPlayerOverlap(bool val) {
   _flags = (_flags & 0xEF) | (val ? 0x10 : 0x00);
 }
 
+void Enemy::setProtection(uint8_t val) {
+  _protection = val;
+}
+
 
 //--------------------------------------------------------------------------------------------------------------------------
 // Methods ..
-
 
 bool Enemy::isVisible() {
   return _status > EnemyStatus::Dead && (_y >= ENEMY_VISIBLE_HORIZON && _y - 48 < 64) && ( getXDisplay() + static_cast<int16_t>(getWidth()) >= 0 && getXDisplay() <= static_cast<int16_t>(119));
@@ -242,12 +252,21 @@ uint8_t Enemy::getHeight() {
 
 void Enemy::moveRelativeToPlayer(Player *player) {
 
-//Speed  _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 4)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
   _y = clamp(static_cast<int8_t>(_y + (player->getYDelta() / 2)), ENEMY_MINIMUM_Y, ENEMY_MAXIMUM_Y);
   
 }
 
-void Enemy::move(Player *player) {
+
+// returns true if the enemy was removed from play ..
+bool Enemy::move(Player *player) {
+
+
+  // Deplete protection if necessary ..
+
+  if (_protection > 0) _protection--;
+
+
+  // Move enemy ..
 
   switch (this->getMovementSequence()) {
 
@@ -264,7 +283,6 @@ void Enemy::move(Player *player) {
 
         if ((this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) || (this->getYDelta() > 0  && _y < ENEMY_MAXIMUM_Y)) {
 
-//Speed          _y = _y + this->getYDelta();
           _y = _y + (player->getYDelta() <= 0 ? this->getYDelta() : this->getYDelta() / 2);
 
         }
@@ -309,11 +327,66 @@ void Enemy::move(Player *player) {
 
       break;
 
+    case MovementSequence::Sequence_3:
+
+      if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
+
+        _x = _x + static_cast<int16_t>(this->getXDelta());
+
+      }
+      else {
+
+        this->setXDelta(static_cast<int8_t>(this->getXDelta()) * -1);
+
+      }
+
+      if (this->getYDelta() > 0  && _y < ENEMY_MAXIMUM_Y) {
+
+        _y = _y + (player->getYDelta() <= 0 ? this->getYDelta() : this->getYDelta() / 2);
+
+      }
+      else {
+
+        _y = 0;
+
+      }
+
+      break;
+
+    case MovementSequence::Sequence_4:  // Returing up the screen.  Used with Astronaut.
+
+      if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
+
+        _x = _x + static_cast<int16_t>(this->getXDelta());
+
+      }
+      else {
+
+        this->setXDelta(static_cast<int8_t>(this->getXDelta()) * -1);
+
+      }
+
+      if (this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) {
+
+        _y = _y + this->getYDelta();
+
+      }
+      else {
+
+        this->setStatus(EnemyStatus::Dead);
+        return true;
+
+      }
+
+      break;
+
     default:
       _x = _x + this->getXDelta();
       _y = _y + this->getYDelta();
     
   }
+
+  return false;
 
 }
 

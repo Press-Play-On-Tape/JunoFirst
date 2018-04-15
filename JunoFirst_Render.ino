@@ -181,7 +181,6 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
     }
 #endif
-
   }
 
 
@@ -290,10 +289,12 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   Sprites::drawOverwrite(120, 0, blankScoreboard, 0);
 
-  if (alternate < 128) {
+  if (alternate < 128 || level.inDoubleUpPhase()) {
+
 
     // Score ..
-    {
+
+    if (!level.inDoubleUpPhase() || level.getDoubleUpDisplay()) {
         uint8_t digits[6] = {};
         extractDigits(digits, level.getScore());
         

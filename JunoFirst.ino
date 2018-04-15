@@ -24,7 +24,6 @@ uint8_t alternate = 0;
 uint8_t horizonIncrement = 0;
 
 
-
 Player player;
 Bullet playerBullet;
 Enemy enemies[MAX_NUMBER_OF_ENEMIES];
@@ -193,6 +192,7 @@ void Play() {
   if (gameState != GameState::Wave) {
 
     player.incHealth();
+    level.decDoubleUpPoints();
 
     if (arduboy.everyXFrames(FRAME_RATE_DEC_FUEL)) {
       player.decFuel();
@@ -206,7 +206,7 @@ void Play() {
         Enemy *enemy = &enemies[x];
 
         if (enemy->getStatus() == EnemyStatus::Active) {
-          enemy->move(&player);
+          if (enemy->move(&player)) level.decInPlay();
         }    
 
       }
@@ -277,7 +277,7 @@ void Play() {
 
         Enemy *enemy = &enemies[x];
 
-        if (enemy->getStatus() == EnemyStatus::Active) {
+        if (enemy->getStatus() == EnemyStatus::Active && enemy->getProtection() == 0) {
 
           Rect enemyRect = { enemy->getXDisplay(), enemy->getYDisplay(), enemy->getWidth(), enemy->getHeight() };
 
@@ -287,23 +287,73 @@ void Play() {
             sound.tones(enemy_explosion);
 
             uint16_t scoreInc = 0;
+            bool doubleUpPoints = level.inDoubleUpPhase();
 
             switch (enemy->getType()) {
 
               case EnemyType::EnemyType1:
-                scoreInc = 150;
+                scoreInc = (!doubleUpPoints ? 150 : 300);
                 break;
 
               case EnemyType::EnemyType2:
-                scoreInc = 300;
+                scoreInc = (!doubleUpPoints ? 300 : 600);
                 break;
 
               case EnemyType::EnemyType3:
-                scoreInc = 450;
+                scoreInc = (!doubleUpPoints ? 450 : 900);
                 break;
 
               case EnemyType::EnemyType4:
-                scoreInc = 600;
+                scoreInc = (!doubleUpPoints ? 600 : 1200);;
+                break;
+
+              case EnemyType::AstronautCaptured:
+                {
+                  bool enemyLaunched = false;
+                  scoreInc = 450;
+
+
+                  // If possible, launch a new enemy (astronaut) in the same place as the original ..
+
+                  for (uint8_t y = 0; y < MAX_NUMBER_OF_ENEMIES; y++) {
+
+                    Enemy *newEnemy = &enemies[y];
+
+                    if (newEnemy->getStatus() == EnemyStatus::Dead) {
+                      newEnemy->setType(EnemyType::AstronautReleased);
+                      newEnemy->setMovementSequence(MovementSequence::Sequence_4);
+                      newEnemy->setStatus(EnemyStatus::Active);
+                      newEnemy->setX(enemy->getX());
+                      newEnemy->setY(enemy->getY());
+                      newEnemy->setXDelta(enemy->getXDelta());
+                      newEnemy->setYDelta(-1);
+                      newEnemy->setProtection(10);
+                      enemyLaunched = true;
+                      level.incEnemiesLaunched();
+                      level.incInPlay();
+                      break;
+                      
+                    }
+
+                  }
+
+                  // If no enemy launched, the re-use the current one ..
+
+                  if (!enemyLaunched) {
+
+                      enemy->setType(EnemyType::AstronautReleased);
+                      enemy->setMovementSequence(MovementSequence::Sequence_4);
+                      enemy->setStatus(EnemyStatus::Active);
+                      enemy->setProtection(5);
+                      enemy->setYDelta(-1);
+
+                  }
+
+                }
+                break;
+
+              case EnemyType::AstronautReleased:
+                scoreInc = 1000;
                 break;
 
             }
@@ -355,25 +405,39 @@ void Play() {
 
           if (arduboy.collide(enemyRect, playerRect)) {
 
-            if (!enemy->getPlayerOverlap()) {
+            switch (enemy->getType()) {
 
-              enemy->setPlayerOverlap(true);
-              enemy->setStatus(EnemyStatus::Explosion4);
+              case EnemyType::EnemyType1 ... EnemyType::AstronautCaptured:
 
-              uint8_t health = player.getHealth();
+                if (!enemy->getPlayerOverlap()) {
 
-              if (health > 0) {
+                  enemy->setPlayerOverlap(true);
+                  enemy->setStatus(EnemyStatus::Explosion4);
 
-                player.setHealth(--health);
-                sound.tones(player_hit_by_alien);
+                  uint8_t health = player.getHealth();
 
-              }
-              else {
+                  if (health > 0) {
 
-                player.setStatus(PlayerStatus::Explosion4);
-                sound.tones(player_explosion);
+                    player.setHealth(--health);
+                    sound.tones(player_hit_by_alien);
 
-              }
+                  }
+                  else {
+
+                    player.setStatus(PlayerStatus::Explosion4);
+                    sound.tones(player_explosion);
+
+                  }
+
+                }
+                
+                break;
+
+              case EnemyType::AstronautReleased:
+                enemy->setStatus(EnemyStatus::Dead);
+                sound.tones(double_up);
+                level.setDoubleUpPoints(DOUBLE_UP_POINTS_DELAY);
+                break;
 
             }
 
@@ -503,7 +567,7 @@ void Play() {
             Enemy *enemy = &enemies[x2];
             EnemyStatus enemyStatus = enemy->getStatus();
 
-            if (enemy->getYDelta() >= 0 && enemyStatus == EnemyStatus::Active && enemy->inShootingRange()) {
+            if (enemy->getType() >= EnemyType::EnemyType1 && enemy->getType() <= EnemyType::EnemyType4 && enemy->getYDelta() >= 0 && enemyStatus == EnemyStatus::Active && enemy->inShootingRange()) {
 
               uint8_t enemyMiddle = enemy->getXDisplay() + (enemy->getWidth() / 2);
 
@@ -560,7 +624,16 @@ void Play() {
 
     if (level.getCountDown() == 0 && level.getInPlay() <= MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION && level.getEnemiesLaunchedThisWave() < level.getEnemiesInWave()) {
 
-      uint8_t numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
+      uint8_t numberOfEnemies = 0;
+
+
+      if (level.getScore() > 1000 && !level.inDoubleUpPhase()) {
+        numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT));
+      }
+      else {
+        numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
+      }
+
       sound.tones(formation_launch[numberOfEnemies - 1]);
 
     }

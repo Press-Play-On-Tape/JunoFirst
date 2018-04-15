@@ -25,14 +25,17 @@ class Level {
     void setScore(uint16_t val);
     void setCountDown(uint16_t val);
     void setInPlay(uint8_t val);
+    void setDoubleUpPoints(uint16_t val);
 
 
     // Methods ..
 
     void incHorizon(int8_t val);
     void decCountDown();
+    void incInPlay();
     void decInPlay();
     void incWave();
+    void incEnemiesLaunched();
     void resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
     void resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
 
@@ -41,6 +44,10 @@ class Level {
     uint8_t getEnemiesInWave();
     uint8_t getEnemiesLaunchedThisWave();
     uint8_t getBulletFrequency();
+
+    void decDoubleUpPoints();
+    bool inDoubleUpPhase();
+    bool getDoubleUpDisplay();
 
   private:
 
@@ -52,6 +59,7 @@ class Level {
     uint8_t _frameRate;
     uint8_t _enemiesInWave;
     uint8_t _enemiesLaunchedThisWave;
+    uint16_t _doubleUpPoints = 0;
 
 };
 
@@ -100,6 +108,9 @@ void Level::setInPlay(uint8_t val) {
   _inPlay = val;
 }
 
+void Level::setDoubleUpPoints(uint16_t val) {
+  _doubleUpPoints = val;
+}
 
 
 //--------------------------------------------------------------------------------------------------------------------------
@@ -127,6 +138,7 @@ void Level::resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
 
     Enemy *enemy = &enemies[x];
     enemy->setStatus(EnemyStatus::Dead);
+    enemy->setProtection(0);
 
   }
 
@@ -141,6 +153,7 @@ void Level::resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
   _inPlay = 0;
   _horizon = 2;
   _enemiesLaunchedThisWave = 0;
+  _doubleUpPoints = 0;
 
 }
 
@@ -151,6 +164,12 @@ void Level::decCountDown() {
 }
 
 void Level::decInPlay() {
+
+  _inPlay--;
+
+}
+
+void Level::incInPlay() {
 
   _inPlay--;
 
@@ -181,7 +200,7 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
 
       if (enemy->getStatus() == EnemyStatus::Dead) {
 
-        enemy->setEnemyType(static_cast<EnemyType>(pgm_read_byte(&formationToLoad[dataOffset++])));
+        enemy->setType(static_cast<EnemyType>(pgm_read_byte(&formationToLoad[dataOffset++])));
         enemy->setX(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
         enemy->setY(pgm_read_byte(&formationToLoad[dataOffset++]));
         enemy->setXDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
@@ -196,7 +215,7 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
 
   }
 
-  _countDown =  clamp<uint8_t>((MAX_DELAY_BETWEEN_FORMATIONS - (_wave * LEVEL_DELAY_BETWEEN_FORMATIONS)), MIN_DELAY_BETWEEN_FORMATIONS, MAX_DELAY_BETWEEN_FORMATIONS);
+  _countDown = clamp<uint8_t>((MAX_DELAY_BETWEEN_FORMATIONS - (_wave * LEVEL_DELAY_BETWEEN_FORMATIONS)), MIN_DELAY_BETWEEN_FORMATIONS, MAX_DELAY_BETWEEN_FORMATIONS);
   _enemiesLaunchedThisWave = _enemiesLaunchedThisWave + numberOfEnemies;
 
   return numberOfEnemies;
@@ -224,5 +243,29 @@ uint8_t Level::getEnemiesLaunchedThisWave() {
 uint8_t Level::getBulletFrequency() {
 
   return INITIAL_BULLET_FREQUENCY + ((_wave - 1) * BULLETS_DECREASE_PER_WAVE);
+
+}
+
+void Level::incEnemiesLaunched() {
+
+  _enemiesLaunchedThisWave++;
+
+}
+
+bool Level::inDoubleUpPhase() {
+
+  return _doubleUpPoints > 0;
+
+}
+
+bool Level::getDoubleUpDisplay() {
+ 
+  return (_doubleUpPoints / DOUBLE_UP_POINTS_DELAY_INC) % 2 == 0;
+
+}
+
+void Level::decDoubleUpPoints() {
+ 
+  if (_doubleUpPoints > 0) _doubleUpPoints--;
 
 }

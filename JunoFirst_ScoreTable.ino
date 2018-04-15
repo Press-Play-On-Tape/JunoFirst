@@ -27,7 +27,7 @@ void ScoreTable() {
   Sprites::drawOverwrite(49, 33, numbers, 0);  
   Sprites::drawOverwrite(54, 33, numbers, 0);  
  
-  Sprites::drawOverwrite(11, 41, austronaut_prison_close, 0);
+  Sprites::drawOverwrite(10, 41, alien_close_1, 04);
   Sprites::drawOverwrite(29, 40, ellipsis, 0);
   Sprites::drawOverwrite(44, 43, numbers, 4);  
   Sprites::drawOverwrite(49, 43, numbers, 5);  
@@ -45,7 +45,7 @@ void ScoreTable() {
   Sprites::drawOverwrite(109, 33, numbers, 5);  
   Sprites::drawOverwrite(114, 33, numbers, 0);  
  
-  Sprites::drawOverwrite(72, 41, austronaut_close, 0);
+  Sprites::drawOverwrite(70, 41, alien_close_1, 5);
   Sprites::drawOverwrite(89, 40, ellipsis, 0);
   Sprites::drawOverwrite(99, 43, numbers, 1);  
   Sprites::drawOverwrite(104, 43, numbers, 0);  

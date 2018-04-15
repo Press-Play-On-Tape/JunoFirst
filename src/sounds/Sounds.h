@@ -76,6 +76,14 @@ const uint16_t enemy_explosion[] PROGMEM = {
   TONES_END
 };
 
+
+const uint16_t double_up[] PROGMEM = {
+  NOTE_C3,40, NOTE_REST,20,
+  NOTE_C4,40, NOTE_REST,20,
+  NOTE_C5,40, NOTE_REST,20,
+  TONES_END
+};
+
 const uint16_t formation_launch_1[] PROGMEM = {
   NOTE_B3, 9, NOTE_E3, 10, TONES_END
 };

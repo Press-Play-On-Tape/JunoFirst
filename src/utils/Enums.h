@@ -23,6 +23,8 @@ static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame
 static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
 static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 
+static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How long do we double up points after an astronaut capture?
+
 
 // ---------------------------------------------------------------------
 //  Do not play with these !
@@ -80,6 +82,8 @@ static const uint8_t FRAME_RATE_2                         = 2;
 static const uint8_t FRAME_RATE_4                         = 4;
 static const uint8_t FRAME_RATE_16                        = 16;
 
+static const uint16_t DOUBLE_UP_POINTS_DELAY_INC          = DOUBLE_UP_POINTS_DELAY / 10; 
+
 
 // ----------------------------------------------------------------------------
 //  A better absolute as it uses less memory than the standard one .. 
@@ -135,6 +139,8 @@ enum class EnemyType : uint8_t {
   EnemyType2,
   EnemyType3,
   EnemyType4,
+  AstronautCaptured,
+  AstronautReleased
 
 };
 
@@ -142,7 +148,9 @@ enum class EnemyType : uint8_t {
 enum class MovementSequence : uint8_t {
 
   Sequence_1,       // Move left to right by xDelta.  When at edge of screen move forward yDelta, change x direction.  When at bottom of screen, reverse yDelta.
-  Sequence_2,       // Move both X and Y simultaneously.  When at an edge of the screen, reverse direction.
+  Sequence_2,       // Move both X and Y simultaneously.  When at an edge of the screen, reverse direction.  When at bottom of screen reverse direction.
+  Sequence_3,       // Move both X and Y simultaneously.  When at an edge of the screen, reverse direction.  When at bottom of screen reappear at top.
+  Sequence_4,       // Return to the top of the screen.  When at the top, disable the enemy.  Used for Astronaut.
 
 };
 
