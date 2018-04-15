@@ -23,7 +23,6 @@ uint8_t introDelay = 0;
 uint8_t alternate = 0;
 uint8_t horizonIncrement = 0;
 
-
 Player player;
 Bullet playerBullet;
 Enemy enemies[MAX_NUMBER_OF_ENEMIES];
@@ -147,9 +146,16 @@ void Play() {
 
   // Update the ground's position ..
 
-//  const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
-//  const uint8_t speedLookup[] = {0, 8, 4, 0, 2};
+#if GROUND_SPEED == 1
+  const uint8_t speedLookup[] = {0, 16, 8, 0, 4};
+#endif
+#if GROUND_SPEED == 2
   const uint8_t speedLookup[] = {0, 12, 6, 0, 3};
+#endif
+#if GROUND_SPEED == 3
+  const uint8_t speedLookup[] = {0, 8, 4, 0, 2};
+#endif
+
   uint8_t speed = speedLookup[absT(player.getYDelta())];
 
   if (horizonIncrement == speed) {

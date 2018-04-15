@@ -3,6 +3,11 @@
 #include "Arduboy2Ext.h"
 
 
+// How fast should the ground move ?
+
+#define GROUND_SPEED 2
+
+
 // You can comment this out (or append it with an underscore or something) to have solid lines ..
 
 #define USE_DOTTED_LINES                  
