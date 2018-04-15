@@ -3,7 +3,7 @@
 #include "Arduboy2Ext.h"
 
 
-// How fast should the ground move ?
+// How fast should the ground move ?  1 = Slow, 2 = Medium, 3 = Fast - I think 2 is the most appropriate.
 
 #define GROUND_SPEED 2
 
