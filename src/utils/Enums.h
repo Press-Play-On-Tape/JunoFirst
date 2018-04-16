@@ -12,6 +12,7 @@
 
 #define USE_DOTTED_LINES                  
 #define SHOW_OUT_OF_SIGHT
+#define _TEST_ASTRONAUT
 
 
 // ---------------------------------------------------------------------
@@ -87,8 +88,6 @@ static const uint8_t FRAME_RATE_2                         = 2;
 static const uint8_t FRAME_RATE_4                         = 4;
 static const uint8_t FRAME_RATE_16                        = 16;
 
-static const uint16_t DOUBLE_UP_POINTS_DELAY_INC          = DOUBLE_UP_POINTS_DELAY / 10; 
-
 
 // ----------------------------------------------------------------------------
 //  A better absolute as it uses less memory than the standard one .. 
@@ -123,7 +122,8 @@ enum class GameState : uint8_t {
   GameOver,
   SaveScore,
   HighScore,
-  Credits
+  Credits,
+  Paused
 
 };
 

@@ -50,7 +50,8 @@ class Enemy {
     int8_t _y;
     uint8_t _delta;           // bits 0 - 3 y, bits 4 - 7 x
     EnemyStatus _status; 
-    uint8_t _protection;      // if non-zero, enemy is protected from bullets          
+    uint8_t _protection;      // if non-zero, enemy is protected from bullets       
+    uint8_t _alternate;       // used to slow down the movement of the released astronaut   
 
 };
 
@@ -355,27 +356,34 @@ bool Enemy::move(Player *player) {
 
     case MovementSequence::Sequence_4:  // Returing up the screen.  Used with Astronaut.
 
-      if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
+      _alternate++;
+      if (_alternate == 4) _alternate = 0;
 
-        _x = _x + static_cast<int16_t>(this->getXDelta());
+      if (_alternate <= 2) {
+          
+        if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
 
-      }
-      else {
+          _x = _x + static_cast<int16_t>(this->getXDelta());
 
-        this->setXDelta(static_cast<int8_t>(this->getXDelta()) * -1);
+        }
+        else {
 
-      }
+          this->setXDelta(static_cast<int8_t>(this->getXDelta()) * -1);
 
-      if (this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) {
+        }
 
-        _y = _y + this->getYDelta();
+        if (this->getYDelta() < 0 && _y > ENEMY_MINIMUM_Y) {
 
-      }
-      else {
+          _y = _y + this->getYDelta();
 
-        this->setStatus(EnemyStatus::Dead);
-        return true;
+        }
+        else {
 
+          this->setStatus(EnemyStatus::Dead);
+          return true;
+
+        }
+      
       }
 
       break;

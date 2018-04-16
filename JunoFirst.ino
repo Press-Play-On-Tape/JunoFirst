@@ -21,6 +21,7 @@ GameState gameState = GameState::Intro_Init;
 
 uint8_t introDelay = 0;
 uint8_t alternate = 0;
+uint8_t alternate2 = 0;
 uint8_t horizonIncrement = 0;
 
 Player player;
@@ -73,6 +74,7 @@ void loop() {
       break;
 
     case GameState::ScoreTable:
+      sound.noTone();
       ScoreTable();
       player.resetGame();
       level.resetGame(enemies, bullets, &playerBullet);
@@ -99,6 +101,7 @@ void loop() {
       Play();
       break;
 
+    case GameState::Paused:
     case GameState::GamePlay:
       Play();
       break;
@@ -156,46 +159,50 @@ void Play() {
   const uint8_t speedLookup[] = {0, 8, 4, 0, 2};
 #endif
 
-  uint8_t speed = speedLookup[absT(player.getYDelta())];
+  if (gameState != GameState::Paused) {
 
-  if (horizonIncrement == speed) {
+    uint8_t speed = speedLookup[absT(player.getYDelta())];
 
-    level.incHorizon( player.getYDelta() > 0 ? 1 : -1);
-    horizonIncrement = 0;
- 
+    if (horizonIncrement == speed) {
 
-    // Update the enemies and bullets relative to the player position ..
-
-    for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
-
-      Enemy *enemy = &enemies[x];
-
-      if (enemy->getStatus() == EnemyStatus::Active) {
-
-        enemy->moveRelativeToPlayer(&player);
-
-      }
-
-    }
-
-    for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
-
-      Bullet *bullet = &bullets[x];
-
-      if (bullet->getY() > 0) {
-
-        bullet->moveRelativeToPlayer(&player);
-
-      }
-
-    }
-    
-  }
-
-  horizonIncrement++;
+      level.incHorizon( player.getYDelta() > 0 ? 1 : -1);
+      horizonIncrement = 0;
   
 
-  if (gameState != GameState::Wave) {
+      // Update the enemies and bullets relative to the player position ..
+
+      for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+        Enemy *enemy = &enemies[x];
+
+        if (enemy->getStatus() == EnemyStatus::Active) {
+
+          enemy->moveRelativeToPlayer(&player);
+
+        }
+
+      }
+
+      for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+        Bullet *bullet = &bullets[x];
+
+        if (bullet->getY() > 0) {
+
+          bullet->moveRelativeToPlayer(&player);
+
+        }
+
+      }
+      
+    }
+
+    horizonIncrement++;
+
+  }
+  
+
+  if (gameState != GameState::Wave && gameState != GameState::Paused) {
 
     player.incHealth();
     level.decDoubleUpPoints();
@@ -226,14 +233,14 @@ void Play() {
 
   // Handle players actions ..
 
-  if (player.getStatus() == PlayerStatus::Active) {
+  if (player.getStatus() == PlayerStatus::Active && gameState != GameState::Paused) {
 
     if (arduboy.pressed(DOWN_BUTTON))     { if (player.decYDelta()) horizonIncrement = 0; }
     if (arduboy.pressed(UP_BUTTON))       { if (player.incYDelta()) horizonIncrement = 0; }
     if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
     if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-    if (gameState != GameState::Wave && arduboy.justPressed(A_BUTTON))        { 
+    if (gameState != GameState::Wave  && arduboy.justPressed(A_BUTTON))        { 
 
       if (playerBullet.getY() == 0) {
 
@@ -249,10 +256,12 @@ void Play() {
 
   }
 
+  if (gameState != GameState::Wave && arduboy.justPressed(B_BUTTON)) gameState = (gameState == GameState::GamePlay ? GameState::Paused : GameState::GamePlay);
+
 
 
   
-  if (gameState != GameState::Wave) {
+  if (gameState != GameState::Wave && gameState != GameState::Paused) {
 
 
     // Update player bullet position ..

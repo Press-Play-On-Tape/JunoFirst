@@ -47,7 +47,6 @@ class Level {
 
     void decDoubleUpPoints();
     bool inDoubleUpPhase();
-    bool getDoubleUpDisplay();
 
   private:
 
@@ -255,12 +254,6 @@ void Level::incEnemiesLaunched() {
 bool Level::inDoubleUpPhase() {
 
   return _doubleUpPoints > 0;
-
-}
-
-bool Level::getDoubleUpDisplay() {
- 
-  return (_doubleUpPoints / DOUBLE_UP_POINTS_DELAY_INC) % 2 == 0;
 
 }
 

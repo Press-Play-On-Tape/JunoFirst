@@ -289,18 +289,16 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   Sprites::drawOverwrite(120, 0, blankScoreboard, 0);
 
-  if (alternate < 128 || level.inDoubleUpPhase()) {
+  if (alternate < 128) {
 
 
     // Score ..
 
-    if (!level.inDoubleUpPhase() || level.getDoubleUpDisplay()) {
-        uint8_t digits[6] = {};
-        extractDigits(digits, level.getScore());
-        
-        for (int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
-          Sprites::drawOverwrite(123, y, numbers_vert, digits[i]);
-        }
+    uint8_t digits[6] = {};
+    extractDigits(digits, level.getScore());
+    
+    for (int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
+      Sprites::drawOverwrite(123, y, numbers_vert, digits[i]);
     }
 
     if (gameState == GameState::Wave) {
@@ -350,22 +348,49 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   // Start of game or wave?
 
-  if (gameState == GameState::Wave && introDelay != 2 && introDelay != 4 && introDelay != 6) {
+  if (gameState == GameState::Wave) {
 
-    if (level.getWave() == 1 && player->getLives() == MAX_NUMBER_OF_LIVES) {
+    if (introDelay != 2 && introDelay != 4 && introDelay != 6) {
 
-      arduboy.fillRect(33, 21, 53, 13, BLACK);
-      Sprites::drawSelfMasked(34, 22, getReady, 0);
+      if (level.getWave() == 1 && player->getLives() == MAX_NUMBER_OF_LIVES) {
+
+        arduboy.fillRect(33, 21, 53, 13, BLACK);
+        Sprites::drawSelfMasked(34, 22, getReady, 0);
+
+      }
+      else {
+
+        arduboy.fillRect(42, 21, 39, 13, BLACK);
+        Sprites::drawSelfMasked(43, 22, startOfWave, 0);
+        Sprites::drawSelfMasked(69, 25, numbers, level.getWave() / 10);
+        Sprites::drawSelfMasked(74, 25, numbers, level.getWave() % 10);
+        
+      }
 
     }
     else {
 
-      arduboy.fillRect(42, 21, 39, 13, BLACK);
-      Sprites::drawSelfMasked(43, 22, startOfWave, 0);
-      Sprites::drawSelfMasked(69, 25, numbers, level.getWave() / 10);
-      Sprites::drawSelfMasked(74, 25, numbers, level.getWave() % 10);
-      
+      if (!sound.playing()) sound.tones(blib);
+
     }
+
+  }
+
+  if (gameState == GameState::Paused) {
+    
+    arduboy.fillRect(48, 21, 33, 13, BLACK);
+    Sprites::drawSelfMasked(48, 22, pause, 0);
+
+  }
+
+
+  // Double up score ..
+
+  alternate2++;
+  if (alternate2 > 96) alternate2 = 0;
+  if (level.inDoubleUpPhase() && alternate2 < 48) {
+
+    Sprites::drawOverwrite(106, 0, x2Inverted, 0);
 
   }
 
