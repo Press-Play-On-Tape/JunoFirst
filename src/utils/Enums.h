@@ -12,7 +12,7 @@
 
 #define USE_DOTTED_LINES                  
 #define SHOW_OUT_OF_SIGHT
-#define TEST_ASTRONAUT
+#define _TEST_ASTRONAUT
 
 
 // ---------------------------------------------------------------------

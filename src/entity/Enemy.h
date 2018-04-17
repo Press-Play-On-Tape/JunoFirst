@@ -357,9 +357,9 @@ bool Enemy::move(Player *player) {
     case MovementSequence::Sequence_4:  // Returing up the screen.  Used with Astronaut.
 
       _alternate++;
-      if (_alternate == 4) _alternate = 0;
+      if (_alternate == 3) _alternate = 0;
 
-      if (_alternate <= 2) {
+      if (_alternate < 1) {
           
         if ((this->getXDelta() < 0 && _x > ENEMY_MINIMUM_X) || (this->getXDelta() > 0  && _x < ENEMY_MAXIMUM_X)) {
 
