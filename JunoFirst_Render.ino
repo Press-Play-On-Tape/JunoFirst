@@ -196,10 +196,10 @@ void RenderScreen(Player *player, Enemy *enemies) {
       case -4 ... -1:
 
         if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-          Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_1, spaceship_backwards_1_mask, 0, 0);
+          Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_backwards_1, spaceship_backwards_1_mask, 0, 0);
         }
         else {
-          Sprites::drawExternalMask(player->getX(), player->getY() - 4, spaceship_backwards_2, spaceship_backwards_2_mask, 0, 0);
+          Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_backwards_2, spaceship_backwards_2_mask, 0, 0);
         }
         break;
 
@@ -211,7 +211,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
       case 1 ... 4:
 
         if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-          Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
+          Sprites::drawExternalMask(player->getX(), player->getY() + 1, spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
         }
         else {
           Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
