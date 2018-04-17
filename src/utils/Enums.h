@@ -5,7 +5,7 @@
 
 // How fast should the ground move ?  1 = Slow, 2 = Medium, 3 = Fast - I think 2 is the most appropriate.
 
-#define GROUND_SPEED 2
+#define GROUND_SPEED 1
 
 
 // You can comment this out (or append it with an underscore or something) to have solid lines ..
@@ -24,8 +24,21 @@ static const uint8_t ADDITIONAL_ENEMIES_PER_WAVE          = 2;          // How m
 static const uint8_t INITIAL_BULLET_FREQUENCY             = 60;         // How frequently should enemies shoot you?  Higher is less often.
 static const uint8_t BULLETS_DECREASE_PER_WAVE            = 2;          // How does the frequency increase each wave?  Bigger numbers means enemies fire more rapidly each wave ..
 
+#if GROUND_SPEED == 1
+static const uint8_t DEFAULT_FRAME_RATE                   = 70;         // Frame rate the game starts at.
+static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
+#endif
+
+#if GROUND_SPEED == 2
 static const uint8_t DEFAULT_FRAME_RATE                   = 60;         // Frame rate the game starts at.
 static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
+#endif
+
+#if GROUND_SPEED == 3
+static const uint8_t DEFAULT_FRAME_RATE                   = 50;         // Frame rate the game starts at.
+static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
+#endif
+
 static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
 static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 

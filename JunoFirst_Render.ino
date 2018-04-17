@@ -378,8 +378,8 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   if (gameState == GameState::Paused) {
     
-    arduboy.fillRect(48, 21, 33, 13, BLACK);
-    Sprites::drawSelfMasked(48, 22, pause, 0);
+    arduboy.fillRect(44, 21, 33, 13, BLACK);
+    Sprites::drawSelfMasked(44, 22, pause, 0);
 
   }
 
