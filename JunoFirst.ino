@@ -242,7 +242,7 @@ void Play() {
     if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
     if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-    if (gameState != GameState::Wave  && arduboy.justPressed(A_BUTTON))        { 
+    if (gameState != GameState::Wave && (arduboy.justPressed(A_BUTTON) || (level.inDoubleUpPhase() && arduboy.pressed(A_BUTTON)))) {
 
       if (playerBullet.getY() == 0) {
 
@@ -370,7 +370,6 @@ void Play() {
                 break;
 
               case EnemyType::AstronautReleased:
-                scoreInc = 1000;
                 break;
 
             }
