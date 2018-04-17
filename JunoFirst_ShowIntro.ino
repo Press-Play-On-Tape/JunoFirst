@@ -51,7 +51,7 @@ void Intro() {
 
 //    player.resetGame();
 //    level.reset(enemies, bullets, &playerBullet);
-    gameState = GameState::HighScore; 
+    gameState = GameState::Credits; 
     
   }
 

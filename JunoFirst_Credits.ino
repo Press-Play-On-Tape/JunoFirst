@@ -91,9 +91,7 @@ void Credits() {
 
   if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) { 
 
-//    player.reset();
-//    level.reset(enemies, bullets, &playerBullet);
-    gameState = GameState::Intro_Init; 
+    gameState = GameState::HighScore; 
     
   }
 
