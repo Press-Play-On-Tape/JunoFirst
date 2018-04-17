@@ -134,12 +134,12 @@ void Player::resetGame() {
 
   resetWave();
   _lives = 4;
+  _x = 56;
 
 }
 
 void Player::resetWave() {
 
-  _x = 56;
   _xDelta = 0;
   _yDelta = 0;
   _fuel = 48;
