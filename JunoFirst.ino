@@ -87,6 +87,7 @@ void loop() {
       alternate = 0;
       gameState = GameState::Wave;
       arduboy.setFrameRate(level.getFrameRate());
+      arduboy.setRGBled(0, 0, 0);
       // break; Fall-through intentional.
 
     case GameState::Wave:
@@ -111,6 +112,7 @@ void loop() {
       gameState = GameState::GameOver;
       fadeInEffect.reset();
       sound.tones(end_of_game);
+      arduboy.setRGBled(0, 0, 0);
       // break; Fall-through intentional.
 
     case GameState::GameOver:

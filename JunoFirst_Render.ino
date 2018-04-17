@@ -388,9 +388,21 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   alternate2++;
   if (alternate2 > 96) alternate2 = 0;
-  if (level.inDoubleUpPhase() && alternate2 < 48) {
 
-    Sprites::drawOverwrite(106, 0, x2Inverted, 0);
+  if (level.inDoubleUpPhase()) {
+
+    arduboy.setRGBled(0, (alternate2 < 48 ? (alternate2 + 2) / 2 : 50 - (alternate2 / 2)), 0);
+   
+    if (alternate2 < 48) {
+
+      Sprites::drawOverwrite(106, 0, x2Inverted, 0);
+ 
+    }
+
+  }
+  else {
+
+    arduboy.setRGBled(0, 0, 0);
 
   }
 
