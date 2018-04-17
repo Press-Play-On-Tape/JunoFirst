@@ -5,14 +5,14 @@
 
 // How fast should the ground move ?  1 = Slow, 2 = Medium, 3 = Fast - I think 2 is the most appropriate.
 
-#define GROUND_SPEED 1
+#define GROUND_SPEED 3
 
 
 // You can comment this out (or append it with an underscore or something) to have solid lines ..
 
 #define USE_DOTTED_LINES                  
 #define SHOW_OUT_OF_SIGHT
-#define TEST_ASTRONAUT
+//#define TEST_ASTRONAUT
 
 
 // ---------------------------------------------------------------------
@@ -39,7 +39,7 @@ static const uint8_t DEFAULT_FRAME_RATE                   = 50;         // Frame
 static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
 #endif
 
-static const uint8_t FRAME_RATE_DEC_FUEL                  = 72;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
+static const uint8_t FRAME_RATE_DEC_FUEL                  = 50;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
 static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 
 static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How long do we double up points after an astronaut capture?
