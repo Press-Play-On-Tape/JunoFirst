@@ -141,6 +141,14 @@ enum class GameState : uint8_t {
 };
 
 
+enum class IntroductionState : uint8_t {
+
+  Start,
+  HighScore,
+  Credits
+
+};
+
 enum class ImageSize : uint8_t {
 
   Horizon,
@@ -267,6 +275,37 @@ inline PlayerStatus operator--( PlayerStatus & c ) {
 inline PlayerStatus operator--( PlayerStatus & c, int ) {
 
   PlayerStatus result = c;
+  --c;
+  return result;
+
+}
+
+
+inline IntroductionState operator++( IntroductionState & c ) {
+
+  c = static_cast<IntroductionState>( static_cast<uint8_t>(c) + 1 );
+  return c;
+
+}
+
+inline IntroductionState operator++( IntroductionState & c, int ) {
+
+  IntroductionState result = c;
+  ++c;
+  return result;
+
+}
+
+inline IntroductionState operator--( IntroductionState & c ) {
+ 
+  c = static_cast<IntroductionState>( static_cast<uint8_t>(c) - 1 );
+  return c;
+
+}
+
+inline IntroductionState operator--( IntroductionState & c, int ) {
+
+  IntroductionState result = c;
   --c;
   return result;
 

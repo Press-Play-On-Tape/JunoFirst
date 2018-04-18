@@ -15,13 +15,13 @@ class Slot {
     uint8_t getChar1();
     uint8_t getChar2();
     uint8_t getWave();
-    uint16_t getScore();
+    uint32_t getScore();
 
     void setChar0(uint8_t val);
     void setChar1(uint8_t val);
     void setChar2(uint8_t val);
     void setWave(uint8_t val);
-    void setScore(uint16_t val);
+    void setScore(uint32_t val);
 
 
   private:
@@ -30,7 +30,7 @@ class Slot {
     uint8_t _char1;
     uint8_t _char2;
     uint8_t _wave;
-    uint16_t _score;
+    uint32_t _score;
 
 };
 
@@ -54,7 +54,7 @@ uint8_t Slot::getWave() {
   return _wave;
 }
 
-uint16_t Slot::getScore() {
+uint32_t Slot::getScore() {
   return _score;
 }
 
@@ -74,6 +74,6 @@ void Slot::setWave(uint8_t val) {
   _wave = val;
 }
 
-void Slot::setScore(uint16_t val) {
+void Slot::setScore(uint32_t val) {
   _score = val;
 }
