@@ -16,7 +16,7 @@ class EEPROM_Utils {
 
     EEPROM_Utils(){};
         
-    static void initEEPROM();
+    static void initEEPROM(bool forceClear);
     static void getSlot(uint8_t x, Slot *slot);
     static uint8_t saveScore(uint32_t score, uint8_t wave);
     static void writeChars(uint8_t slotIndex, HighScore *highScore);
@@ -35,12 +35,12 @@ class EEPROM_Utils {
 const uint8_t letter1 = 74; // 74
 const uint8_t letter2 = 70; // 70
 
-void EEPROM_Utils::initEEPROM() {
+void EEPROM_Utils::initEEPROM(bool forceClear) {
 
   byte c1 = EEPROM.read(EEPROM_START_C1);
   byte c2 = EEPROM.read(EEPROM_START_C2);
 
-  if (c1 != letter1 || c2 != letter2) { // JF 74 70
+  if (forceClear || c1 != letter1 || c2 != letter2) { // JF 74 70
 
     uint32_t score = 0;
     EEPROM.update(EEPROM_START_C1, letter1);

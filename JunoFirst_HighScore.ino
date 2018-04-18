@@ -1,5 +1,7 @@
 #include "src/utils/Arduboy2Ext.h"
 
+uint8_t clearScores = 0;
+
 
 // --------------------------------------------------------------------------------------
 //  Render High Score screen ..
@@ -105,7 +107,45 @@ void HighScore() {
   }
   else {
 
-    if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) { gameState = GameState::Intro_Init; }
+
+    // Clear scores ..
+
+    if (arduboy.pressed(UP_BUTTON) && arduboy.pressed(DOWN_BUTTON)) {
+
+      clearScores++;
+
+      switch (clearScores) {
+
+        case 21 ... 60:
+          arduboy.setRGBled(128 - (clearScores * 2), 0, 0);
+          break;
+
+        case 61:
+          clearScores = 0;
+          arduboy.setRGBled(0, 0, 0);
+          EEPROM_Utils::initEEPROM(true);
+          return;
+
+      }
+
+    }
+    else {
+
+      if (clearScores > 0) {
+      
+        arduboy.setRGBled(0, 0, 0);
+        clearScores = 0;
+
+      }
+      
+    }
+
+    if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) { 
+    
+      arduboy.setRGBled(0, 0, 0);
+      gameState = GameState::Intro_Init; 
+      
+    }
     
   }
 
