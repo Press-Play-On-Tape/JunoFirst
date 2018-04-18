@@ -16,13 +16,13 @@ class Level {
 
     int8_t getHorizon();
     uint8_t getWave();
-    uint16_t getScore();
+    uint32_t getScore();
     uint16_t getCountDown();
     uint8_t getInPlay();      // Enemies in play.
 
     void setHorizon(int8_t val);
     void setWave(uint8_t val);
-    void setScore(uint16_t val);
+    void setScore(uint32_t val);
     void setCountDown(uint16_t val);
     void setInPlay(uint8_t val);
     void setDoubleUpPoints(uint16_t val);
@@ -52,7 +52,7 @@ class Level {
 
     int8_t _horizon;
     uint8_t _wave;
-    uint16_t _score;
+    uint32_t _score;
     uint8_t _inPlay;
     uint16_t _countDown;
     uint8_t _frameRate;
@@ -75,7 +75,7 @@ uint8_t Level::getWave() {
   return _wave;
 }
 
-uint16_t Level::getScore() {
+uint32_t Level::getScore() {
   return _score;
 }
 
@@ -95,7 +95,7 @@ void Level::setWave(uint8_t val) {
   _wave = val;
 }
 
-void Level::setScore(uint16_t val) {
+void Level::setScore(uint32_t val) {
   _score = val;
 }
 

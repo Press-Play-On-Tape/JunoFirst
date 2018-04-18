@@ -47,7 +47,7 @@ void setup() {
   arduboy.initRandomSeed();
   arduboy.audio.begin();
 
-  EEPROM_Utils::initEEPROM();
+  EEPROM_Utils::initEEPROM(false);
 
 }
 

@@ -2,6 +2,7 @@
 #include "src/utils/FadeEffects.h"
 
 
+IntroductionState selectedIntroItem = IntroductionState::Start;
 
 
 // --------------------------------------------------------------------------------------
@@ -12,7 +13,7 @@ void Intro() {
 
   // Draw logo ..
 
-  Sprites::drawOverwrite(18, 4, logo, 0);
+  Sprites::drawOverwrite(18, 1, logo, 0);
 
 
   if (!fadeInEffect.isComplete()) {
@@ -29,29 +30,41 @@ void Intro() {
     introDelay++;
   }
   else {    
-    Sprites::drawOverwrite(51, 55, pressA, 0);
+
+    Sprites::drawOverwrite(12, 55, start_normal, 0);
+    Sprites::drawOverwrite(45, 55, highscore_normal, 0);
+    Sprites::drawOverwrite(88, 55, credits_normal, 0);
+
+    if (selectedIntroItem == IntroductionState::Start)      { Sprites::drawOverwrite(12, 62, start_highlight, 0); }
+    if (selectedIntroItem == IntroductionState::HighScore)  { Sprites::drawOverwrite(45, 62, highscore_highlight, 0); }
+    if (selectedIntroItem == IntroductionState::Credits)    { Sprites::drawOverwrite(88, 62, credits_highlight, 0); }
+
   }
 
 
-  // If 'A' button is pressed move to game play ..
+  // Handle keypress ..
+
+  if (arduboy.justPressed(LEFT_BUTTON) && selectedIntroItem > IntroductionState::Start) { selectedIntroItem--; }
+  if (arduboy.justPressed(RIGHT_BUTTON) && selectedIntroItem < IntroductionState::Credits) { selectedIntroItem++; }
 
   if (arduboy.justPressed(A_BUTTON)) { 
 
-//    player.resetGame();  
-//    level.reset(enemies, bullets, &playerBullet);
-    gameState = GameState::ScoreTable; 
-    introDelay = 0;
-    
-  }
+    switch (selectedIntroItem) {
 
+      case IntroductionState::Start:
+        gameState = GameState::ScoreTable; 
+        introDelay = 0;
+        break;
 
-  // If 'B' button show high scores ..
+      case IntroductionState::HighScore:
+        gameState = GameState::HighScore; 
+        break;
 
-  if (arduboy.justPressed(B_BUTTON)) { 
+      case IntroductionState::Credits:
+        gameState = GameState::Credits; 
+        break;
 
-//    player.resetGame();
-//    level.reset(enemies, bullets, &playerBullet);
-    gameState = GameState::Credits; 
+    }
     
   }
 

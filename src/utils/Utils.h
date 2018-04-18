@@ -29,3 +29,16 @@ void extractDigits(uint8_t (&buffer)[size], uint16_t value) {
   }
 
 }
+
+// ---------------------------------------------------------------------------------
+// Extract individual digits of a uint32_t
+//
+template< size_t size >
+void extractDigits(uint8_t (&buffer)[size], uint32_t value) {
+
+  for(uint8_t i = 0; i < size; ++i) {
+    buffer[i] = value % 10;
+    value /= 10;
+  }
+
+}
