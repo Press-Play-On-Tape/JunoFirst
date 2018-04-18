@@ -124,6 +124,7 @@ void HighScore() {
           clearScores = 0;
           arduboy.setRGBled(0, 0, 0);
           EEPROM_Utils::initEEPROM(true);
+          sound.tone(NOTE_C6, 100);
           return;
 
       }

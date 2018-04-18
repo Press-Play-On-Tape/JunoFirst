@@ -342,7 +342,6 @@ void Play() {
                       newEnemy->setStatus(EnemyStatus::Active);
                       newEnemy->setX(enemy->getX());
                       newEnemy->setY(enemy->getY());
-//                    newEnemy->setXDelta(enemy->getXDelta());
                       newEnemy->setYDelta(-1);
                       newEnemy->setProtection(10);
                       enemyLaunched = true;

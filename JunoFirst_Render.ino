@@ -125,12 +125,11 @@ void RenderScreen(Player *player, Enemy *enemies) {
       }
  
     }
-#ifdef SHOW_OUT_OF_SIGHT
     else { // Enemy is not visible ..
 
       if (enemy->getStatus() == EnemyStatus::Active) {
 
-        if (enemy->getYDisplay() >= 64 && enemy->getYDisplay() <= 120) {
+        if (enemy->getYDisplay() >= 64 && enemy->getYDisplay() <= VISIBLE_SCREEN_WIDTH) {
 
           if (enemy->getXDisplay() < static_cast<int16_t>(0)) {
 
@@ -140,7 +139,17 @@ void RenderScreen(Player *player, Enemy *enemies) {
             arduboy.drawPixel(4, 63, BLACK);
 
           }
-          if (enemy->getXDisplay() > static_cast<int16_t>(119)) {
+          #ifdef HUD
+          if (enemy->getXDisplay() > static_cast<int16_t>(113)) {
+
+            arduboy.drawPixel(113, 59, BLACK);
+            arduboy.drawFastVLine(113, 60, 3);
+            arduboy.drawFastHLine(110, 63, 3);
+            arduboy.drawPixel(109, 63, BLACK);
+
+          }
+          #else
+          if (enemy->getXDisplay() > static_cast<int16_t>(1139)) {
 
             arduboy.drawPixel(119, 59, BLACK);
             arduboy.drawFastVLine(119, 60, 3);
@@ -148,6 +157,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
             arduboy.drawPixel(115, 63, BLACK);
 
           }
+          #endif
           else {
 
             arduboy.drawPixel(enemy->getXDisplay() + 2, 63, BLACK);
@@ -180,7 +190,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
       }
 
     }
-#endif
+
   }
 
 
@@ -211,7 +221,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
       case 1 ... 4:
 
         if (arduboy.getFrameCount(frameRate) % frameRate < frameRate / 2) { 
-          Sprites::drawExternalMask(player->getX(), player->getY() + 1, spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
+          Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_1, spaceship_advance_1_mask, 0, 0);
         }
         else {
           Sprites::drawExternalMask(player->getX(), player->getY(), spaceship_advance_2, spaceship_advance_2_mask, 0, 0);
@@ -285,6 +295,8 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
 
 
+#ifndef HUD
+
   // Render scoreboard ..
 
   Sprites::drawOverwrite(120, 0, blankScoreboard, 0);
@@ -345,6 +357,76 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   }
 
+#else
+
+  // Render scoreboard ..
+
+  Sprites::drawOverwrite(114, 0, blankScoreboard, 0);
+
+
+  // Score ..
+
+  uint8_t digits[6] = {};
+  extractDigits(digits, level.getScore());
+  
+  for (int8_t i = 5, y = 1; i >= 0; --i, y += 5) {
+    Sprites::drawOverwrite(123, y, numbers_vert, digits[i]);
+  }
+
+
+  if (gameState == GameState::Wave) {
+  
+    if (introDelay % 2 == 1) {
+
+      for (int8_t i = player->getLives(), y = 64 - (player->getLives() * 6); i > 0; --i, y += 6) {
+        Sprites::drawOverwrite(123, y, life_vert, 0);
+      }
+
+    }
+    else {
+      
+      for (int8_t i = player->getLives() - 1, y = 64 - ((player->getLives() - 1) * 6); i > 0; --i, y += 6) {
+        Sprites::drawOverwrite(123, y, life_vert, 0);
+      }
+
+    }
+
+  }
+  else {
+      
+    for (int8_t i = player->getLives() - 1, y = 64 - ((player->getLives() - 1) * 6); i > 0; --i, y += 6) {
+      Sprites::drawOverwrite(123, y, life_vert, 0);
+    }
+    
+  }
+
+  Sprites::drawOverwrite(116, 0, fuelGauge, 0);
+  uint8_t fuel = player->getFuel() / 2;
+
+  #if HUD_GAUGES 
+  arduboy.drawFastVLine(118, 5, fuel, WHITE);
+  arduboy.drawFastVLine(119, 5, fuel, WHITE);
+  #else
+  for (uint8_t y = 0; y < fuel; y+=2) {
+    arduboy.drawFastHLine(117, 5 + y, 4, WHITE);
+  }
+  #endif
+
+  #if HUD_GAUGES   
+  uint8_t health = player->getHealth() * 2;
+  Sprites::drawOverwrite(116, 39, shieldGauge, 0);
+  arduboy.drawFastVLine(118, 46, health, WHITE);
+  arduboy.drawFastVLine(119, 46, health, WHITE);
+  #else
+  uint8_t health = player->getHealth() * 2;
+  Sprites::drawOverwrite(116, 41, shieldGauge, 0);
+  for (uint8_t y = 0; y < health; y+=2) {
+    arduboy.drawFastHLine(117, 48 + y, 4, WHITE);
+  }
+  #endif
+
+#endif
+
 
   // Start of game or wave?
 
@@ -354,17 +436,29 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
       if (level.getWave() == 1 && player->getLives() == MAX_NUMBER_OF_LIVES) {
 
+        #ifdef HUD
+        arduboy.fillRect(30, 21, 53, 13, BLACK);
+        Sprites::drawSelfMasked(31, 22, getReady, 0);
+        #else
         arduboy.fillRect(33, 21, 53, 13, BLACK);
         Sprites::drawSelfMasked(34, 22, getReady, 0);
+        #endif
 
       }
       else {
 
+        #ifdef HUD
+        arduboy.fillRect(39, 21, 39, 13, BLACK);
+        Sprites::drawSelfMasked(40, 22, startOfWave, 0);
+        Sprites::drawSelfMasked(66, 25, numbers, level.getWave() / 10);
+        Sprites::drawSelfMasked(71, 25, numbers, level.getWave() % 10);
+        #else
         arduboy.fillRect(42, 21, 39, 13, BLACK);
         Sprites::drawSelfMasked(43, 22, startOfWave, 0);
         Sprites::drawSelfMasked(69, 25, numbers, level.getWave() / 10);
         Sprites::drawSelfMasked(74, 25, numbers, level.getWave() % 10);
-        
+        #endif
+
       }
 
     }
@@ -379,7 +473,11 @@ void RenderScreen(Player *player, Enemy *enemies) {
   if (gameState == GameState::Paused) {
     
     arduboy.fillRect(44, 21, 33, 13, BLACK);
+    #ifdef HUD
+    Sprites::drawSelfMasked(41, 22, pause, 0);
+    #else
     Sprites::drawSelfMasked(44, 22, pause, 0);
+    #endif
 
   }
 
@@ -395,7 +493,11 @@ void RenderScreen(Player *player, Enemy *enemies) {
    
     if (alternate2 < 48) {
 
+      #ifdef HUD
+      Sprites::drawExternalMask(118, 33, x2HUD, x2HUD_mask, 0, 0);
+      #else
       Sprites::drawOverwrite(106, 0, x2Inverted, 0);
+      #endif
  
     }
 

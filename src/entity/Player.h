@@ -67,13 +67,7 @@ uint8_t Player::getX() {
 }
 
 uint8_t Player::getY() {
-
-  #ifdef SHOW_OUT_OF_SIGHT
-  return 49;
-  #else
   return 48;
-  #endif
-
 }
 
 uint8_t Player::getFuel() {
@@ -134,23 +128,35 @@ void Player::resetGame() {
 
   resetWave();
   _lives = 4;
+  #ifdef HUD
+  _x = 53;
+  #else
   _x = 56;
-
+  #endif
 }
 
 void Player::resetWave() {
 
   _xDelta = 0;
   _yDelta = 0;
+  #ifdef HUD
+  _fuel = 50;
+  _health = 8;
+  #else
   _fuel = 48;
   _health = 7;
+  #endif
   _status = PlayerStatus::Active;
 
 }
 
 void Player::incX() {
 
+#ifdef HUD
+  if (_x < 102) _x++;
+#else
   if (_x < 108) _x++;
+#endif
 
 }
 

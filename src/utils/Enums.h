@@ -11,8 +11,8 @@
 // You can comment this out (or append it with an underscore or something) to have solid lines ..
 
 #define USE_DOTTED_LINES                  
-#define SHOW_OUT_OF_SIGHT
-//#define TEST_ASTRONAUT
+#define TEST_ASTRONAUT
+#define HUD
 
 
 // ---------------------------------------------------------------------
@@ -48,7 +48,13 @@ static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How l
 // ---------------------------------------------------------------------
 //  Do not play with these !
 
+#ifdef HUD
+static const uint8_t WIDTH_HALF                           = 57;
+static const uint8_t VISIBLE_SCREEN_WIDTH                 = 114;
+#else
 static const uint8_t WIDTH_HALF                           = 60;
+static const uint8_t VISIBLE_SCREEN_WIDTH                 = 120;
+#endif
 
 static const uint8_t MAX_NUMBER_OF_ENEMIES                = 12;
 static const uint8_t MAX_NUMBER_OF_ENEMIES_PER_FORMATION  = 4;
