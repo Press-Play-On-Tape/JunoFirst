@@ -13,7 +13,7 @@ void Intro() {
 
   // Draw logo ..
 
-  Sprites::drawOverwrite(18, 4, logo, 0);
+  Sprites::drawOverwrite(18, 1, logo, 0);
 
 
   if (!fadeInEffect.isComplete()) {
@@ -31,13 +31,13 @@ void Intro() {
   }
   else {    
 
-    Sprites::drawOverwrite(49, 0, start_normal, 0);
-    Sprites::drawOverwrite(49, 40, highscore_normal, 0);
-    Sprites::drawOverwrite(49, 80, credits_normal, 0);
+    Sprites::drawOverwrite(12, 55, start_normal, 0);
+    Sprites::drawOverwrite(45, 55, highscore_normal, 0);
+    Sprites::drawOverwrite(88, 55, credits_normal, 0);
 
-    if (selectedIntroItem == IntroductionState::Start)      { Sprites::drawOverwrite(57, 0, start_highlight, 0); }
-    if (selectedIntroItem == IntroductionState::HighScore)  { Sprites::drawOverwrite(49, 40, highscore_highlight, 0); }
-    if (selectedIntroItem == IntroductionState::Credits)    { Sprites::drawOverwrite(49, 80, credits_highlight, 0); }
+    if (selectedIntroItem == IntroductionState::Start)      { Sprites::drawOverwrite(12, 62, start_highlight, 0); }
+    if (selectedIntroItem == IntroductionState::HighScore)  { Sprites::drawOverwrite(45, 62, highscore_highlight, 0); }
+    if (selectedIntroItem == IntroductionState::Credits)    { Sprites::drawOverwrite(88, 62, credits_highlight, 0); }
 
   }
 
@@ -45,7 +45,7 @@ void Intro() {
   // Handle keypress ..
 
   if (arduboy.justPressed(LEFT_BUTTON) && selectedIntroItem > IntroductionState::Start) { selectedIntroItem--; }
-  if (arduboy.justPressed(LEFT_BUTTON) && selectedIntroItem < IntroductionState::Credits) { selectedIntroItem++; }
+  if (arduboy.justPressed(RIGHT_BUTTON) && selectedIntroItem < IntroductionState::Credits) { selectedIntroItem++; }
 
   if (arduboy.justPressed(A_BUTTON)) { 
 
