@@ -13,6 +13,7 @@
 #define USE_DOTTED_LINES                  
 #define TEST_ASTRONAUT
 #define HUD
+#define _HUD_GAUGES
 
 
 // ---------------------------------------------------------------------

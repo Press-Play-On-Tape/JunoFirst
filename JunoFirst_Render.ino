@@ -403,7 +403,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
   Sprites::drawOverwrite(116, 0, fuelGauge, 0);
   uint8_t fuel = player->getFuel() / 2;
 
-  #if HUD_GAUGES 
+  #ifdef HUD_GAUGES 
   arduboy.drawFastVLine(118, 5, fuel, WHITE);
   arduboy.drawFastVLine(119, 5, fuel, WHITE);
   #else
@@ -412,7 +412,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
   #endif
 
-  #if HUD_GAUGES   
+  #ifdef HUD_GAUGES   
   uint8_t health = player->getHealth() * 2;
   Sprites::drawOverwrite(116, 39, shieldGauge, 0);
   arduboy.drawFastVLine(118, 46, health, WHITE);
