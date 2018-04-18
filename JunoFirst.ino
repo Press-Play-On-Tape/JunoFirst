@@ -408,7 +408,7 @@ void Play() {
 
     if (player.getStatus() == PlayerStatus::Active) {
 
-      Rect playerRect = { player.getX() + 1, player.getY() + 1, 13, 14 };
+      Rect playerRect = { player.getX() + 1, player.getY() + 4, 13, 8 };
 
       for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
@@ -467,15 +467,8 @@ void Play() {
 
       }
 
-    }
 
-
-
-    // Did any enemy bullet hit us ..
-
-    if (player.getStatus() == PlayerStatus::Active) {
-
-      Rect playerRect = { player.getX() + 1, player.getY() + 1, 13, 14 };
+      // Did any enemy bullet hit us ..
 
       for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
 
