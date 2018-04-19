@@ -41,7 +41,10 @@ static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame
 #endif
 
 static const uint8_t FRAME_RATE_DEC_FUEL                  = 50;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
+
+#ifdef INC_HEALTH
 static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
+#endif
 
 static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How long do we double up points after an astronaut capture?
 
