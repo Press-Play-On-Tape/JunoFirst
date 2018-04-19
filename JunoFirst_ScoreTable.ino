@@ -47,7 +47,7 @@ void ScoreTable() {
  
   Sprites::drawOverwrite(70, 41, alien_close_1, 5);
   Sprites::drawOverwrite(89, 40, ellipsis, 0);
-  Sprites::drawOverwrite(107, 43, x2, 0);  
+  Sprites::drawOverwrite(107, 43, x2_score_table, 0);  
 
 
   // Display 'Press A' button after a short period of time ..

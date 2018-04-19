@@ -170,7 +170,7 @@ void Level::decInPlay() {
 
 void Level::incInPlay() {
 
-  _inPlay--;
+  _inPlay++;
 
 }
 
