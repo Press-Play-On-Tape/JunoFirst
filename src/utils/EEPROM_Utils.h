@@ -8,7 +8,7 @@
 #define EEPROM_START_C1               EEPROM_START
 #define EEPROM_START_C2               EEPROM_START + 1
 #define EEPROM_TOP_START              EEPROM_START + 2
-#define EEPROM_ENTRY_SIZE             6
+#define EEPROM_ENTRY_SIZE             8
 
 class EEPROM_Utils {
 
