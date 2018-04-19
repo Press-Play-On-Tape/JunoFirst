@@ -134,35 +134,23 @@ void Player::resetGame() {
 
   resetWave();
   _lives = 4;
-  #ifdef HUD
   _x = 53;
-  #else
-  _x = 56;
-  #endif
+
 }
 
 void Player::resetWave() {
 
   _xDelta = 0;
   _yDelta = 0;
-  #ifdef HUD
-  _fuel = 50;
+  _fuel = 22;
   _health = 8;
-  #else
-  _fuel = 48;
-  _health = 7;
-  #endif
   _status = PlayerStatus::Active;
 
 }
 
 void Player::incX() {
 
-#ifdef HUD
   if (_x < 102) _x++;
-#else
-  if (_x < 108) _x++;
-#endif
 
 }
 
@@ -267,11 +255,8 @@ void Player::incHealth() {
   if (_incHealth == INCREMENT_HEALTH) {
 
     _incHealth = 0;
-    #ifdef HUD
     if (_health < 8) _health++;
-    #else
-    if (_health < 7) _health++;
-    #endif    
+
   }
 
 }

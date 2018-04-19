@@ -12,8 +12,6 @@
 
 #define USE_DOTTED_LINES                  
 #define _TEST_ASTRONAUT
-#define HUD
-#define _HUD_GAUGES
 #define _INC_HEALTH   
 
 // ---------------------------------------------------------------------
@@ -41,24 +39,19 @@ static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame
 #endif
 
 static const uint8_t FRAME_RATE_DEC_FUEL                  = 50;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
+static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How long do we double up points after an astronaut capture?
 
 #ifdef INC_HEALTH
 static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 #endif
 
-static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How long do we double up points after an astronaut capture?
 
 
 // ---------------------------------------------------------------------
 //  Do not play with these !
 
-#ifdef HUD
 static const uint8_t WIDTH_HALF                           = 57;
-static const uint8_t VISIBLE_SCREEN_WIDTH                 = 114;
-#else
-static const uint8_t WIDTH_HALF                           = 60;
-static const uint8_t VISIBLE_SCREEN_WIDTH                 = 120;
-#endif
+static const uint8_t VISIBLE_SCREEN_WIDTH                 = 113;
 
 static const uint8_t MAX_NUMBER_OF_ENEMIES                = 12;
 static const uint8_t MAX_NUMBER_OF_ENEMIES_PER_FORMATION  = 4;
