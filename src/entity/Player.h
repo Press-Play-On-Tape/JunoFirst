@@ -33,7 +33,9 @@ class Player {
     void resetWave();
     void incX();
     void decX();
+    #ifdef INC_HEALTH
     void incHealth();
+    #endif
     void decFuel();
     void decLives();
 
@@ -49,7 +51,9 @@ class Player {
     uint8_t _fuel;
     int8_t _xDelta;
     int8_t _yDelta;
+    #ifdef INC_HEALTH
     uint16_t _incHealth;
+    #endif
     PlayerStatus _status; 
 
 };
@@ -116,7 +120,9 @@ void Player::setStatus(PlayerStatus val) {
 
 void Player::setHealth(uint8_t val) {
   _health = val;
+  #ifdef INC_HEALTH
   _incHealth = 0;
+  #endif
 }
 
 
@@ -253,6 +259,7 @@ boolean Player::decelerate() {
 
 }
 
+#ifdef INC_HEALTH
 void Player::incHealth() {
 
   _incHealth++;
@@ -260,11 +267,15 @@ void Player::incHealth() {
   if (_incHealth == INCREMENT_HEALTH) {
 
     _incHealth = 0;
+    #ifdef HUD
+    if (_health < 8) _health++;
+    #else
     if (_health < 7) _health++;
-
+    #endif    
   }
 
 }
+#endif
 
 void Player::decFuel() {
 

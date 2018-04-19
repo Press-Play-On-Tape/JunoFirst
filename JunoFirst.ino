@@ -206,7 +206,10 @@ void Play() {
 
   if (gameState != GameState::Wave && gameState != GameState::Paused) {
 
+    #ifdef INC_HEALTH
     player.incHealth();
+    #endif
+
     level.decDoubleUpPoints();
 
     if (arduboy.everyXFrames(FRAME_RATE_DEC_FUEL)) {
@@ -452,6 +455,7 @@ void Play() {
                 enemy->setStatus(EnemyStatus::Dead);
                 sound.tones(double_up);
                 level.setDoubleUpPoints(DOUBLE_UP_POINTS_DELAY);
+                level.decInPlay();
                 break;
 
             }

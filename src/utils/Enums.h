@@ -11,10 +11,10 @@
 // You can comment this out (or append it with an underscore or something) to have solid lines ..
 
 #define USE_DOTTED_LINES                  
-#define TEST_ASTRONAUT
+#define _TEST_ASTRONAUT
 #define HUD
 #define _HUD_GAUGES
-
+#define _INC_HEALTH   
 
 // ---------------------------------------------------------------------
 //  You can play with these ..
