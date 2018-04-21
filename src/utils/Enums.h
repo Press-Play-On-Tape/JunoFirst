@@ -14,6 +14,11 @@
 #define _TEST_ASTRONAUT
 #define _INC_HEALTH   
 
+// Do we invert the screen?
+#define USE_INVERT
+// Just once or multiple times
+#define _SINGLE_FLASH
+
 // ---------------------------------------------------------------------
 //  You can play with these ..
 
@@ -45,6 +50,7 @@ static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How l
 static const uint16_t INCREMENT_HEALTH                    = 800;        // How quickly does your health regain?  Bigger numbers result in slower regain.
 #endif
 
+static const uint8_t HEALTH_COUNTDOWN                     = 6;          // How many times do we flash the screen / red LED when hit?
 
 
 // ---------------------------------------------------------------------

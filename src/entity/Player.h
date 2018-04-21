@@ -15,6 +15,7 @@ class Player {
     uint8_t getY();
     uint8_t getFuel();
     uint8_t getHealth();
+    uint8_t getHealthCountdown();
     int8_t getXDelta();
     int8_t getYDelta();
     PlayerStatus getStatus();
@@ -23,6 +24,7 @@ class Player {
     void setX(uint8_t val);
     void setFuel(uint8_t val);
     void setHealth(uint8_t val);
+    void setHealthCountdown(uint8_t val);
     void setXDelta(int8_t val);
     void setYDelta(int8_t val);
     void setStatus(PlayerStatus val);
@@ -38,6 +40,7 @@ class Player {
     #endif
     void decFuel();
     void decLives();
+    void decHealthCountdown();
 
     boolean incYDelta();
     boolean decYDelta();
@@ -48,6 +51,7 @@ class Player {
     uint8_t _lives;
     uint8_t _x;
     uint8_t _health;
+    uint8_t _healthCountdown;     // for LED flashing
     uint8_t _fuel;
     int8_t _xDelta;
     int8_t _yDelta;
@@ -94,6 +98,10 @@ uint8_t Player::getHealth() {
   return _health;
 }
 
+uint8_t Player::getHealthCountdown() {
+  return _healthCountdown;
+}
+
 void Player::setLives(uint8_t val) {
   _lives = val;
 }
@@ -123,6 +131,10 @@ void Player::setHealth(uint8_t val) {
   #ifdef INC_HEALTH
   _incHealth = 0;
   #endif
+}
+
+void Player::setHealthCountdown(uint8_t val) {
+  _healthCountdown = val;
 }
 
 
@@ -266,4 +278,8 @@ void Player::decFuel() {
 
   if (_fuel > 0) _fuel--;
 
+}
+
+void Player::decHealthCountdown() {
+  _healthCountdown--;
 }

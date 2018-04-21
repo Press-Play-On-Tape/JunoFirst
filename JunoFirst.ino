@@ -148,6 +148,10 @@ void loop() {
 //
 void Play() {
 
+  #ifdef USE_INVERT
+  arduboy.invert(false);
+  #endif
+
 
   // Update the ground's position ..
 
@@ -432,6 +436,15 @@ void Play() {
                   enemy->setPlayerOverlap(true);
                   enemy->setStatus(EnemyStatus::Explosion4);
 
+                  #ifdef SINGLE_FLASH
+                  #ifdef USE_INVERT
+                  arduboy.invert(true);
+                  #endif
+                  arduboy.setRGBled(RED_LED, 16);
+                  #else 
+                  player.setHealthCountdown(HEALTH_COUNTDOWN);
+                  #endif
+
                   uint8_t health = player.getHealth();
 
                   if (health > 0) {
@@ -483,6 +496,15 @@ void Play() {
           Rect bulletRect = { bullet->getX(), bullet->getY(), 2, 2 };
 
           if (arduboy.collide(bulletRect, playerRect)) {
+
+            #ifdef SINGLE_FLASH
+            #ifdef USE_INVERT
+            arduboy.invert(true);
+            #endif
+            arduboy.setRGBled(RED_LED, 16);
+            #else 
+            player.setHealthCountdown(HEALTH_COUNTDOWN);
+            #endif
 
             uint8_t health = player.getHealth();
             bullet->setY(0);
@@ -661,5 +683,29 @@ void Play() {
     }
 
   }
+
+
+  // Flash the red LED? 
+
+  #ifndef SINGLE_FLASH
+  uint8_t health = player.getHealthCountdown();
+
+  arduboy.setRGBled(RED_LED, 0);
+
+  if (health > 0) {
+
+    player.decHealthCountdown();
+
+    if (health % 2 == 0) {
+
+      #ifdef USE_INVERT
+      arduboy.invert(true);
+      #endif
+      arduboy.setRGBled(RED_LED, 16);
+
+    }
+
+  }
+  #endif
 
 }
