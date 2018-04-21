@@ -17,7 +17,7 @@
 // Do we invert the screen?
 #define USE_INVERT
 // Just once or multiple times
-#define _SINGLE_FLASH
+#define SINGLE_FLASH
 
 // ---------------------------------------------------------------------
 //  You can play with these ..
