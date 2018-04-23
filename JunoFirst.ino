@@ -580,6 +580,27 @@ void Play() {
     }
 
 
+
+    // Update dying enemy images ..
+
+    if (arduboy.everyXFrames(FRAME_RATE_16)) {
+
+      for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
+
+        Enemy *enemy = &enemies[x];
+        EnemyStatus enemyStatus = enemy->getStatus();
+
+        if (enemyStatus > EnemyStatus::Active) {
+
+          enemy->setStatus(--enemyStatus);
+
+        }
+
+      }
+
+    }
+
+
     // Enemy takes a shot? 
 
     if (random(0, level.getBulletFrequency()) == 0) {

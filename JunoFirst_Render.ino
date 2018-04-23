@@ -96,7 +96,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
         Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, frame, frame);
 
       }
-      else {
+      else if (enemy->getStatus() == EnemyStatus::Active) {
 
         switch (enemy->getStatus()) {
 
@@ -121,6 +121,32 @@ void RenderScreen(Player *player, Enemy *enemies) {
         }
 
         Sprites::drawSelfMasked(enemy->getXDisplay(), enemy->getYDisplay(), imageName, 0);
+
+      }
+      else if (enemy->getStatus() > EnemyStatus::Active) {
+
+        uint8_t idx = static_cast<uint8_t>(enemy->getStatus()) - static_cast<uint8_t>(EnemyStatus::Spawn1);
+        switch (enemy->getSize()) {
+
+          case ImageSize::Medium:
+
+            imageName = spawning_medium;
+            maskName = spawning_medium_mask;
+
+            break;
+
+          case ImageSize::Close:
+
+            imageName = spawning_close;
+            maskName = spawning_close_mask;
+
+            break;
+
+            default: break;
+
+        }
+
+        Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, idx, idx);
 
       }
  

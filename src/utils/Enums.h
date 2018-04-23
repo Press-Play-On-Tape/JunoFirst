@@ -19,6 +19,7 @@
 // Just once or multiple times
 #define SINGLE_FLASH
 
+
 // ---------------------------------------------------------------------
 //  You can play with these ..
 
@@ -197,7 +198,11 @@ enum class EnemyStatus : uint8_t {
   Explosion2,
   Explosion3,
   Explosion4,
-  Active
+  Active,
+  Spawn1,
+  Spawn2,
+  Spawn3,
+  Spawn4,
 
 };
 
