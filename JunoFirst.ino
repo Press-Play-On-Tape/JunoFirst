@@ -661,8 +661,12 @@ void Play() {
       uint8_t numberOfEnemies = 0;
 
 
-      if (level.getScore() > 1000 && !level.inDoubleUpPhase()) {
-        numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT));
+      if (level.getScore() > 1000 && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
+
+        uint8_t sequence = random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
+        numberOfEnemies = level.launchFormation(enemies, sequence);
+        if (sequence >= NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT) { level.setAstronautBeenLaunched(true); }
+
       }
       else {
         numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
