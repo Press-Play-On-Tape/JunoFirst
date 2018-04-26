@@ -27,6 +27,7 @@ static const uint8_t ADDITIONAL_ENEMIES_PER_WAVE          = 2;          // How m
 
 static const uint8_t INITIAL_BULLET_FREQUENCY             = 60;         // How frequently should enemies shoot you?  Higher is less often.
 static const uint8_t BULLETS_DECREASE_PER_WAVE            = 2;          // How does the frequency increase each wave?  Bigger numbers means enemies fire more rapidly each wave ..
+static const uint16_t FUEL_BONUS_INC                      = 1000;
 
 #if GROUND_SPEED == 1
 static const uint8_t DEFAULT_FRAME_RATE                   = 70;         // Frame rate the game starts at.

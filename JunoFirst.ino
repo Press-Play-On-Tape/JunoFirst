@@ -90,6 +90,7 @@ void loop() {
       gameState = GameState::Wave;
       arduboy.setFrameRate(level.getFrameRate());
       arduboy.setRGBled(0, 0, 0);
+      fuelBonusDisplay = 0;
       // break; Fall-through intentional.
 
     case GameState::Wave:
@@ -99,7 +100,6 @@ void loop() {
       if (introDelay == 0) {
         level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
         gameState = GameState::GamePlay;
-        fuelBonusDisplay = 0;
       }
 
       Play();
@@ -684,8 +684,8 @@ void Play() {
     
     if (level.getInPlay() == 0 && level.getEnemiesLaunchedThisWave() >= level.getEnemiesInWave()) {
 
-      fuelBonus = player->getFuel();
-      fuelBonusDisplay = fuelBonus;
+      fuelBonus = clamp(player.getFuel(), static_cast<uint8_t>(0), static_cast<uint8_t>(9));
+      fuelBonusDisplay = 0;
       level.incWave();
       gameState = GameState::Wave_Init;
 
