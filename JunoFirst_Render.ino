@@ -348,10 +348,22 @@ void RenderScreen(Player *player, Enemy *enemies) {
       }
       else {
 
-        arduboy.fillRect(39, 21, 39, 13, BLACK);
-        Sprites::drawSelfMasked(40, 22, startOfWave, 0);
-        Sprites::drawSelfMasked(66, 25, numbers, level.getWave() / 10);
-        Sprites::drawSelfMasked(71, 25, numbers, level.getWave() % 10);
+        arduboy.fillRect(30, 18, 56, 22, BLACK);
+        Sprites::drawSelfMasked(31, 19, startOfWave, 0);
+        Sprites::drawSelfMasked(67, 22, numbers, level.getWave() / 10);
+        Sprites::drawSelfMasked(72, 22, numbers, level.getWave() % 10);
+
+        if (arduboy.everyXFrames(12) && fuelBonusDisplay < fuelBonus) {
+
+          fuelBonusDisplay++;
+          level.setScore(level.getScore() + FUEL_BONUS_INC);
+          
+        }
+
+        Sprites::drawSelfMasked(64, 30, numbers, fuelBonusDisplay);
+        Sprites::drawSelfMasked(69, 30, numbers, 0);
+        Sprites::drawSelfMasked(74, 30, numbers, 0);
+        Sprites::drawSelfMasked(79, 30, numbers, 0);
 
       }
 

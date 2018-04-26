@@ -19,6 +19,7 @@ class Level {
     uint32_t getScore();
     uint16_t getCountDown();
     uint8_t getInPlay();      // Enemies in play.
+    bool getAstronautBeenLaunched();    
 
     void setHorizon(int8_t val);
     void setWave(uint8_t val);
@@ -26,6 +27,7 @@ class Level {
     void setCountDown(uint16_t val);
     void setInPlay(uint8_t val);
     void setDoubleUpPoints(uint16_t val);
+    void setAstronautBeenLaunched(bool val);
 
 
     // Methods ..
@@ -47,6 +49,7 @@ class Level {
 
     void decDoubleUpPoints();
     bool inDoubleUpPhase();
+    bool hasAstronautBeenLaunched();
 
   private:
 
@@ -59,6 +62,7 @@ class Level {
     uint8_t _enemiesInWave;
     uint8_t _enemiesLaunchedThisWave;
     uint16_t _doubleUpPoints = 0;
+    bool _hasAstronautBeenLaunched;
 
 };
 
@@ -87,6 +91,10 @@ uint8_t Level::getInPlay() {
   return _inPlay;
 }
 
+bool Level::getAstronautBeenLaunched() {
+  return _hasAstronautBeenLaunched;
+}
+
 void Level::setHorizon(int8_t val) {
   _horizon = val;
 }
@@ -109,6 +117,10 @@ void Level::setInPlay(uint8_t val) {
 
 void Level::setDoubleUpPoints(uint16_t val) {
   _doubleUpPoints = val;
+}
+
+void Level::setAstronautBeenLaunched(bool val) {
+  _hasAstronautBeenLaunched = val;
 }
 
 
@@ -153,6 +165,7 @@ void Level::resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
   _horizon = 2;
   _enemiesLaunchedThisWave = 0;
   _doubleUpPoints = 0;
+  _hasAstronautBeenLaunched = false;
 
 }
 
@@ -260,5 +273,11 @@ bool Level::inDoubleUpPhase() {
 void Level::decDoubleUpPoints() {
  
   if (_doubleUpPoints > 0) _doubleUpPoints--;
+
+}
+
+bool Level::hasAstronautBeenLaunched() {
+
+  return _hasAstronautBeenLaunched;
 
 }

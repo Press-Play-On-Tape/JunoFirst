@@ -23,6 +23,8 @@ uint8_t introDelay = 0;
 uint8_t alternate = 0;
 uint8_t alternate2 = 0;
 uint8_t horizonIncrement = 0;
+uint8_t fuelBonusDisplay = 0;
+uint8_t fuelBonus = 0;
 
 Player player;
 Bullet playerBullet;
@@ -88,6 +90,7 @@ void loop() {
       gameState = GameState::Wave;
       arduboy.setFrameRate(level.getFrameRate());
       arduboy.setRGBled(0, 0, 0);
+      fuelBonusDisplay = 0;
       // break; Fall-through intentional.
 
     case GameState::Wave:
@@ -661,8 +664,12 @@ void Play() {
       uint8_t numberOfEnemies = 0;
 
 
-      if (level.getScore() > 1000 && !level.inDoubleUpPhase()) {
-        numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT));
+      if (level.getScore() > 1000 && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
+
+        uint8_t sequence = random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
+        numberOfEnemies = level.launchFormation(enemies, sequence);
+        if (sequence >= NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT) { level.setAstronautBeenLaunched(true); }
+
       }
       else {
         numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
@@ -677,6 +684,8 @@ void Play() {
     
     if (level.getInPlay() == 0 && level.getEnemiesLaunchedThisWave() >= level.getEnemiesInWave()) {
 
+      fuelBonus = clamp(player.getFuel(), static_cast<uint8_t>(0), static_cast<uint8_t>(9));
+      fuelBonusDisplay = 0;
       level.incWave();
       gameState = GameState::Wave_Init;
 
