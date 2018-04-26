@@ -23,6 +23,8 @@ uint8_t introDelay = 0;
 uint8_t alternate = 0;
 uint8_t alternate2 = 0;
 uint8_t horizonIncrement = 0;
+uint8_t fuelBonusDisplay = 0;
+uint8_t fuelBonus = 0;
 
 Player player;
 Bullet playerBullet;
@@ -97,6 +99,7 @@ void loop() {
       if (introDelay == 0) {
         level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
         gameState = GameState::GamePlay;
+        fuelBonusDisplay = 0;
       }
 
       Play();
@@ -681,6 +684,8 @@ void Play() {
     
     if (level.getInPlay() == 0 && level.getEnemiesLaunchedThisWave() >= level.getEnemiesInWave()) {
 
+      fuelBonus = player->getFuel();
+      fuelBonusDisplay = fuelBonus;
       level.incWave();
       gameState = GameState::Wave_Init;
 

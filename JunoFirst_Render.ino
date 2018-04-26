@@ -353,6 +353,21 @@ void RenderScreen(Player *player, Enemy *enemies) {
         Sprites::drawSelfMasked(66, 25, numbers, level.getWave() / 10);
         Sprites::drawSelfMasked(71, 25, numbers, level.getWave() % 10);
 
+        if (fuelBonusDisplay < fuelBonus) {
+
+          fuelBonusDisplay++;
+          player.score = playerScore + 100000;
+          
+        }
+
+        Sprites::drawSelfMasked(66, 32, numbers, fuelBonusDisplay);
+        Sprites::drawSelfMasked(66, 32, numbers, 0);
+        Sprites::drawSelfMasked(71, 32, numbers, 0);
+        Sprites::drawSelfMasked(76, 32, numbers, 0);
+        Sprites::drawSelfMasked(81, 32, numbers, 0);
+        Sprites::drawSelfMasked(86, 32, numbers, 0);
+
+
       }
 
     }
