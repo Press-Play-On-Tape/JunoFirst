@@ -28,7 +28,6 @@ static const uint8_t ADDITIONAL_ENEMIES_PER_WAVE          = 2;          // How m
 
 static const uint8_t INITIAL_BULLET_FREQUENCY             = 60;         // How frequently should enemies shoot you?  Higher is less often.
 static const uint8_t BULLETS_DECREASE_PER_WAVE            = 2;          // How does the frequency increase each wave?  Bigger numbers means enemies fire more rapidly each wave ..
-static const uint16_t FUEL_BONUS_INC                      = 1000;
 
 #if GROUND_SPEED == 1
 static const uint8_t DEFAULT_FRAME_RATE                   = 70;         // Frame rate the game starts at.
@@ -53,6 +52,7 @@ static const uint16_t INCREMENT_HEALTH                    = 800;        // How q
 #endif
 
 static const uint8_t HEALTH_COUNTDOWN                     = 6;          // How many times do we flash the screen / red LED when hit?
+static const uint16_t FUEL_BONUS_INC                      = 1000;       // What binus do you get for each fuel unit left at the end of a level?
 
 
 // ---------------------------------------------------------------------
