@@ -218,7 +218,7 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
         enemy->setXDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
         enemy->setYDelta(static_cast<int8_t>(pgm_read_byte(&formationToLoad[dataOffset++])));
         enemy->setMovementSequence(static_cast<MovementSequence>(pgm_read_byte(&formationToLoad[dataOffset++])));
-        enemy->setStatus(EnemyStatus::Active);
+        enemy->setStatus(static_cast<EnemyStatus>(pgm_read_byte(&formationToLoad[dataOffset++])));
         break;
 
       }    

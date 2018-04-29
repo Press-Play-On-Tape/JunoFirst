@@ -19,6 +19,7 @@
 // Just once or multiple times
 #define SINGLE_FLASH
 
+
 // ---------------------------------------------------------------------
 //  You can play with these ..
 
@@ -109,6 +110,8 @@ static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH_HALF      = 6;
 static const uint8_t FRAME_RATE_1                         = 1;
 static const uint8_t FRAME_RATE_2                         = 2;
 static const uint8_t FRAME_RATE_4                         = 4;
+static const uint8_t FRAME_RATE_8                         = 8;
+static const uint8_t FRAME_RATE_12                        = 12;
 static const uint8_t FRAME_RATE_16                        = 16;
 
 
@@ -198,7 +201,15 @@ enum class EnemyStatus : uint8_t {
   Explosion2,
   Explosion3,
   Explosion4,
-  Active
+  Active,
+  Spawn1,
+  Spawn2,
+  Spawn3,
+  Spawn4,
+  Spawn5,
+  Spawn6,
+  Spawn7,
+  Spawn8
 
 };
 
