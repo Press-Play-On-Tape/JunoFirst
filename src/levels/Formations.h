@@ -262,8 +262,8 @@ const int8_t PROGMEM formation_30[] = {
 
 const int8_t PROGMEM formation_31[] = {
   2,  
-  static_cast<uint8_t>(EnemyType::EnemyType2), ENEMY_MINIMUM_X + 5, 60, 2, 2, static_cast<uint8_t>(MovementSequence::Sequence_3), static_cast<uint8_t>(EnemyStatus::Spawn4), 
-  static_cast<uint8_t>(EnemyType::EnemyType2), ENEMY_MINIMUM_X + 25, 80, 2, 2, static_cast<uint8_t>(MovementSequence::Sequence_3), static_cast<uint8_t>(EnemyStatus::Spawn4), 
+  static_cast<uint8_t>(EnemyType::EnemyType2), ENEMY_MINIMUM_X + 5, 60, 2, 2, static_cast<uint8_t>(MovementSequence::Sequence_3), static_cast<uint8_t>(EnemyStatus::Spawn8), 
+  static_cast<uint8_t>(EnemyType::EnemyType2), ENEMY_MINIMUM_X + 25, 80, 2, 2, static_cast<uint8_t>(MovementSequence::Sequence_3), static_cast<uint8_t>(EnemyStatus::Spawn8), 
 };
 
 #ifndef TEST_ASTRONAUT

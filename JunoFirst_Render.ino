@@ -38,115 +38,142 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
     uint8_t const *imageName = nullptr;
     uint8_t const *maskName = nullptr;
+    uint8_t const *spawnImageName = nullptr;
+    uint8_t const *spawnMaskName = nullptr;    
     uint8_t frame = 0;
 
     if (enemy->isVisible()) {
 
-      if (enemy->getStatus() == EnemyStatus::Active) {
+      switch (enemy->getStatus()) {
 
-        switch (enemy->getSize()) {
+        case EnemyStatus::Active:
+        
+          switch (enemy->getSize()) {
 
-          case ImageSize::Horizon:
+            case ImageSize::Horizon:
 
-            imageName = alien_horizon;
-            maskName = alien_horizon_mask;
-            break;
+              imageName = alien_horizon;
+              maskName = alien_horizon_mask;
+              break;
 
-          case ImageSize::Far:
+            case ImageSize::Far:
 
-            imageName = alien_far;
-            maskName = alien_far_mask;
-            break;
+              imageName = alien_far;
+              maskName = alien_far_mask;
+              break;
 
-          case ImageSize::Medium:
+            case ImageSize::Medium:
+       
+              frame = static_cast<uint8_t>(enemy->getType());
 
-            if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-              imageName = alien_medium_1;
-              maskName = alien_medium_1_mask;
-            }
-            else {
-              imageName = alien_medium_2;
-              maskName = alien_medium_2_mask;
-            }
+              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+                imageName = alien_medium_1;
+                maskName = alien_medium_1_mask;
+              }
+              else {
+                imageName = alien_medium_2;
+                maskName = alien_medium_2_mask;
+              }
 
-            frame = static_cast<uint8_t>(enemy->getType());
+              break;
 
-            break;
+            case ImageSize::Close:
+     
+              frame = static_cast<uint8_t>(enemy->getType());
 
-          case ImageSize::Close:
+              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+                imageName = alien_close_1;
+                maskName = alien_close_1_mask;
+              }
+              else {
+                imageName = alien_close_2;
+                maskName = alien_close_2_mask;
+              }
 
-            if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
-              imageName = alien_close_1;
-              maskName = alien_close_1_mask;
-            }
-            else {
-              imageName = alien_close_2;
-              maskName = alien_close_2_mask;
-            }
+              break;
 
-            frame = static_cast<uint8_t>(enemy->getType());
-
-            break;
-
-        }
+          }
 
 
-        // Render image ..
+          // Render image ..
 
-        Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, frame, frame);
+          Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, frame, frame);
+          break;
 
-      }
-      else if (enemy->getStatus() == EnemyStatus::Active) {
 
-        switch (enemy->getStatus()) {
+        case EnemyStatus::Dead ... EnemyStatus::Explosion4:
 
-          case EnemyStatus::Explosion1:
-            imageName = alien_close_explosion_4;
-            break;
+          switch (enemy->getStatus()) {
 
-          case EnemyStatus::Explosion2:
-            imageName = alien_close_explosion_3;
-            break;
+            case EnemyStatus::Explosion1:
+              imageName = alien_close_explosion_4;
+              break;
 
-          case EnemyStatus::Explosion3:
-            imageName = alien_close_explosion_2;
-            break;
+            case EnemyStatus::Explosion2:
+              imageName = alien_close_explosion_3;
+              break;
 
-          case EnemyStatus::Explosion4:
-            imageName = alien_close_explosion_1;
-            break;
+            case EnemyStatus::Explosion3:
+              imageName = alien_close_explosion_2;
+              break;
 
-          default: break;
-            
-        }
-
-        Sprites::drawSelfMasked(enemy->getXDisplay(), enemy->getYDisplay(), imageName, 0);
-
-      }
-      else if (enemy->getStatus() > EnemyStatus::Active) {
-
-        uint8_t idx = static_cast<uint8_t>(enemy->getStatus()) - static_cast<uint8_t>(EnemyStatus::Spawn1);
-        switch (enemy->getSize()) {
-
-          case ImageSize::Medium:
-
-            imageName = spawning_medium;
-            maskName = spawning_medium_mask;
-
-            break;
-
-          case ImageSize::Close:
-
-            imageName = spawning_close;
-            maskName = spawning_close_mask;
-
-            break;
+            case EnemyStatus::Explosion4:
+              imageName = alien_close_explosion_1;
+              break;
 
             default: break;
+              
+          }
 
-        }
+          Sprites::drawSelfMasked(enemy->getXDisplay(), enemy->getYDisplay(), imageName, 0);
+          break;
 
-        Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, idx, idx);
+
+        case EnemyStatus::Spawn1 ... EnemyStatus::Spawn8:
+        
+          uint8_t spawnIdx = static_cast<uint8_t>(enemy->getStatus()) - static_cast<uint8_t>(EnemyStatus::Spawn1);
+          frame = static_cast<uint8_t>(enemy->getType());
+
+          switch (enemy->getSize()) {
+
+            case ImageSize::Medium:
+
+              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+                imageName = alien_medium_1;
+                maskName = alien_medium_1_mask;
+              }
+              else {
+                imageName = alien_medium_2;
+                maskName = alien_medium_2_mask;
+              }
+
+              spawnImageName = spawning_medium;
+              spawnMaskName = spawning_medium_mask;
+
+              break;
+
+            case ImageSize::Close:
+
+              if (arduboy.getFrameCount(ENEMY_FRAME_COUNT) < ENEMY_FRAME_COUNT_HALF) {
+                imageName = alien_close_1;
+                maskName = alien_close_1_mask;
+              }
+              else {
+                imageName = alien_close_2;
+                maskName = alien_close_2_mask;
+              }
+
+              spawnImageName = spawning_close;
+              spawnMaskName = spawning_close_mask;
+
+
+              break;
+
+          }
+
+          Sprites::drawExternalMask(enemy->getXDisplay(), enemy->getYDisplay(), imageName, maskName, frame, frame);
+          Sprites::drawExternalMask(enemy->getXDisplay() - 1, enemy->getYDisplay(), spawnImageName, spawnMaskName, spawnIdx, spawnIdx);
+          break;
 
       }
  

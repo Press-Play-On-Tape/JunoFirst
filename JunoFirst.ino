@@ -581,9 +581,9 @@ void Play() {
 
 
 
-    // Update dying enemy images ..
+    // Update spawning enemy images ..
 
-    if (arduboy.everyXFrames(FRAME_RATE_16)) {
+    if (arduboy.everyXFrames(FRAME_RATE_8)) {
 
       for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
