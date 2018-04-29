@@ -20,6 +20,7 @@ class Level {
     uint16_t getCountDown();
     uint8_t getInPlay();      // Enemies in play.
     bool getAstronautBeenLaunched();    
+    uint8_t getFormationNumber();      
 
     void setHorizon(int8_t val);
     void setWave(uint8_t val);
@@ -28,6 +29,7 @@ class Level {
     void setInPlay(uint8_t val);
     void setDoubleUpPoints(uint16_t val);
     void setAstronautBeenLaunched(bool val);
+    void setFormationNumber(uint8_t val);
 
 
     // Methods ..
@@ -41,7 +43,7 @@ class Level {
     void resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
     void resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
 
-    uint8_t launchFormation(Enemy *enemies, uint8_t formationNumber);
+    uint8_t launchFormation(Enemy *enemies, uint8_t maxFormationNumber);
     uint8_t getFrameRate();
     uint8_t getEnemiesInWave();
     uint8_t getEnemiesLaunchedThisWave();
@@ -63,6 +65,7 @@ class Level {
     uint8_t _enemiesLaunchedThisWave;
     uint16_t _doubleUpPoints = 0;
     bool _hasAstronautBeenLaunched;
+    uint8_t _formationNumber;
 
 };
 
@@ -95,6 +98,10 @@ bool Level::getAstronautBeenLaunched() {
   return _hasAstronautBeenLaunched;
 }
 
+uint8_t Level::getFormationNumber() {
+  return _formationNumber;
+}
+
 void Level::setHorizon(int8_t val) {
   _horizon = val;
 }
@@ -113,6 +120,10 @@ void Level::setCountDown(uint16_t val) {
 
 void Level::setInPlay(uint8_t val) {
   _inPlay = val;
+}
+
+void Level::setFormationNumber(uint8_t val) {
+  _formationNumber = val;
 }
 
 void Level::setDoubleUpPoints(uint16_t val) {
@@ -140,6 +151,7 @@ void Level::resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
 
   _wave = 01;
   _score = 0;
+  _formationNumber = 0;
 
 }
 
@@ -196,13 +208,16 @@ void Level::incWave() {
 
 // Returns number launched ..
 
-uint8_t Level::launchFormation(Enemy *enemies, uint8_t formationNumber) {
+uint8_t Level::launchFormation(Enemy *enemies, uint8_t maxFormationNumber) {
 
+  uint8_t formationNumber = random(0, clamp(static_cast<uint8_t>(_formationNumber), static_cast<uint8_t>(0), static_cast<uint8_t>(maxFormationNumber)));
   uint16_t dataOffset = 0;
-  const int8_t *formationToLoad = formations[formationNumber];
 
+  const int8_t *formationToLoad = formations[formationNumber];
   uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
+
   _inPlay = _inPlay + numberOfEnemies;
+  if (_formationNumber < NUMBER_OF_FORMATIONS_WITH_ASTRONAUT - 1) _formationNumber++;
 
   for (uint8_t x = 0; x < numberOfEnemies; x++) {
 

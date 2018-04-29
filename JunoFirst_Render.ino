@@ -353,7 +353,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
   }
 
 
-  if (gameState == GameState::Wave) {
+  if (gameState == GameState::Wave || gameState == GameState::WaveCompleted) {
   
     if (introDelay % 2 == 1) {
 
@@ -387,6 +387,29 @@ void RenderScreen(Player *player, Enemy *enemies) {
   arduboy.drawLine(119, 61, 119, 46 + health, BLACK);
 
 
+  // Wave completed ?
+
+  if (gameState == GameState::WaveCompleted) {
+
+    if (arduboy.everyXFrames(12) && fuelBonusDisplay < fuelBonus) {
+
+      fuelBonusDisplay++;
+      level.setScore(level.getScore() + FUEL_BONUS_INC);
+      
+    }
+
+    arduboy.fillRect(19, 18, 78, 22, BLACK);
+    Sprites::drawSelfMasked(20, 19, waveCompleted, 0);
+
+    Sprites::drawSelfMasked(74, 30, numbers, fuelBonusDisplay);
+    Sprites::drawSelfMasked(79, 30, numbers, 0);
+    Sprites::drawSelfMasked(84, 30, numbers, 0);
+    Sprites::drawSelfMasked(89, 30, numbers, 0);
+
+  }
+
+
+
   // Start of game or wave?
 
   if (gameState == GameState::Wave) {
@@ -401,22 +424,10 @@ void RenderScreen(Player *player, Enemy *enemies) {
       }
       else {
 
-        arduboy.fillRect(30, 18, 56, 22, BLACK);
-        Sprites::drawSelfMasked(31, 19, startOfWave, 0);
-        Sprites::drawSelfMasked(67, 22, numbers, level.getWave() / 10);
-        Sprites::drawSelfMasked(72, 22, numbers, level.getWave() % 10);
-
-        if (arduboy.everyXFrames(12) && fuelBonusDisplay < fuelBonus) {
-
-          fuelBonusDisplay++;
-          level.setScore(level.getScore() + FUEL_BONUS_INC);
-          
-        }
-
-        Sprites::drawSelfMasked(64, 30, numbers, fuelBonusDisplay);
-        Sprites::drawSelfMasked(69, 30, numbers, 0);
-        Sprites::drawSelfMasked(74, 30, numbers, 0);
-        Sprites::drawSelfMasked(79, 30, numbers, 0);
+        arduboy.fillRect(35, 21, 46, 13, BLACK);
+        Sprites::drawSelfMasked(36, 22, startOfWave, 0);
+        Sprites::drawSelfMasked(67, 25, numbers, level.getWave() / 10);
+        Sprites::drawSelfMasked(72, 25, numbers, level.getWave() % 10);
 
       }
 

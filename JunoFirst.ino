@@ -98,8 +98,27 @@ void loop() {
       if (arduboy.everyXFrames(20)) { introDelay--; }
     
       if (introDelay == 0) {
-        level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
+        level.launchFormation(enemies, 0);
         gameState = GameState::GamePlay;
+      }
+
+      Play();
+      break;
+
+    case GameState::WaveCompleted_Init:
+      introDelay = 12;
+      alternate = 0;
+      gameState = GameState::WaveCompleted;
+      fuelBonusDisplay = 0;
+      // break; Fall-through intentional.
+
+    case GameState::WaveCompleted:
+ 
+      if (arduboy.everyXFrames(20)) { introDelay--; }
+    
+      if (introDelay == 0) {
+        level.launchFormation(enemies, 0);
+        gameState = GameState::Wave_Init;
       }
 
       Play();
@@ -211,7 +230,7 @@ void Play() {
   }
   
 
-  if (gameState != GameState::Wave && gameState != GameState::Paused) {
+  if (gameState != GameState::Wave && gameState != GameState::WaveCompleted && gameState != GameState::Paused) {
 
     #ifdef INC_HEALTH
     player.incHealth();
@@ -273,7 +292,7 @@ void Play() {
 
 
   
-  if (gameState != GameState::Wave && gameState != GameState::Paused) {
+  if (gameState != GameState::Wave && gameState != GameState::WaveCompleted && gameState != GameState::Paused) {
 
 
     // Update player bullet position ..
@@ -685,7 +704,7 @@ void Play() {
       uint8_t numberOfEnemies = 0;
 
 
-      if (level.getScore() > 1000 && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
+      if (level.getFormationNumber() > NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
 
         uint8_t sequence = random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
         numberOfEnemies = level.launchFormation(enemies, sequence);
@@ -693,7 +712,7 @@ void Play() {
 
       }
       else {
-        numberOfEnemies = level.launchFormation(enemies, random(0, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT));
+        numberOfEnemies = level.launchFormation(enemies, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT);
       }
 
       sound.tones(formation_launch[numberOfEnemies - 1]);
@@ -708,7 +727,7 @@ void Play() {
       fuelBonus = clamp(player.getFuel(), static_cast<uint8_t>(0), static_cast<uint8_t>(9));
       fuelBonusDisplay = 0;
       level.incWave();
-      gameState = GameState::Wave_Init;
+      gameState = GameState::WaveCompleted_Init;
 
     }
 
