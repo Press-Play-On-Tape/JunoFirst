@@ -217,7 +217,20 @@ uint8_t Level::launchFormation(Enemy *enemies, uint8_t maxFormationNumber) {
   uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
 
   _inPlay = _inPlay + numberOfEnemies;
-  if (_formationNumber < NUMBER_OF_FORMATIONS_WITH_ASTRONAUT - 1) _formationNumber++;
+
+
+
+  // Increase formatino number by =3 up to maximum ..
+
+  if (_formationNumber < NUMBER_OF_FORMATIONS_WITH_ASTRONAUT - 1) {
+
+      _formationNumber = formationNumber + 3;
+      _formationNumber = clamp<uint8_t>(_formationNumber, 0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
+
+  }
+
+
+  // Launch enemies ..
 
   for (uint8_t x = 0; x < numberOfEnemies; x++) {
 

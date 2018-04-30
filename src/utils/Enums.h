@@ -109,6 +109,7 @@ static const uint8_t ENEMY_DISTANCE_CLOSE_WIDTH_HALF      = 6;
 
 static const uint8_t FRAME_RATE_1                         = 1;
 static const uint8_t FRAME_RATE_2                         = 2;
+static const uint8_t FRAME_RATE_3                         = 3;
 static const uint8_t FRAME_RATE_4                         = 4;
 static const uint8_t FRAME_RATE_8                         = 8;
 static const uint8_t FRAME_RATE_12                        = 12;

@@ -115,7 +115,7 @@ void loop() {
       }
 
       playerBullet.setY(0);
-      
+
       introDelay = 12;
       alternate = 0;
       gameState = GameState::WaveCompleted;
@@ -127,7 +127,6 @@ void loop() {
       if (arduboy.everyXFrames(20)) { introDelay--; }
     
       if (introDelay == 0) {
-        level.launchFormation(enemies, 0);
         gameState = GameState::Wave_Init;
       }
 
@@ -615,7 +614,7 @@ void Play() {
 
     // Update spawning enemy images ..
 
-    if (arduboy.everyXFrames(FRAME_RATE_8)) {
+    if (arduboy.everyXFrames(FRAME_RATE_3)) {
 
       for (uint8_t x = 0; x < MAX_NUMBER_OF_ENEMIES; x++) {
 
