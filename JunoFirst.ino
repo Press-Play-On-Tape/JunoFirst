@@ -98,7 +98,7 @@ void loop() {
       if (arduboy.everyXFrames(20)) { introDelay--; }
     
       if (introDelay == 0) {
-        level.launchFormation(enemies, 0);
+        level.launchFormation(enemies);
         gameState = GameState::GamePlay;
       }
 
@@ -710,19 +710,18 @@ void Play() {
 
     if (level.getCountDown() == 0 && level.getInPlay() <= MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION && level.getEnemiesLaunchedThisWave() < level.getEnemiesInWave()) {
 
-      uint8_t numberOfEnemies = 0;
+      uint8_t numberOfEnemies = level.launchFormation(enemies);
 
+      // if (level.getFormationNumber() > NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
 
-      if (level.getFormationNumber() > NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
+      //   uint8_t sequence = random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
+      //   numberOfEnemies = level.launchFormation(enemies, sequence);
+      //   if (sequence >= NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT) { level.setAstronautBeenLaunched(true); }
 
-        uint8_t sequence = random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
-        numberOfEnemies = level.launchFormation(enemies, sequence);
-        if (sequence >= NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT) { level.setAstronautBeenLaunched(true); }
-
-      }
-      else {
-        numberOfEnemies = level.launchFormation(enemies, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT);
-      }
+      // }
+      // else {
+      //   numberOfEnemies = level.launchFormation(enemies, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT);
+      // }
 
       sound.tones(formation_launch[numberOfEnemies - 1]);
 
@@ -731,7 +730,7 @@ void Play() {
 
     // Have we cleared the wave ?
     
-    if (level.getInPlay() == 0 && level.getEnemiesLaunchedThisWave() >= level.getEnemiesInWave()) {
+    if (gameState == GameState::GamePlay && level.getInPlay() == 0 && level.getEnemiesLaunchedThisWave() >= level.getEnemiesInWave()) {
 
       fuelBonus = clamp(player.getFuel(), static_cast<uint8_t>(0), static_cast<uint8_t>(9));
       fuelBonusDisplay = 0;

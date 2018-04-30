@@ -52,8 +52,6 @@ static const uint16_t INCREMENT_HEALTH                    = 800;        // How q
 #endif
 
 static const uint8_t HEALTH_COUNTDOWN                     = 6;          // How many times do we flash the screen / red LED when hit?
-static const uint16_t FUEL_BONUS_INC                      = 1000;       // What binus do you get for each fuel unit left at the end of a level?
-
 
 // ---------------------------------------------------------------------
 //  Do not play with these !
@@ -114,6 +112,10 @@ static const uint8_t FRAME_RATE_4                         = 4;
 static const uint8_t FRAME_RATE_8                         = 8;
 static const uint8_t FRAME_RATE_12                        = 12;
 static const uint8_t FRAME_RATE_16                        = 16;
+
+
+static const uint16_t FUEL_BONUS_INC                      = 500;        // What bonus do you get for each fuel unit left at the end of a level?
+static const uint8_t FUEL_BONUS_INC_DIV                   = 5;          // Above divided by 100.
 
 
 // ----------------------------------------------------------------------------

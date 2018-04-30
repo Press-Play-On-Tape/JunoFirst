@@ -19,7 +19,7 @@ class Level {
     uint32_t getScore();
     uint16_t getCountDown();
     uint8_t getInPlay();      // Enemies in play.
-    bool getAstronautBeenLaunched();    
+//    bool getAstronautBeenLaunched();    
     uint8_t getFormationNumber();      
 
     void setHorizon(int8_t val);
@@ -28,7 +28,7 @@ class Level {
     void setCountDown(uint16_t val);
     void setInPlay(uint8_t val);
     void setDoubleUpPoints(uint16_t val);
-    void setAstronautBeenLaunched(bool val);
+//    void setAstronautBeenLaunched(bool val);
     void setFormationNumber(uint8_t val);
 
 
@@ -43,7 +43,7 @@ class Level {
     void resetGame(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
     void resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet);
 
-    uint8_t launchFormation(Enemy *enemies, uint8_t maxFormationNumber);
+    uint8_t launchFormation(Enemy *enemies);
     uint8_t getFrameRate();
     uint8_t getEnemiesInWave();
     uint8_t getEnemiesLaunchedThisWave();
@@ -64,8 +64,10 @@ class Level {
     uint8_t _enemiesInWave;
     uint8_t _enemiesLaunchedThisWave;
     uint16_t _doubleUpPoints = 0;
-    bool _hasAstronautBeenLaunched;
+//    bool _hasAstronautBeenLaunched;
     uint8_t _formationNumber;
+    uint8_t _astronautLaunchIndex;        // When should we launch the astronaut?
+    uint8_t _formationLaunchIndex;        // Counter of formations for the level, used to determine when to launch the astronaut.
 
 };
 
@@ -94,9 +96,9 @@ uint8_t Level::getInPlay() {
   return _inPlay;
 }
 
-bool Level::getAstronautBeenLaunched() {
-  return _hasAstronautBeenLaunched;
-}
+// bool Level::getAstronautBeenLaunched() {
+//   return _hasAstronautBeenLaunched;
+// }
 
 uint8_t Level::getFormationNumber() {
   return _formationNumber;
@@ -130,9 +132,9 @@ void Level::setDoubleUpPoints(uint16_t val) {
   _doubleUpPoints = val;
 }
 
-void Level::setAstronautBeenLaunched(bool val) {
-  _hasAstronautBeenLaunched = val;
-}
+// void Level::setAstronautBeenLaunched(bool val) {
+//   _hasAstronautBeenLaunched = val;
+// }
 
 
 //--------------------------------------------------------------------------------------------------------------------------
@@ -177,7 +179,9 @@ void Level::resetWave(Enemy *enemies, Bullet *bullets, Bullet *playerBullet) {
   _horizon = 2;
   _enemiesLaunchedThisWave = 0;
   _doubleUpPoints = 0;
-  _hasAstronautBeenLaunched = false;
+  //_hasAstronautBeenLaunched = false;
+  _astronautLaunchIndex = random(2, 5);
+  _formationLaunchIndex = 0;
 
 }
 
@@ -208,10 +212,22 @@ void Level::incWave() {
 
 // Returns number launched ..
 
-uint8_t Level::launchFormation(Enemy *enemies, uint8_t maxFormationNumber) {
+uint8_t Level::launchFormation(Enemy *enemies) {
 
-  uint8_t formationNumber = random(0, clamp(static_cast<uint8_t>(_formationNumber), static_cast<uint8_t>(0), static_cast<uint8_t>(maxFormationNumber)));
+  _formationNumber++;
+  uint8_t formationNumber = 0;
   uint16_t dataOffset = 0;
+  
+
+  // Should we launch the Astronuat?
+
+  if (_astronautLaunchIndex == formationNumber) {
+    formationNumber = random(NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT + 4);
+  }
+  else {
+//    formationNumber = random(0, clamp(static_cast<uint8_t>(_formationNumber), static_cast<uint8_t>(0), static_cast<uint8_t>(maxFormationNumber)));
+    formationNumber = random(0, _formationNumber);
+  }
 
   const int8_t *formationToLoad = formations[formationNumber];
   uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
@@ -304,8 +320,8 @@ void Level::decDoubleUpPoints() {
 
 }
 
-bool Level::hasAstronautBeenLaunched() {
+// bool Level::hasAstronautBeenLaunched() {
 
-  return _hasAstronautBeenLaunched;
+//   return _hasAstronautBeenLaunched;
 
-}
+// }

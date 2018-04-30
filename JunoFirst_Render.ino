@@ -401,8 +401,8 @@ void RenderScreen(Player *player, Enemy *enemies) {
     arduboy.fillRect(19, 18, 78, 22, BLACK);
     Sprites::drawSelfMasked(20, 19, waveCompleted, 0);
 
-    Sprites::drawSelfMasked(74, 30, numbers, fuelBonusDisplay);
-    Sprites::drawSelfMasked(79, 30, numbers, 0);
+    Sprites::drawSelfMasked(74, 30, numbers, (fuelBonusDisplay * FUEL_BONUS_INC_DIV) / 10);
+    Sprites::drawSelfMasked(79, 30, numbers, (fuelBonusDisplay * FUEL_BONUS_INC_DIV) % 10);
     Sprites::drawSelfMasked(84, 30, numbers, 0);
     Sprites::drawSelfMasked(89, 30, numbers, 0);
 
