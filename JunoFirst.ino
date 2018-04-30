@@ -114,6 +114,8 @@ void loop() {
 
       }
 
+      playerBullet.setY(0);
+      
       introDelay = 12;
       alternate = 0;
       gameState = GameState::WaveCompleted;
