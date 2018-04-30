@@ -106,6 +106,14 @@ void loop() {
       break;
 
     case GameState::WaveCompleted_Init:
+
+      for (uint8_t x = 0; x < MAX_NUMBER_OF_BULLETS; x++) {
+
+        Bullet *bullet = &bullets[x];
+        bullet->setY(0);
+
+      }
+
       introDelay = 12;
       alternate = 0;
       gameState = GameState::WaveCompleted;
