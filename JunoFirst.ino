@@ -280,7 +280,7 @@ void Play() {
     if (arduboy.pressed(LEFT_BUTTON))     { player.decX(); }
     if (arduboy.pressed(RIGHT_BUTTON))    { player.incX(); }
 
-    if (gameState != GameState::Wave && (arduboy.justPressed(A_BUTTON) || (level.inDoubleUpPhase() && arduboy.pressed(A_BUTTON)))) {
+    if (gameState != GameState::Wave && gameState != GameState::WaveCompleted && (arduboy.justPressed(A_BUTTON) || (level.inDoubleUpPhase() && arduboy.pressed(A_BUTTON)))) {
 
       if (playerBullet.getY() == 0) {
 
@@ -296,11 +296,7 @@ void Play() {
 
   }
 
-  if (gameState != GameState::Wave && arduboy.justPressed(B_BUTTON)) gameState = (gameState == GameState::GamePlay ? GameState::Paused : GameState::GamePlay);
-
-
-
-  
+  if (gameState != GameState::Wave && gameState != GameState::WaveCompleted && arduboy.justPressed(B_BUTTON)) gameState = (gameState == GameState::GamePlay ? GameState::Paused : GameState::GamePlay);
   if (gameState != GameState::Wave && gameState != GameState::WaveCompleted && gameState != GameState::Paused) {
 
 
@@ -711,18 +707,6 @@ void Play() {
     if (level.getCountDown() == 0 && level.getInPlay() <= MAX_NUMBER_OF_ENEMIES - MAX_NUMBER_OF_ENEMIES_PER_FORMATION && level.getEnemiesLaunchedThisWave() < level.getEnemiesInWave()) {
 
       uint8_t numberOfEnemies = level.launchFormation(enemies);
-
-      // if (level.getFormationNumber() > NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT && !level.inDoubleUpPhase() && !level.hasAstronautBeenLaunched()) {
-
-      //   uint8_t sequence = random(0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
-      //   numberOfEnemies = level.launchFormation(enemies, sequence);
-      //   if (sequence >= NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT) { level.setAstronautBeenLaunched(true); }
-
-      // }
-      // else {
-      //   numberOfEnemies = level.launchFormation(enemies, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT);
-      // }
-
       sound.tones(formation_launch[numberOfEnemies - 1]);
 
     }

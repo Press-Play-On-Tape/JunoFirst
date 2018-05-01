@@ -414,7 +414,7 @@ void RenderScreen(Player *player, Enemy *enemies) {
 
   if (gameState == GameState::Wave) {
 
-    if (introDelay != 2 && introDelay != 4 && introDelay != 6) {
+    if (introDelay != 2 && introDelay != 4 && introDelay != 6 && introDelay != 8) {
 
       if (level.getWave() == 1 && player->getLives() == MAX_NUMBER_OF_LIVES) {
 
@@ -434,7 +434,12 @@ void RenderScreen(Player *player, Enemy *enemies) {
     }
     else {
 
-      if (!sound.playing()) sound.tones(blib);
+      if (introDelay == 2) {
+        if (!sound.playing()) sound.tones(blib2);
+      }
+      else {
+        if (!sound.playing()) sound.tones(blib);
+      }
 
     }
 

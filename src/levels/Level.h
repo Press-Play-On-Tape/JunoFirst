@@ -214,34 +214,39 @@ void Level::incWave() {
 
 uint8_t Level::launchFormation(Enemy *enemies) {
 
-  _formationNumber++;
-  uint8_t formationNumber = 0;
+  uint8_t formationNumberToLaunch = 0;
   uint16_t dataOffset = 0;
   
 
   // Should we launch the Astronuat?
-
-  if (_astronautLaunchIndex == formationNumber) {
-    formationNumber = random(NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT + 4);
+//  arduboy->setCursor(0,0);
+Serial.print(_astronautLaunchIndex);
+Serial.print(" ");
+Serial.print(_formationLaunchIndex);
+_formationLaunchIndex++;
+  if (_astronautLaunchIndex == _formationLaunchIndex) {
+    formationNumberToLaunch = random(NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT, NUMBER_OF_FORMATIONS_WITHOUT_ASTRONAUT + 2);
   }
   else {
 //    formationNumber = random(0, clamp(static_cast<uint8_t>(_formationNumber), static_cast<uint8_t>(0), static_cast<uint8_t>(maxFormationNumber)));
-    formationNumber = random(0, _formationNumber);
+    formationNumberToLaunch = random(0, _formationNumber);
   }
+Serial.print(" ");
+Serial.println(formationNumberToLaunch);
 
-  const int8_t *formationToLoad = formations[formationNumber];
+  const int8_t *formationToLoad = formations[formationNumberToLaunch];
   uint8_t numberOfEnemies = pgm_read_byte(&formationToLoad[dataOffset++]);
 
   _inPlay = _inPlay + numberOfEnemies;
 
 
 
-  // Increase formatino number by =3 up to maximum ..
+  // Increase formatino number by 2 up to maximum ..
 
   if (_formationNumber < NUMBER_OF_FORMATIONS_WITH_ASTRONAUT - 1) {
 
-      _formationNumber = formationNumber + 3;
-      _formationNumber = clamp<uint8_t>(_formationNumber, 0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT);
+      _formationNumber = _formationNumber + 2;
+      _formationNumber = clamp<uint8_t>(_formationNumber, 0, NUMBER_OF_FORMATIONS_WITH_ASTRONAUT - 1);
 
   }
 

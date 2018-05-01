@@ -111,5 +111,9 @@ const uint16_t blib[] PROGMEM = {
   NOTE_C3, 40, NOTE_REST, 500, TONES_END
 };
 
+const uint16_t blib2[] PROGMEM = {
+  NOTE_C5, 60, NOTE_REST, 500, TONES_END
+};
+
 
 const uint16_t *formation_launch[] = { formation_launch_1, formation_launch_2, formation_launch_3, formation_launch_4 };
