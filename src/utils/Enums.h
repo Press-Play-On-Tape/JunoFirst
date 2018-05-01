@@ -43,7 +43,7 @@ static const uint8_t DEFAULT_FRAME_RATE                   = 50;         // Frame
 static const uint8_t NEW_WAVE_FRAME_RATE_INC              = 4;          // Frame rate increment per wave.
 #endif
 
-static const uint8_t FRAME_RATE_DEC_FUEL                  = 50;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
+static const uint8_t FRAME_RATE_DEC_FUEL                  = 60;         // How wuickly does your fuel deplete?  Again, bigger numbers result in slower depletion,
 static const uint16_t DOUBLE_UP_POINTS_DELAY              = 500;        // How long do we double up points after an astronaut capture?
 
 #ifdef INC_HEALTH
