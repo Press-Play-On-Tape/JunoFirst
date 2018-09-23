@@ -1,8 +1,7 @@
 ## Juno First for the Arduboy
 <br/> 
 
-<img src="/distributable/JunoFirst_01.png" data-canonical-src="/distributable/JunoFirst_01.png" width="256" height="128" />
-&nbsp;&nbsp;&nbsp;<img src="/distributable/JunoFirst_02.png" data-canonical-src="/distributable/JunoFirst_02.png" width="256" height="128" />
+<img src="/distributable/JunoFirst_01.png" data-canonical-src="/distributable/JunoFirst_01.png" width="256" height="128" />&nbsp;&nbsp;&nbsp;<img src="/distributable/JunoFirst_02.png" data-canonical-src="/distributable/JunoFirst_02.png" width="256" height="128" />
 
 <img src="/distributable/JunoFirst_03.png" data-canonical-src="/distributable/JunoFirst_03.png" width="256" height="128" />&nbsp;&nbsp;&nbsp;<img src="/distributable/JunoFirst_04.png" data-canonical-src="/distributable/JunoFirst_04.png" width="256" height="128" />
 
