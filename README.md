@@ -13,6 +13,7 @@ Kill each wave of attacking aliens before you fuel or health runs out.  Rescue t
 
 <img src="/distributable/Movie.gif" data-canonical-src="/distributable/Movie.gif" width="256" height="128" />
 <br/>
+
 #### Artwork and Music: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Vampirics<br/>Development and Bugs: &nbsp;&nbsp;@Filmote<br/>Source Code and Hex:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/Press-Play-On-Tape/JunoFirst/releases
 
 #### Enjoy!
