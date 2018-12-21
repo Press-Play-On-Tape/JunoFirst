@@ -13,7 +13,7 @@ void Intro() {
 
   // Draw logo ..
 
-  Sprites::drawOverwrite(18, 1, logo, 0);
+  Sprites::drawOverwrite(5, 5, logo, 0);
 
 
   if (!fadeInEffect.isComplete()) {
