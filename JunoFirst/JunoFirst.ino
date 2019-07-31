@@ -25,6 +25,7 @@ uint8_t alternate2 = 0;
 uint8_t horizonIncrement = 0;
 uint8_t fuelBonusDisplay = 0;
 uint8_t fuelBonus = 0;
+uint8_t restart = 0;
 
 Player player;
 Bullet playerBullet;

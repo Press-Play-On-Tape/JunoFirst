@@ -3,6 +3,7 @@
 
 
 IntroductionState selectedIntroItem = IntroductionState::Start;
+constexpr const static uint8_t UPLOAD_DELAY = 16;
 
 
 // --------------------------------------------------------------------------------------
@@ -67,5 +68,21 @@ void Intro() {
     }
     
   }
+
+  // Restart ?
+
+	if (arduboy.pressed(DOWN_BUTTON)) {
+
+		if (restart < UPLOAD_DELAY) {
+			restart++;
+		}
+		else {
+      arduboy.exitToBootloader();
+		}
+
+	}
+	else {
+		restart = 0;
+	}
 
 }
