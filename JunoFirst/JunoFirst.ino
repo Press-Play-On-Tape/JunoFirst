@@ -17,7 +17,7 @@
 
 Arduboy2Ext arduboy;
 ArduboyTones sound(arduboy.audio.enabled);
-GameState gameState = GameState::Intro_Init;
+GameState gameState = GameState::SplashScreen_Init;
 
 uint8_t introDelay = 0;
 uint8_t alternate = 0;
@@ -64,6 +64,14 @@ void loop() {
   arduboy.pollButtons();
 
   switch (gameState) {
+
+    case GameState::SplashScreen_Init:
+      splashScreen_Init();
+      break;
+
+    case GameState::SplashScreen:
+      splashScreen();
+      break;
 
     case GameState::Intro_Init:
       arduboy.setFrameRate(DEFAULT_FRAME_RATE);

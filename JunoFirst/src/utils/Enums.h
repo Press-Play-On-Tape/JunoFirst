@@ -153,7 +153,9 @@ enum class GameState : uint8_t {
   SaveScore,
   HighScore,
   Credits,
-  Paused
+  Paused,
+  SplashScreen_Init,
+  SplashScreen
 
 };
 
